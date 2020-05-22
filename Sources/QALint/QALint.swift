@@ -1,6 +1,6 @@
 //
-//  DesignQA.swift
-//  DesignQA
+//  UILint.swift
+//  UILint
 //
 //  Created by Quinn McHenry on 5/18/20.
 //  Copyright © 2020 Quinn McHenry. All rights reserved.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-public struct DesignQA {
+public struct UILint {
 
     public static func doTheQA(view: UIView) {
         
@@ -86,4 +86,3 @@ extension UIView {
         superview?.convert(frame, to: nil)
     }
 }
-
