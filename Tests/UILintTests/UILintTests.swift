@@ -1,12 +1,12 @@
 import XCTest
-@testable import QALint
+@testable import UILint
 
-final class QALintTests: XCTestCase {
+final class UILintTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(QALint().text, "Hello, World!")
+        XCTAssertEqual(UILint().text, "Hello, World!")
     }
 
     static var allTests = [
