@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,7 @@
 		A9F847DE2478433300CE37CE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9F847DC2478433300CE37CE /* LaunchScreen.storyboard */; };
 		A9F847E92478433400CE37CE /* LintyUIKitDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847E82478433400CE37CE /* LintyUIKitDemoTests.swift */; };
 		A9F847F42478433400CE37CE /* LintyUIKitDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847F32478433400CE37CE /* LintyUIKitDemoUITests.swift */; };
+		A9F8480624784A6700CE37CE /* UILint in Frameworks */ = {isa = PBXBuildFile; productRef = A9F8480524784A6700CE37CE /* UILint */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9F8480624784A6700CE37CE /* UILint in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +146,9 @@
 			dependencies = (
 			);
 			name = LintyUIKitDemo;
+			packageProductDependencies = (
+				A9F8480524784A6700CE37CE /* UILint */,
+			);
 			productName = LintyUIKitDemo;
 			productReference = A9F847CE2478433200CE37CE /* LintyUIKitDemo.app */;
 			productType = "com.apple.product-type.application";
@@ -216,6 +221,9 @@
 				Base,
 			);
 			mainGroup = A9F847C52478433200CE37CE;
+			packageReferences = (
+				A9F8480424784A6700CE37CE /* XCRemoteSwiftPackageReference "UILint" */,
+			);
 			productRefGroup = A9F847CF2478433200CE37CE /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -590,6 +598,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		A9F8480424784A6700CE37CE /* XCRemoteSwiftPackageReference "UILint" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/qmchenry/UILint.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A9F8480524784A6700CE37CE /* UILint */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A9F8480424784A6700CE37CE /* XCRemoteSwiftPackageReference "UILint" */;
+			productName = UILint;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A9F847C62478433200CE37CE /* Project object */;
 }

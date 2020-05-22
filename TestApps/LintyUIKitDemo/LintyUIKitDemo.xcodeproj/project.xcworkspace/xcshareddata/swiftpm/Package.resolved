@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "UILint",
+        "repositoryURL": "https://github.com/qmchenry/UILint.git",
+        "state": {
+          "branch": "master",
+          "revision": "3b184808a7d30d0a1780d621753411954f9130c0",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
