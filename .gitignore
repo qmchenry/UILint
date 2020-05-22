@@ -66,3 +66,4 @@ playground.xcworkspace
 
 Carthage/Build/
 
+.DS_Store

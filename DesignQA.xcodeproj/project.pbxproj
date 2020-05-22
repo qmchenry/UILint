@@ -11,6 +11,7 @@
 		A958B0952473099600C74CBD /* DesignQATests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A958B0942473099600C74CBD /* DesignQATests.swift */; };
 		A958B0972473099600C74CBD /* DesignQA.h in Headers */ = {isa = PBXBuildFile; fileRef = A958B0892473099600C74CBD /* DesignQA.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A958B0B424730A3400C74CBD /* DesignQA.swift in Sources */ = {isa = PBXBuildFile; fileRef = A958B0B324730A3400C74CBD /* DesignQA.swift */; };
+		A958B0B824747A8900C74CBD /* ScreenshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A958B0B724747A8900C74CBD /* ScreenshotHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		A958B0942473099600C74CBD /* DesignQATests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignQATests.swift; sourceTree = "<group>"; };
 		A958B0962473099600C74CBD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A958B0B324730A3400C74CBD /* DesignQA.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignQA.swift; sourceTree = "<group>"; };
+		A958B0B724747A8900C74CBD /* ScreenshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 				A958B0892473099600C74CBD /* DesignQA.h */,
 				A958B08A2473099600C74CBD /* Info.plist */,
 				A958B0B324730A3400C74CBD /* DesignQA.swift */,
+				A958B0B724747A8900C74CBD /* ScreenshotHelper.swift */,
 			);
 			path = DesignQA;
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A958B0B424730A3400C74CBD /* DesignQA.swift in Sources */,
+				A958B0B824747A8900C74CBD /* ScreenshotHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

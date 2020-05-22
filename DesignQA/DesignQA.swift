@@ -11,6 +11,14 @@ import UIKit
 public struct DesignQA {
 
     public static func doTheQA(view: UIView) {
+        
+        let screenshot = UIApplication.shared.makeSnapshot()
+        if let imageData = screenshot?.pngData() {
+            let filename = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("screenshot.png")
+            try? imageData.write(to: filename)
+            print(filename)
+        }
+        
         guard let grandparent = view.parentViewController()?.view else {
             print("wah")
             return
@@ -36,6 +44,7 @@ public struct DesignQA {
 enum QAElement {
     case label(fontName: String, fontSize: CGFloat, maxLines: Int, windowFrame: CGRect?, text: String)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, windowFrame: CGRect?)
+    case image(imageAccessibilityLabel: String?, windowFrame: CGRect?)
     
     init?(view: UIView) {
         if let view = view as? UILabel {
@@ -52,6 +61,9 @@ enum QAElement {
                                     hasImage: view.imageView?.image != nil,
                                     imageAccessibilityLabel: view.imageView?.image?.accessibilityLabel,
                                     windowFrame: view.windowFrame)
+        } else if let view = view as? UIImageView {
+            self = QAElement.image(imageAccessibilityLabel: view.image?.accessibilityLabel,
+                                   windowFrame: view.windowFrame)
         } else {
             return nil
         }
