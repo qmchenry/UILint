@@ -2,6 +2,15 @@
   "object": {
     "pins": [
       {
+        "package": "Alamofire",
+        "repositoryURL": "https://github.com/Alamofire/Alamofire",
+        "state": {
+          "branch": "master",
+          "revision": "d976690ea9d55a799c8dde418131eb95710e3ca9",
+          "version": null
+        }
+      },
+      {
         "package": "UILint",
         "repositoryURL": "https://github.com/qmchenry/UILint.git",
         "state": {
