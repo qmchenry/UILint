@@ -13,7 +13,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        UILint.doTheQA(view: view)
+        UILint.lint(view: view)
     }
 
 

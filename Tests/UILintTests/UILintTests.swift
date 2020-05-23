@@ -2,11 +2,19 @@ import XCTest
 @testable import UILint
 
 final class UILintTests: XCTestCase {
+    
+    var sut: UIViewController!
+
+    override func setUp() {
+        super.setUp()
+        
+        sut = UIViewController()
+    }
+    
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(UILint().text, "Hello, World!")
+        let label = UILabel(frame: CGRect(origin: .zero, size: .zero))
+        sut.view.addSubview(label)
+        UILint.lint(view: sut.view)
     }
 
     static var allTests = [

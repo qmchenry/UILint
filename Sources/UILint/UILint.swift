@@ -10,7 +10,7 @@ import UIKit
 
 public struct UILint {
 
-    public static func doTheQA(view: UIView) {
+    public static func lint(view: UIView) {
         
         let screenshot = UIApplication.shared.makeSnapshot()
         if let imageData = screenshot?.pngData() {

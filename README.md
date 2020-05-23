@@ -20,7 +20,7 @@ and pasting this repository's url in the resulting search text field and clickin
 
 UILint usage is likely to change dramatically, but to get a feel right now, just `import UILint` in a UIViewController subclass of interest, and in the `viewDidLoad` function, add the line:
 
-`UILint.doTheQA(view: view)` 
+`UILint.lint(view: view)` 
 
 When the view loads, text representing the views in the scene will appear unceremoniously in the console.
 
