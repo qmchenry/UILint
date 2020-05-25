@@ -2,20 +2,11 @@
   "object": {
     "pins": [
       {
-        "package": "Alamofire",
-        "repositoryURL": "https://github.com/Alamofire/Alamofire",
-        "state": {
-          "branch": "master",
-          "revision": "d976690ea9d55a799c8dde418131eb95710e3ca9",
-          "version": null
-        }
-      },
-      {
         "package": "UILint",
         "repositoryURL": "https://github.com/qmchenry/UILint.git",
         "state": {
           "branch": "master",
-          "revision": "3b184808a7d30d0a1780d621753411954f9130c0",
+          "revision": "315ca559fb5916bf2bf011f7c23ef347990a70fe",
           "version": null
         }
       }

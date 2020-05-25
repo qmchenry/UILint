@@ -42,17 +42,27 @@ public struct UILint {
 }
 
 enum QAElement {
-    case label(fontName: String, fontSize: CGFloat, maxLines: Int, windowFrame: CGRect?, text: String)
-    case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, windowFrame: CGRect?)
-    case image(imageAccessibilityLabel: String?, windowFrame: CGRect?)
+    struct Base {
+        let windowFrame: CGRect?
+        let zPosition: CGFloat
+        init(_ view: UIView) {
+            self.windowFrame = view.windowFrame
+            self.zPosition = view.layer.zPosition
+        }
+    }
+    case label(fontName: String, fontSize: CGFloat, maxLines: Int, text: String, base: Base)
+    case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
+    case image(imageAccessibilityLabel: String?, base: Base)
+    case other(className: String, base: Base)
     
     init?(view: UIView) {
+        let base = Base(view)
         if let view = view as? UILabel {
             self = QAElement.label(fontName: view.font.fontName,
                                    fontSize: view.font.pointSize,
                                    maxLines: view.numberOfLines,
-                                   windowFrame: view.windowFrame,
-                                   text: view.text ?? "{empty_text}")
+                                   text: view.text ?? "{empty_text}",
+                                   base: base)
         } else if let view = view as? UIButton {
             let font = view.titleLabel?.font
             self = QAElement.button(fontName: font?.fontName,
@@ -60,12 +70,12 @@ enum QAElement {
                                     title: view.titleLabel?.text,
                                     hasImage: view.imageView?.image != nil,
                                     imageAccessibilityLabel: view.imageView?.image?.accessibilityLabel,
-                                    windowFrame: view.windowFrame)
+                                    base: base)
         } else if let view = view as? UIImageView {
             self = QAElement.image(imageAccessibilityLabel: view.image?.accessibilityLabel,
-                                   windowFrame: view.windowFrame)
+                                   base: base)
         } else {
-            return nil
+            self = QAElement.other(className: view.className, base: base)
         }
     }
 }
@@ -84,5 +94,11 @@ extension UIView {
     // View's frame in global/window coordinates
     var windowFrame: CGRect? {
         superview?.convert(frame, to: nil)
+    }
+}
+
+extension NSObject {
+    var className: String {
+        return NSStringFromClass(type(of: self))
     }
 }
