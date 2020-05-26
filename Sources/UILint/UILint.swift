@@ -12,13 +12,14 @@ public struct UILint {
     
     let elements: [QAElement]
     let findings: [QAFinding]
-    let imageData: Data?
+    let windowSize: CGSize
+    let screenshot: UIImage?
 
     public init?(view: UIView) {
         var currentDepth = 0
         
-        let screenshot = UIApplication.shared.makeSnapshot()
-        imageData = screenshot?.pngData()
+        screenshot = UIApplication.shared.makeSnapshot()
+        windowSize = screenshot?.size ?? .zero
         
         guard let grandparent = view.parentViewController()?.view else {
             print("Unable to find parent view controller from view")
@@ -41,13 +42,8 @@ public struct UILint {
         }
         
         let elements = recurse(grandparent)
-        print(elements.map{ "\($0)" }.joined(separator: "\n"))
-        
-        let findings = elements.flatMap { $0.findings(elements: elements) }
-        print(findings)
-        
+        findings = elements.flatMap { $0.findings(elements: elements) }
         self.elements = elements
-        self.findings = findings
     }
     
 }
@@ -89,6 +85,9 @@ enum QAElement {
             if let windowFrame = base.windowFrame {
                 if isLabelTruncated(text: text, font: font, maxLines: maxLines, frame: windowFrame) {
                     results.append(QAFinding(message: "Label is truncated", severity: .error, element: self))
+                }
+                if isLabelClippedVertically(text: text, font: font, frame: windowFrame) {
+                    results.append(QAFinding(message: "Label is clipped vertically", severity: .error, element: self))
                 }
             }
         default:

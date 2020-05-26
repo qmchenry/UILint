@@ -13,6 +13,11 @@ extension QAElement {
         return maxLines > 0 ? numberOfLines(text: text, font: font, frame: frame) > maxLines : false
     }
     
+    func isLabelClippedVertically(text: String, font: UIFont, frame: CGRect) -> Bool {
+        guard frame.width > 0 else { return true }
+        return labelSize(text: text, font: font, frame: frame).height > frame.size.height
+    }
+    
     func numberOfLines(text: String, font: UIFont, frame: CGRect) -> Int {
         let size = labelSize(text: text, font: font, frame: frame)
         return Int(ceil(size.height) / font.lineHeight)
