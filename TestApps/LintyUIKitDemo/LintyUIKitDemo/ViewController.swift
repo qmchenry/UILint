@@ -13,7 +13,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        UILint.lint(view: view)
+        let _ = UILint(view: view)
     }
 
 
