@@ -9,18 +9,19 @@
 import UIKit
 
 public struct UILint {
+    
+    let elements: [QAElement]
+    let imageData: Data?
 
-    public static func lint(view: UIView) {
+    public init?(view: UIView) {
+        var currentDepth = 0
         
         let screenshot = UIApplication.shared.makeSnapshot()
-        if let imageData = screenshot?.pngData() {
-            let filename = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("screenshot.png")
-            try? imageData.write(to: filename)
-            print(filename)
-        }
+        imageData = screenshot?.pngData()
         
         guard let grandparent = view.parentViewController()?.view else {
-            print("wah")
+            print("Unable to find parent view controller from view")
+            elements = []
             return
         }
                 
@@ -32,31 +33,49 @@ public struct UILint {
         }
         
         func recurse(_ view: UIView) -> [QAElement] {
-            let viewOutput = [QAElement(view: view)].compactMap{$0}
+            let viewOutput = [QAElement(view: view, depth: currentDepth)].compactMap{$0}
+            currentDepth += 1
             return subviews(view).compactMap { recurse($0) }.reduce(viewOutput, +)
         }
         
-        print(recurse(grandparent).map{ "\($0)" }.joined(separator: "\n"))
+        elements = recurse(grandparent)
+        
+        print(elements.map{ "\($0)" }.joined(separator: "\n"))
     }
     
 }
 
 enum QAElement {
     struct Base {
+        let className: String
         let windowFrame: CGRect?
-        let zPosition: CGFloat
-        init(_ view: UIView) {
+        let depth: Int
+        init(_ view: UIView, depth: Int) {
+            self.className = view.className
             self.windowFrame = view.windowFrame
-            self.zPosition = view.layer.zPosition
+            self.depth = depth
         }
     }
     case label(fontName: String, fontSize: CGFloat, maxLines: Int, text: String, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
     case image(imageAccessibilityLabel: String?, base: Base)
-    case other(className: String, base: Base)
+    case other(base: Base)
     
-    init?(view: UIView) {
-        let base = Base(view)
+    var base: Base {
+        switch self {
+        case .label(_, _, _, _, let base): return base
+        case .button(_, _, _, _, _, let base): return base
+        case .image(_, let base): return base
+        case .other(let base): return base
+        }
+    }
+    
+    var depth: Int {
+        return base.depth
+    }
+    
+    init?(view: UIView, depth: Int) {
+        let base = Base(view, depth: depth)
         if let view = view as? UILabel {
             self = QAElement.label(fontName: view.font.fontName,
                                    fontSize: view.font.pointSize,
@@ -75,7 +94,7 @@ enum QAElement {
             self = QAElement.image(imageAccessibilityLabel: view.image?.accessibilityLabel,
                                    base: base)
         } else {
-            self = QAElement.other(className: view.className, base: base)
+            self = QAElement.other(base: base)
         }
     }
 }

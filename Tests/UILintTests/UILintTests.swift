@@ -14,21 +14,33 @@ final class UILintTests: XCTestCase {
     func testUILabel() {
         let label = UILabel(frame: CGRect(origin: .zero, size: .zero))
         sut.view.addSubview(label)
-        UILint.lint(view: sut.view)
+        _ = UILint(view: sut.view)
     }
     
-    func testZPositions() {
-        func zView(_ zPosition: CGFloat) -> UIView {
-            let view = UIView()
-            view.layer.zPosition = zPosition
-            return view
-        }
-        sut.view.addSubview(UIImageView()) // zPosition 0
-        sut.view.addSubview(UILabel()) // zPosition 0
-        sut.view.addSubview(zView(3))
-        sut.view.addSubview(zView(-1))
+    func testDepth() {
+        let v = UIView() // 0
+        v.addSubview(UISlider()) // 3
+        v.addSubview(UITableView()) // 4
+        sut.view.addSubview(UIImageView()) // 1
+        sut.view.addSubview(v) // 2
+        sut.view.addSubview(UILabel()) // 5
+
+        let lint = UILint(view: sut.view)
+        XCTAssertEqual(lint?.elements.count, 6)
+        XCTAssertEqual(lint?.elements[0].depth, 0)
+        XCTAssertEqual(lint?.elements[1].depth, 1)
+        XCTAssertEqual(lint?.elements[2].depth, 2)
+        XCTAssertEqual(lint?.elements[3].depth, 3)
+        XCTAssertEqual(lint?.elements[4].depth, 4)
+        XCTAssertEqual(lint?.elements[5].depth, 5)
         
-        UILint.lint(view: sut.view)
+        XCTAssertEqual(lint?.elements[0].base.className, "UIView")
+        XCTAssertEqual(lint?.elements[1].base.className, "UIImageView")
+        XCTAssertEqual(lint?.elements[2].base.className, "UIView")
+        XCTAssertEqual(lint?.elements[3].base.className, "UISlider")
+        XCTAssertEqual(lint?.elements[4].base.className, "UITableView")
+        XCTAssertEqual(lint?.elements[5].base.className, "UILabel")
+
     }
 
 }
