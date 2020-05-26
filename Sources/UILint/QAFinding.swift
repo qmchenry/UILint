@@ -7,10 +7,14 @@
 
 import Foundation
 
-struct QAFinding {
+struct QAFinding: CustomDebugStringConvertible {
     let message: String
     let severity: UIFindingSeverity
     let element: QAElement
+    
+    var debugDescription: String {
+        "Finding (\(element.base.className)): [\(severity)] \(message)"
+    }
 }
 
 enum UIFindingSeverity {

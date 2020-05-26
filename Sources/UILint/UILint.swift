@@ -85,9 +85,11 @@ enum QAElement {
     func findings(elements: [QAElement]) -> [QAFinding] {
         var results = [QAFinding]()
         switch self {
-        case .label(let font, _, let text, let base):
-            if let windowFrame = base.windowFrame, isLabelTruncated(text: text, font: font, frame: windowFrame) {
-                results.append(QAFinding(message: "Label is truncated", severity: .error, element: self))
+        case .label(let font, let maxLines, let text, let base):
+            if let windowFrame = base.windowFrame {
+                if isLabelTruncated(text: text, font: font, maxLines: maxLines, frame: windowFrame) {
+                    results.append(QAFinding(message: "Label is truncated", severity: .error, element: self))
+                }
             }
         default:
             break
