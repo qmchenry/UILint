@@ -7,18 +7,7 @@ final class UILintTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        
         sut = UIViewController()
-    }
-    
-    func testUILabelTruncation() {
-        let label = UILabel(frame: CGRect(origin: .zero, size: .zero))
-        label.text = "Some long text here"
-        sut.view.addSubview(label)
-        let lint = UILint(view: sut.view)
-        XCTAssertEqual(lint?.findings.count, 1)
-        XCTAssertEqual(lint?.findings.first?.severity, .error)
-        XCTAssertEqual(lint?.findings.first?.message, "Label is truncated")
     }
     
     func testDepth() {

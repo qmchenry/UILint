@@ -9,10 +9,8 @@ import UIKit
 
 extension QAElement {
     func isLabelTruncated(text: String, font: UIFont, maxLines: Int, frame: CGRect) -> Bool {
-        let size = labelSize(text: text, font: font, frame: frame)
-        return maxLines == 1 ?
-            size.width > frame.size.width :
-            size.height > frame.size.height
+        guard frame.width > 0 else { return true }
+        return maxLines > 0 ? numberOfLines(text: text, font: font, frame: frame) > maxLines : false
     }
     
     func numberOfLines(text: String, font: UIFont, frame: CGRect) -> Int {
