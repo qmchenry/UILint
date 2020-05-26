@@ -11,6 +11,7 @@ import UIKit
 public struct UILint {
     
     let elements: [QAElement]
+    let findings: [QAFinding]
     let imageData: Data?
 
     public init?(view: UIView) {
@@ -22,6 +23,7 @@ public struct UILint {
         guard let grandparent = view.parentViewController()?.view else {
             print("Unable to find parent view controller from view")
             elements = []
+            findings = []
             return
         }
                 
@@ -38,14 +40,24 @@ public struct UILint {
             return subviews(view).compactMap { recurse($0) }.reduce(viewOutput, +)
         }
         
-        elements = recurse(grandparent)
-        
+        let elements = recurse(grandparent)
         print(elements.map{ "\($0)" }.joined(separator: "\n"))
+        
+        let findings = elements.flatMap { $0.findings(elements: elements) }
+        print(findings)
+        
+        self.elements = elements
+        self.findings = findings
     }
     
 }
 
 enum QAElement {
+    case label(font: UIFont, maxLines: Int, text: String, base: Base)
+    case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
+    case image(imageAccessibilityLabel: String?, base: Base)
+    case other(base: Base)
+
     struct Base {
         let className: String
         let windowFrame: CGRect?
@@ -56,14 +68,10 @@ enum QAElement {
             self.depth = depth
         }
     }
-    case label(fontName: String, fontSize: CGFloat, maxLines: Int, text: String, base: Base)
-    case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
-    case image(imageAccessibilityLabel: String?, base: Base)
-    case other(base: Base)
     
     var base: Base {
         switch self {
-        case .label(_, _, _, _, let base): return base
+        case .label(_, _, _, let base): return base
         case .button(_, _, _, _, _, let base): return base
         case .image(_, let base): return base
         case .other(let base): return base
@@ -74,11 +82,23 @@ enum QAElement {
         return base.depth
     }
     
+    func findings(elements: [QAElement]) -> [QAFinding] {
+        var results = [QAFinding]()
+        switch self {
+        case .label(let font, _, let text, let base):
+            if let windowFrame = base.windowFrame, isLabelTruncated(text: text, font: font, frame: windowFrame) {
+                results.append(QAFinding(message: "Label is truncated", severity: .error, element: self))
+            }
+        default:
+            break
+        }
+        return results
+    }
+    
     init?(view: UIView, depth: Int) {
         let base = Base(view, depth: depth)
         if let view = view as? UILabel {
-            self = QAElement.label(fontName: view.font.fontName,
-                                   fontSize: view.font.pointSize,
+            self = QAElement.label(font: view.font,
                                    maxLines: view.numberOfLines,
                                    text: view.text ?? "{empty_text}",
                                    base: base)

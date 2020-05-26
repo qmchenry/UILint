@@ -11,10 +11,15 @@ final class UILintTests: XCTestCase {
         sut = UIViewController()
     }
     
-    func testUILabel() {
+    func testUILabelTruncation() {
         let label = UILabel(frame: CGRect(origin: .zero, size: .zero))
+        label.text = "Some long text here"
         sut.view.addSubview(label)
-        _ = UILint(view: sut.view)
+        let lint = UILint(view: sut.view)
+        print(lint!.findings)
+        XCTAssertEqual(lint?.findings.count, 1)
+        XCTAssertEqual(lint?.findings.first?.severity, .error)
+        XCTAssertEqual(lint?.findings.first?.message, "Label is truncated")
     }
     
     func testDepth() {

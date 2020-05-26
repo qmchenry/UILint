@@ -10,6 +10,7 @@ import Foundation
 struct QAFinding {
     let message: String
     let severity: UIFindingSeverity
+    let element: QAElement
 }
 
 enum UIFindingSeverity {
