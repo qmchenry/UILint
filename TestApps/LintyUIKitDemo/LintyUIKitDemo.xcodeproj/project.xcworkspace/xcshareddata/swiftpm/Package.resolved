@@ -2,11 +2,20 @@
   "object": {
     "pins": [
       {
+        "package": "SimplePDF",
+        "repositoryURL": "https://github.com/qmchenry/SimplePDF",
+        "state": {
+          "branch": "master",
+          "revision": "62c8f47c910626361b23e497fc7332adb92d2816",
+          "version": null
+        }
+      },
+      {
         "package": "UILint",
         "repositoryURL": "https://github.com/qmchenry/UILint.git",
         "state": {
           "branch": "master",
-          "revision": "9e8a3d8ed7d21921bda8f31dac684ae3840afd14",
+          "revision": "566aa0e03fc25b77b6ff47d5ad57183bc1f83d71",
           "version": null
         }
       }

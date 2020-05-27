@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A90E01FA247EC1CF003C3CA1 /* UILint in Frameworks */ = {isa = PBXBuildFile; productRef = A90E01F9247EC1CF003C3CA1 /* UILint */; };
 		A9F847D22478433200CE37CE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847D12478433200CE37CE /* AppDelegate.swift */; };
 		A9F847D42478433200CE37CE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847D32478433200CE37CE /* SceneDelegate.swift */; };
 		A9F847D62478433200CE37CE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847D52478433200CE37CE /* ViewController.swift */; };
@@ -15,7 +16,6 @@
 		A9F847DE2478433300CE37CE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A9F847DC2478433300CE37CE /* LaunchScreen.storyboard */; };
 		A9F847E92478433400CE37CE /* LintyUIKitDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847E82478433400CE37CE /* LintyUIKitDemoTests.swift */; };
 		A9F847F42478433400CE37CE /* LintyUIKitDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F847F32478433400CE37CE /* LintyUIKitDemoUITests.swift */; };
-		A9F8480624784A6700CE37CE /* UILint in Frameworks */ = {isa = PBXBuildFile; productRef = A9F8480524784A6700CE37CE /* UILint */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A9F8480624784A6700CE37CE /* UILint in Frameworks */,
+				A90E01FA247EC1CF003C3CA1 /* UILint in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +78,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A90E01F5247EBED9003C3CA1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		A9F847C52478433200CE37CE = {
 			isa = PBXGroup;
 			children = (
@@ -85,6 +92,7 @@
 				A9F847E72478433400CE37CE /* LintyUIKitDemoTests */,
 				A9F847F22478433400CE37CE /* LintyUIKitDemoUITests */,
 				A9F847CF2478433200CE37CE /* Products */,
+				A90E01F5247EBED9003C3CA1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -147,7 +155,7 @@
 			);
 			name = LintyUIKitDemo;
 			packageProductDependencies = (
-				A9F8480524784A6700CE37CE /* UILint */,
+				A90E01F9247EC1CF003C3CA1 /* UILint */,
 			);
 			productName = LintyUIKitDemo;
 			productReference = A9F847CE2478433200CE37CE /* LintyUIKitDemo.app */;
@@ -222,7 +230,7 @@
 			);
 			mainGroup = A9F847C52478433200CE37CE;
 			packageReferences = (
-				A9F8480424784A6700CE37CE /* XCRemoteSwiftPackageReference "UILint" */,
+				A90E01F8247EC1CF003C3CA1 /* XCRemoteSwiftPackageReference "UILint" */,
 			);
 			productRefGroup = A9F847CF2478433200CE37CE /* Products */;
 			projectDirPath = "";
@@ -600,7 +608,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A9F8480424784A6700CE37CE /* XCRemoteSwiftPackageReference "UILint" */ = {
+		A90E01F8247EC1CF003C3CA1 /* XCRemoteSwiftPackageReference "UILint" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/qmchenry/UILint.git";
 			requirement = {
@@ -611,9 +619,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A9F8480524784A6700CE37CE /* UILint */ = {
+		A90E01F9247EC1CF003C3CA1 /* UILint */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = A9F8480424784A6700CE37CE /* XCRemoteSwiftPackageReference "UILint" */;
+			package = A90E01F8247EC1CF003C3CA1 /* XCRemoteSwiftPackageReference "UILint" */;
 			productName = UILint;
 		};
 /* End XCSwiftPackageProductDependency section */

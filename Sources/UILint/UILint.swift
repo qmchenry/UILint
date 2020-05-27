@@ -17,19 +17,16 @@ public struct UILint {
     let screenshot: UIImage?
 
     public init?(view: UIView) {
-        var currentDepth = 0
-        
-        screenshot = UIApplication.shared.makeSnapshot()
-        let windowSize = screenshot?.size ?? .zero
-        
         guard let grandparent = view.parentViewController()?.view else {
             print("Unable to find parent view controller from view")
-            elements = []
-            findings = []
-            self.windowSize = windowSize
-            return
+            return nil
         }
+        
+        var currentDepth = 0
                 
+        screenshot = grandparent.makeSnapshot()
+        let windowSize = screenshot?.size ?? .zero
+
         func subviews(_ view: UIView) -> [UIView] {
             if let view = view as? UICollectionView {
                 return view.visibleCells
