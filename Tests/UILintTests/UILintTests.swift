@@ -34,6 +34,7 @@ final class UILintTests: XCTestCase {
         XCTAssertEqual(lint?.elements[4].base.className, "UITableView")
         XCTAssertEqual(lint?.elements[5].base.className, "UILabel")
 
+        _ = lint?.makePDF()
     }
 
 }

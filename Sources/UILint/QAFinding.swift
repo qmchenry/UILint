@@ -17,7 +17,7 @@ struct QAFinding: CustomDebugStringConvertible {
     }
 }
 
-enum UIFindingSeverity {
+enum UIFindingSeverity: String {
     case warning
     case error
 }

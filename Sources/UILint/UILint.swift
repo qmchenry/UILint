@@ -52,8 +52,22 @@ public struct UILint {
     public func makePDF() -> Data {
         let pdf = SimplePDF(pageSize: CGSize(width: 595, height: 768))
         
+        if let screenshot = screenshot {
+            pdf.addImage(screenshot)
+        }
+        
+        findings.forEach { finding in
+            pdf.beginHorizontalArrangement()
+            pdf.addText(finding.severity.rawValue)
+            pdf.addHorizontalSpace(10)
+            pdf.addText(finding.message)
+            pdf.endHorizontalArrangement()
+            pdf.addLineSeparator(height: 0.1)
+        }
+        
         let pdfData = pdf.generatePDFdata()
         try? pdfData.write(to: URL(fileURLWithPath: "/tmp/test.pdf"), options: Data.WritingOptions.atomic)
         return pdfData
     }
 }
+
