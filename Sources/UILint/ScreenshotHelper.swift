@@ -20,13 +20,14 @@ extension UIApplication {
 
     func getKeyWindow() -> UIWindow? {
         if #available(iOS 13, *) {
-            return windows.first { $0.isKeyWindow }
-        } else {
-            return keyWindow
+            return windows.first { $0.isKeyWindow } ?? windows.first
         }
+        return keyWindow
     }
 
-    func makeSnapshot() -> UIImage? { return getKeyWindow()?.layer.makeSnapshot() }
+    func makeSnapshot() -> UIImage? {
+        getKeyWindow()?.layer.makeSnapshot()
+    }
 }
 
 

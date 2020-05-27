@@ -29,3 +29,17 @@ extension NSObject {
         return NSStringFromClass(type(of: self))
     }
 }
+
+extension UIImage {
+    func crop(to rect: CGRect, viewSize: CGSize) -> UIImage {
+        let scale = max(size.width/viewSize.width, size.height/viewSize.height)
+        let cropRect = CGRect(x: rect.origin.x * scale,
+                              y: rect.origin.y * scale,
+                              width: rect.size.width * scale,
+                              height: rect.size.height * scale)
+        guard let cropped = cgImage?.cropping(to: cropRect) else {
+            return UIImage()
+        }
+        return UIImage(cgImage: cropped)
+    }
+}
