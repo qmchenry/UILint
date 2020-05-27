@@ -50,7 +50,7 @@ public struct UILint {
     }
 
     public func makePDF() -> Data {
-        let pdf = SimplePDF(pageSize: CGSize(width: 595, height: 768))
+        let pdf = SimplePDF(pageSize: CGSize(width: 850, height: 1100))
         
         if let screenshot = screenshot {
             pdf.addImage(screenshot)
