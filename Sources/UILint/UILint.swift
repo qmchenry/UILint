@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SimplePDF
 
 public struct UILint {
     
@@ -47,5 +48,12 @@ public struct UILint {
         self.elements = elements
         self.windowSize = windowSize
     }
-    
+
+    public func makePDF() -> Data {
+        let pdf = SimplePDF(pageSize: CGSize(width: 595, height: 768))
+        
+        let pdfData = pdf.generatePDFdata()
+        try? pdfData.write(to: URL(fileURLWithPath: "/tmp/test.pdf"), options: Data.WritingOptions.atomic)
+        return pdfData
+    }
 }
