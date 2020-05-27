@@ -19,12 +19,13 @@ public struct UILint {
         var currentDepth = 0
         
         screenshot = UIApplication.shared.makeSnapshot()
-        windowSize = screenshot?.size ?? .zero
+        let windowSize = screenshot?.size ?? .zero
         
         guard let grandparent = view.parentViewController()?.view else {
             print("Unable to find parent view controller from view")
             elements = []
             findings = []
+            self.windowSize = windowSize
             return
         }
                 
@@ -42,8 +43,9 @@ public struct UILint {
         }
         
         let elements = recurse(grandparent)
-        findings = elements.flatMap { $0.findings(elements: elements) }
+        findings = elements.flatMap { $0.findings(elements: elements, windowSize: windowSize) }
         self.elements = elements
+        self.windowSize = windowSize
     }
     
 }

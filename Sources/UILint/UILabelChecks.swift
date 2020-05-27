@@ -18,6 +18,11 @@ extension QAElement {
         return labelSize(text: text, font: font, frame: frame).height > frame.size.height
     }
     
+    func isLabelOffscreen(labelFrame: CGRect, windowSize: CGSize) -> Bool {
+        let windowRect = CGRect(origin: .zero, size: windowSize)
+        return windowRect.union(labelFrame) != windowRect
+    }
+    
     func numberOfLines(text: String, font: UIFont, frame: CGRect) -> Int {
         let size = labelSize(text: text, font: font, frame: frame)
         return Int(ceil(size.height) / font.lineHeight)

@@ -37,7 +37,7 @@ enum QAElement {
         return base.depth
     }
     
-    func findings(elements: [QAElement]) -> [QAFinding] {
+    func findings(elements: [QAElement], windowSize: CGSize) -> [QAFinding] {
         var results = [QAFinding]()
         switch self {
         case .label(let font, let maxLines, let text, let base):
@@ -47,6 +47,9 @@ enum QAElement {
                 }
                 if isLabelClippedVertically(text: text, font: font, frame: windowFrame) {
                     results.append(QAFinding(message: "Label is clipped vertically", severity: .error, element: self))
+                }
+                if windowSize != .zero && isLabelOffscreen(labelFrame: windowFrame, windowSize: windowSize) {
+                    results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error, element: self))
                 }
             }
         default:

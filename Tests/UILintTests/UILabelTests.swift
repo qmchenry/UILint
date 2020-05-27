@@ -115,4 +115,18 @@ class UILabelTests: XCTestCase {
         XCTAssertEqual(lint?.findings.first?.message, "Label is clipped vertically")
     }
 
+    func testUILabelOffscreen() {
+        let element = QAElement.init(view: sut.view, depth: 0)!
+        let size = CGSize(width: 200, height: 50)
+        let windowSize = CGSize(width: 320,height: 480)
+        XCTAssertFalse(element.isLabelOffscreen(labelFrame: CGRect(origin: .zero, size: size), windowSize: windowSize))
+        XCTAssertTrue(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: 121, y: 0), size: size), windowSize: windowSize))
+        XCTAssertTrue(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: -1, y: 0), size: size), windowSize: windowSize))
+        XCTAssertTrue(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: 0, y: -1), size: size), windowSize: windowSize))
+        XCTAssertFalse(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: 120, y: 430), size: size), windowSize: windowSize))
+        XCTAssertTrue(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: 120, y: 431), size: size), windowSize: windowSize))
+        XCTAssertTrue(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: 121, y: 430), size: size), windowSize: windowSize))
+        XCTAssertTrue(element.isLabelOffscreen(labelFrame: CGRect(origin: CGPoint(x: 121, y: 431), size: size), windowSize: windowSize))
+    }
+    
 }
