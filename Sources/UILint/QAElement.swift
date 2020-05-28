@@ -16,10 +16,17 @@ enum QAElement {
     struct Base {
         let className: String
         let windowFrame: CGRect?
+        let tappable: Bool
         let depth: Int
         init(_ view: UIView, depth: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
+            // This tappable property requires more checks, like for
+            // UITapGestureRecognizer specifically, but also for
+            // userInteractionEnabled -- we also need to differentiate
+            // between tap gesture targets and views that block touches
+            // but are not meant to act on them
+            tappable = (view.gestureRecognizers?.count ?? 0) > 1
             self.depth = depth
         }
     }
