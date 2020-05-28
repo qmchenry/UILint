@@ -21,4 +21,11 @@ struct QAFinding: CustomDebugStringConvertible {
 enum UIFindingSeverity: String {
     case warning
     case error
+    
+    var textColor: UIColor {
+        switch self {
+        case .warning: return .blue
+        case .error: return .red
+        }
+    }
 }

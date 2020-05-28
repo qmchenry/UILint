@@ -49,6 +49,11 @@ public struct UILint {
     public func makePDF() -> Data {
         let pdf = SimplePDF(pageSize: CGSize(width: 850, height: 1100))
         
+        let h1 = UIFont.systemFont(ofSize: 24, weight: .heavy)
+        let h2 = UIFont.systemFont(ofSize: 18, weight: .heavy)
+        let h3 = UIFont.systemFont(ofSize: 12, weight: .bold)
+        let body = UIFont.systemFont(ofSize: 12, weight: .regular)
+
         if let screenshot = screenshot {
             pdf.beginHorizontalArrangement()
             pdf.addImage(screenshot)
@@ -57,14 +62,17 @@ public struct UILint {
             pdf.beginNewPage()
         }
 
+        pdf.addText("Findings", font: h1, textColor: .black)
+
+        pdf.addVerticalSpace(20)
         pdf.addLineSeparator(height: 0.1)
 
         findings.forEach { finding in
             pdf.addVerticalSpace(10)
             pdf.beginHorizontalArrangement()
-            pdf.addText(finding.severity.rawValue)
+            pdf.addText(finding.severity.rawValue, font: h3, textColor: finding.severity.textColor)
             pdf.addHorizontalSpace(10)
-            pdf.addText(finding.message)
+            pdf.addText(finding.message, font: body)
             if let croppedScreenshot = finding.screenshot {
                 pdf.setContentAlignment(.right)
                 pdf.addImage(croppedScreenshot)
@@ -75,9 +83,31 @@ public struct UILint {
             pdf.addLineSeparator(height: 0.1)
         }
         
-        let pdfData = pdf.generatePDFdata()
-        try? pdfData.write(to: URL(fileURLWithPath: "/tmp/test.pdf"), options: Data.WritingOptions.atomic)
-        return pdfData
+        pdf.beginNewPage()
+
+        pdf.addText("Elements", font: h1, textColor: .black)
+
+        pdf.addVerticalSpace(20)
+        
+        pdf.addText("Labels", font: h2, textColor: .black)
+        pdf.addVerticalSpace(10)
+
+        pdf.addLineSeparator(height: 0.1)
+        
+        elements.forEach { element in
+            switch element {
+            case .label(let font, let maxLines, let text, _):
+                pdf.addVerticalSpace(10)
+                pdf.addText("\(font.pointSize)pt \(font.fontName), maxLines=\(maxLines)", font: h3)
+                pdf.addText(text, font: body)
+                pdf.addVerticalSpace(10)
+                pdf.addLineSeparator(height: 0.1)
+            default: break
+            }
+        }
+
+        
+        return pdf.generatePDFdata()
     }
 }
 
