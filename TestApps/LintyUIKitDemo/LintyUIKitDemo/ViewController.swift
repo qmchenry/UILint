@@ -13,7 +13,8 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        let _ = UILint(view: view)
+        let lint = UILint(view: view)
+        _ = lint?.makePDF()
     }
 
 

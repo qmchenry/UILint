@@ -28,6 +28,10 @@ extension UIApplication {
     func makeSnapshot() -> UIImage? {
         getKeyWindow()?.layer.makeSnapshot()
     }
+    
+    var windowSize: CGSize? {
+        getKeyWindow()?.bounds.size
+    }
 }
 
 

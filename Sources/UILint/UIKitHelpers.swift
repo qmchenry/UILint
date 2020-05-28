@@ -20,7 +20,7 @@ extension UIView {
     
     // View's frame in global/window coordinates
     var windowFrame: CGRect? {
-        superview?.convert(frame, to: nil)
+        superview?.convert(frame, to: parentViewController()?.view)
     }
 }
 
@@ -32,7 +32,7 @@ extension NSObject {
 
 extension UIImage {
     func crop(to rect: CGRect, viewSize: CGSize) -> UIImage {
-        let scale = max(size.width/viewSize.width, size.height/viewSize.height)
+        let cropScale = max(size.width/viewSize.width, size.height/viewSize.height) * scale
         let cropRect = CGRect(x: rect.origin.x * scale,
                               y: rect.origin.y * scale,
                               width: rect.size.width * scale,

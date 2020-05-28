@@ -5,11 +5,12 @@
 //  Created by Quinn McHenry on 5/25/20.
 //
 
-import Foundation
+import UIKit
 
 struct QAFinding: CustomDebugStringConvertible {
     let message: String
     let severity: UIFindingSeverity
+    let screenshot: UIImage?
     let element: QAElement
     
     var debugDescription: String {

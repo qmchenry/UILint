@@ -12,7 +12,6 @@ import SimplePDF
 public struct UILint {
     
     let elements: [QAElement]
-    let findings: [QAFinding]
     let windowSize: CGSize
     let screenshot: UIImage?
 
@@ -25,7 +24,7 @@ public struct UILint {
         var currentDepth = 0
                 
         screenshot = grandparent.makeSnapshot()
-        let windowSize = screenshot?.size ?? .zero
+        windowSize = screenshot?.size ?? .zero
 
         func subviews(_ view: UIView) -> [UIView] {
             if let view = view as? UICollectionView {
@@ -40,25 +39,39 @@ public struct UILint {
             return subviews(view).compactMap { recurse($0) }.reduce(viewOutput, +)
         }
         
-        let elements = recurse(grandparent)
-        findings = elements.flatMap { $0.findings(elements: elements, windowSize: windowSize) }
-        self.elements = elements
-        self.windowSize = windowSize
+        elements = recurse(grandparent)
+    }
+    
+    var findings: [QAFinding] {
+        elements.flatMap { $0.findings(elements: elements, windowSize: windowSize, screenshot: screenshot) }
     }
 
     public func makePDF() -> Data {
         let pdf = SimplePDF(pageSize: CGSize(width: 850, height: 1100))
         
         if let screenshot = screenshot {
+            pdf.beginHorizontalArrangement()
             pdf.addImage(screenshot)
+            // pdf.addText("app/view details")
+            pdf.endHorizontalArrangement()
+            pdf.beginNewPage()
         }
-        
+
+        pdf.addLineSeparator(height: 0.1)
+
         findings.forEach { finding in
+            pdf.addVerticalSpace(10)
             pdf.beginHorizontalArrangement()
             pdf.addText(finding.severity.rawValue)
             pdf.addHorizontalSpace(10)
             pdf.addText(finding.message)
+            if let croppedScreenshot = finding.screenshot {
+                pdf.setContentAlignment(.right)
+                pdf.addImage(croppedScreenshot)
+                pdf.setContentAlignment(.left)
+            }
             pdf.endHorizontalArrangement()
+            pdf.addVerticalSpace(10)
             pdf.addLineSeparator(height: 0.1)
         }
         

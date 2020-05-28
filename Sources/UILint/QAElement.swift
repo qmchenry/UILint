@@ -37,19 +37,20 @@ enum QAElement {
         return base.depth
     }
     
-    func findings(elements: [QAElement], windowSize: CGSize) -> [QAFinding] {
+    func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
         switch self {
         case .label(let font, let maxLines, let text, let base):
             if let windowFrame = base.windowFrame {
+                let croppedScreenshot = screenshot?.crop(to: windowFrame, viewSize: screenshot!.size)
                 if isLabelTruncated(text: text, font: font, maxLines: maxLines, frame: windowFrame) {
-                    results.append(QAFinding(message: "Label is truncated", severity: .error, element: self))
+                    results.append(QAFinding(message: "Label is truncated", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
                 if isLabelClippedVertically(text: text, font: font, frame: windowFrame) {
-                    results.append(QAFinding(message: "Label is clipped vertically", severity: .error, element: self))
+                    results.append(QAFinding(message: "Label is clipped vertically", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
                 if windowSize != .zero && isLabelOffscreen(labelFrame: windowFrame, windowSize: windowSize) {
-                    results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error, element: self))
+                    results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
             }
         default:
