@@ -20,8 +20,13 @@ and pasting this repository's url in the resulting search text field and clickin
 
 UILint usage is likely to change dramatically, but to get a feel right now, just `import UILint` in a UIViewController subclass of interest, and in the `viewDidLoad` function, add the line:
 
-`UILint.lint(view: view)` 
+`let lint = UILint(view: view)` 
 
-When the view loads, text representing the views in the scene will appear unceremoniously in the console.
+When the view loads, text representing the views in the scene will appear unceremoniously in the console. A PDF report can be generated and written to a file with
 
-A demo UIKit app is available in the TestApps/ directory. This has already been integrated with UILint and has this call in place.
+```swift
+let pdfData = lint.makePDF()
+try? pdfData.write(to: URL(fileURLWithPath: "/tmp/test.pdf"))
+```
+
+A demo UIKit app is available in the TestApps/ directory. It has been integrated with UILint and has these calls in place.
