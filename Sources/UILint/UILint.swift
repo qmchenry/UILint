@@ -25,18 +25,11 @@ public struct UILint {
                 
         screenshot = grandparent.makeSnapshot()
         windowSize = screenshot?.size ?? .zero
-
-        func subviews(_ view: UIView) -> [UIView] {
-            if let view = view as? UICollectionView {
-                return view.visibleCells
-            }
-            return view.subviews
-        }
         
         func recurse(_ view: UIView) -> [QAElement] {
             let viewOutput = [QAElement(view: view, depth: currentDepth)].compactMap{$0}
             currentDepth += 1
-            return subviews(view).compactMap { recurse($0) }.reduce(viewOutput, +)
+            return view.allSubviews.compactMap { recurse($0) }.reduce(viewOutput, +)
         }
         
         elements = recurse(grandparent)
@@ -54,11 +47,15 @@ public struct UILint {
         let h3 = UIFont.systemFont(ofSize: 12, weight: .bold)
         let body = UIFont.systemFont(ofSize: 12, weight: .regular)
 
+        pdf.addText("UILint Report", font: h1)
+        pdf.addVerticalSpace(10)
+        pdf.addText("Generated at \(Date())", font: h3)
+        pdf.addVerticalSpace(20)
+
         if let screenshot = screenshot {
-            pdf.beginHorizontalArrangement()
+            pdf.addText("Full screenshot", font: h2)
+            pdf.addVerticalSpace(20)
             pdf.addImage(screenshot)
-            // pdf.addText("app/view details")
-            pdf.endHorizontalArrangement()
             pdf.beginNewPage()
         }
 

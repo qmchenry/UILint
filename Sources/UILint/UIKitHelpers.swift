@@ -22,6 +22,15 @@ extension UIView {
     var windowFrame: CGRect? {
         superview?.convert(frame, to: parentViewController()?.view)
     }
+    
+    // Return an array of all subviews including those not included in the
+    // default subviews property
+    var allSubviews: [UIView] {
+        if let view = self as? UICollectionView {
+            return view.visibleCells
+        }
+        return subviews
+    }
 }
 
 extension NSObject {
@@ -33,10 +42,10 @@ extension NSObject {
 extension UIImage {
     func crop(to rect: CGRect, viewSize: CGSize) -> UIImage {
         let cropScale = max(size.width/viewSize.width, size.height/viewSize.height) * scale
-        let cropRect = CGRect(x: rect.origin.x * scale,
-                              y: rect.origin.y * scale,
-                              width: rect.size.width * scale,
-                              height: rect.size.height * scale)
+        let cropRect = CGRect(x: rect.origin.x * cropScale,
+                              y: rect.origin.y * cropScale,
+                              width: rect.size.width * cropScale,
+                              height: rect.size.height * cropScale)
         guard let cropped = cgImage?.cropping(to: cropRect) else {
             return UIImage()
         }
