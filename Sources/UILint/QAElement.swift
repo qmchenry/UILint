@@ -16,17 +16,14 @@ enum QAElement {
     struct Base {
         let className: String
         let windowFrame: CGRect?
-        let tappable: Bool
+        let wantsTouches: Bool // like a button
+        let consumesTouches: Bool // opaque view that blocks
         let depth: Int
         init(_ view: UIView, depth: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
-            // This tappable property requires more checks, like for
-            // UITapGestureRecognizer specifically, but also for
-            // userInteractionEnabled -- we also need to differentiate
-            // between tap gesture targets and views that block touches
-            // but are not meant to act on them
-            tappable = (view.gestureRecognizers?.count ?? 0) > 1
+            wantsTouches = (view is UIControl) || (view.gestureRecognizers?.count ?? 0) > 1
+            consumesTouches = view.consumesTouches
             self.depth = depth
         }
     }
@@ -60,10 +57,29 @@ enum QAElement {
                     results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
             }
+//        case .button(_, _, _, _, _, let base)
         default:
             break
         }
+        
+        // Tappability check
+        if base.wantsTouches, let windowFrame = base.windowFrame {
+            let overlapping = elements.filter { $0.base.depth > base.depth && base.consumesTouches }
+            overlapping.forEach { element in
+                if overlaps(element) {
+                    let unionBounds = windowFrame.union(element.base.windowFrame!)
+                    let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
+                    results.append(QAFinding(message: "Tappable view \(base.className) is obscured by \(element.base.className)", severity: .error, screenshot: croppedScreenshot, element: self))
+                }
+            }
+        }
+        
         return results
+    }
+    
+    func overlaps(_ element: QAElement) -> Bool {
+        guard let windowFrame = base.windowFrame, let overlapWindowFrame = element.base.windowFrame else { return false }
+        return windowFrame.intersects(overlapWindowFrame)
     }
     
     init?(view: UIView, depth: Int) {

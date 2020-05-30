@@ -31,6 +31,13 @@ extension UIView {
         }
         return subviews
     }
+    
+    var consumesTouches: Bool {
+        // todo consider multiple points (8 points perimeter and center) but how to handle partial hits?
+        // todo handle layer transform
+        let hitView = hitTest(CGPoint(x: bounds.size.width/2, y: bounds.size.height/2), with: nil)
+        return hitView === self
+    }
 }
 
 extension NSObject {

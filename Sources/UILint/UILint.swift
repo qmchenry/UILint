@@ -61,22 +61,22 @@ public struct UILint {
 
         pdf.addText("Findings", font: h1, textColor: .black)
 
-        pdf.addVerticalSpace(20)
+        pdf.addVerticalSpace(15)
         pdf.addLineSeparator(height: 0.1)
 
         findings.forEach { finding in
-            pdf.addVerticalSpace(10)
+            pdf.addVerticalSpace(5)
             pdf.beginHorizontalArrangement()
             pdf.addText(finding.severity.rawValue, font: h3, textColor: finding.severity.textColor)
             pdf.addHorizontalSpace(10)
             pdf.addText(finding.message, font: body)
+            pdf.endHorizontalArrangement()
             if let croppedScreenshot = finding.screenshot {
                 pdf.setContentAlignment(.right)
                 pdf.addImage(croppedScreenshot)
                 pdf.setContentAlignment(.left)
             }
-            pdf.endHorizontalArrangement()
-            pdf.addVerticalSpace(10)
+            pdf.addVerticalSpace(5)
             pdf.addLineSeparator(height: 0.1)
         }
         
@@ -102,7 +102,6 @@ public struct UILint {
             default: break
             }
         }
-
         
         return pdf.generatePDFdata()
     }

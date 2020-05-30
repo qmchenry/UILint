@@ -13,7 +13,7 @@ final class UILintTests: XCTestCase {
     func testDepth() {
         let v = UIView() // 0
         v.addSubview(UISlider()) // 3
-        v.addSubview(UITableView()) // 4
+        v.addSubview(UIImageView()) // 4
         sut.view.addSubview(UIImageView()) // 1
         sut.view.addSubview(v) // 2
         sut.view.addSubview(UILabel()) // 5
@@ -31,10 +31,10 @@ final class UILintTests: XCTestCase {
         XCTAssertEqual(lint?.elements[1].base.className, "UIImageView")
         XCTAssertEqual(lint?.elements[2].base.className, "UIView")
         XCTAssertEqual(lint?.elements[3].base.className, "UISlider")
-        XCTAssertEqual(lint?.elements[4].base.className, "UITableView")
+        XCTAssertEqual(lint?.elements[4].base.className, "UIImageView")
         XCTAssertEqual(lint?.elements[5].base.className, "UILabel")
 
-        _ = lint?.makePDF()
+//        _ = lint?.makePDF()
     }
 
 }
