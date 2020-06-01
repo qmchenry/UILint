@@ -21,17 +21,16 @@ class TappabilityTests: XCTestCase {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
         let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
-        let under = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
         sut.view.addSubview(under)
         sut.view.addSubview(button)
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings)
-//        XCTAssertTrue(findings.contains { $0.message == "Label is truncated" })
-//        XCTAssertTrue(findings.contains { $0.message == "Label is clipped vertically" })
-//        XCTAssertEqual(findings[0].severity, .error)
-//        XCTAssertEqual(findings[1].severity, .error)
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        let tapFindings = findings.filter { $0.message == "Tappable view UIButton is obscured by UIView" }
+        XCTAssertEqual(tapFindings.count, 1)
+        XCTAssertEqual(tapFindings[0].severity, .error)
     }
     
 }

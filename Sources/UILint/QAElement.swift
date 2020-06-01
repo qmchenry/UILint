@@ -64,7 +64,7 @@ enum QAElement {
         
         // Tappability check
         if base.wantsTouches, let windowFrame = base.windowFrame {
-            let overlapping = elements.filter { $0.base.depth > base.depth && base.consumesTouches }
+            let overlapping = elements.filter { $0.base.depth > base.depth && $0.base.consumesTouches }
             overlapping.forEach { element in
                 if overlaps(element) {
                     let unionBounds = windowFrame.union(element.base.windowFrame!)
