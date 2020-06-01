@@ -106,5 +106,41 @@ class TappabilityTests: XCTestCase {
         print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         XCTAssertEqual(findings.count, 0)
     }
+    
+    func testUIViewWithGestureRecognizerPartiallyCovered() {
+        let origin = CGPoint(x: 100, y: 100)
+        let tappable = UIView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let gestureRecognizer = UITapGestureRecognizer()
+        tappable.addGestureRecognizer(gestureRecognizer)
+        let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(tappable)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        let tapFindings = findings.filter { $0.message == "Tappable view UIView is obscured by UIView" }
+        XCTAssertEqual(tapFindings.count, 1)
+        XCTAssertEqual(tapFindings[0].severity, .error)
+    }
+    
+    func testUIViewWithDisabledGestureRecognizerPartiallyCovered() {
+        let origin = CGPoint(x: 100, y: 100)
+        let tappable = UIView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let gestureRecognizer = UITapGestureRecognizer()
+        gestureRecognizer.isEnabled = false
+        tappable.addGestureRecognizer(gestureRecognizer)
+        let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(tappable)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        let tapFindings = findings.filter { $0.message == "Tappable view UIView is obscured by UIView" }
+        XCTAssertEqual(tapFindings.count, 0)
+    }
 
 }

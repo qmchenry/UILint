@@ -22,7 +22,8 @@ enum QAElement {
         init(_ view: UIView, depth: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
-            wantsTouches = (view is UIControl) || (view.gestureRecognizers?.count ?? 0) > 1
+            let enabledGestureRecognizers = view.gestureRecognizers?.filter { $0.isEnabled }.count ?? 0
+            wantsTouches = (view is UIControl) || enabledGestureRecognizers > 0
             consumesTouches = view.consumesTouches
             self.depth = depth
         }
