@@ -17,7 +17,7 @@ class TappabilityTests: XCTestCase {
         sut = UIViewController()
     }
     
-    func testUILabelTruncationZeroFrame() {
+    func testUIButtonPartiallyCovered() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
         let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
@@ -33,4 +33,78 @@ class TappabilityTests: XCTestCase {
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
     
+    func testUIButtonPartiallyCovered1x1pt() {
+        let origin = CGPoint(x: 100, y: 100)
+        let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 1, height: 1)))
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(button)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        let tapFindings = findings.filter { $0.message == "Tappable view UIButton is obscured by UIView" }
+        XCTAssertEqual(tapFindings.count, 1)
+        XCTAssertEqual(tapFindings[0].severity, .error)
+    }
+    
+    func testUIButtonPartiallyCovered0x0pt() {
+        let origin = CGPoint(x: 100, y: 100)
+        let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 0, height: 0)))
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(button)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        XCTAssertEqual(findings.count, 0)
+    }
+    
+    func testUIButtonNotCovered() {
+        let origin = CGPoint(x: 100, y: 100)
+        let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let over = UIView(frame: CGRect(origin: CGPoint(x: 200, y: 200), size: CGSize(width: 50, height: 100)))
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(button)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        XCTAssertEqual(findings.count, 0)
+    }
+    
+    func testUIButtonCoveredUIEDisabled() {
+        let origin = CGPoint(x: 100, y: 100)
+        let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
+        over.isUserInteractionEnabled = false
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(button)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        XCTAssertEqual(findings.count, 0)
+    }
+    
+    func testUIButtonCoveredByHiddenView() {
+        let origin = CGPoint(x: 100, y: 100)
+        let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
+        let over = UIView(frame: CGRect(origin: origin, size: CGSize(width: 50, height: 100)))
+        over.isHidden = true
+        let under = UIImageView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 50)))
+        sut.view.addSubview(under)
+        sut.view.addSubview(button)
+        sut.view.addSubview(over)
+        let lint = UILint(view: sut.view)
+        let findings = lint!.findings
+        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
+        XCTAssertEqual(findings.count, 0)
+    }
+
 }
