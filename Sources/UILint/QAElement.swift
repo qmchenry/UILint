@@ -58,13 +58,13 @@ enum QAElement {
                     results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
             }
-//        case .button(_, _, _, _, _, let base)
         default:
             break
         }
         
         // Tappability check
         if base.wantsTouches, let windowFrame = base.windowFrame {
+            // Overlapping tap consumers
             let overlapping = elements.filter { $0.base.depth > base.depth && $0.base.consumesTouches }
             overlapping.forEach { element in
                 if overlaps(element) {
@@ -72,6 +72,12 @@ enum QAElement {
                     let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
                     results.append(QAFinding(message: "Tappable view \(base.className) is obscured by \(element.base.className)", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
+            }
+            
+            // Minimum tappable size
+            if windowFrame.size.height < 44 || windowFrame.size.width < 44 {
+                let croppedScreenshot = screenshot?.crop(to: windowFrame, viewSize: screenshot!.size)
+                results.append(QAFinding(message: "Provide ample touch targets for interactive elements. \(base.className) width/height is less than 44pt (\(windowFrame.width),\(windowFrame.height))", severity: .error, screenshot: croppedScreenshot, element: self))
             }
         }
         
