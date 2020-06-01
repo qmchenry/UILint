@@ -87,7 +87,7 @@ enum QAElement {
         if let view = view as? UILabel {
             self = QAElement.label(font: view.font,
                                    maxLines: view.numberOfLines,
-                                   text: view.text ?? "{empty_text}",
+                                   text: view.text ?? "",
                                    base: base)
         } else if let view = view as? UIButton {
             let font = view.titleLabel?.font

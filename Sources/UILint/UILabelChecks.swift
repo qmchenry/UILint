@@ -9,11 +9,13 @@ import UIKit
 
 extension QAElement {
     func isLabelTruncated(text: String, font: UIFont, maxLines: Int, frame: CGRect) -> Bool {
+        guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
         return maxLines > 0 ? numberOfLines(text: text, font: font, frame: frame) > maxLines : false
     }
     
     func isLabelClippedVertically(text: String, font: UIFont, frame: CGRect) -> Bool {
+        guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
         return labelSize(text: text, font: font, frame: frame).height > frame.size.height
     }
@@ -24,6 +26,7 @@ extension QAElement {
     }
     
     func numberOfLines(text: String, font: UIFont, frame: CGRect) -> Int {
+        guard text.count > 0 else { return 0 }
         let size = labelSize(text: text, font: font, frame: frame)
         return Int(ceil(size.height) / font.lineHeight)
     }

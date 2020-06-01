@@ -61,6 +61,14 @@ class UILabelTests: XCTestCase {
         XCTAssertEqual(lint?.findings.count, 0)
     }
 
+    func testUILabelEmptyNoTruncationSingleLine() {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 1, height: 57))
+        label.text = ""
+        sut.view.addSubview(label)
+        let lint = UILint(view: sut.view)
+        XCTAssertEqual(lint?.findings.count, 0)
+    }
+
     func testUILabelTruncationSingleLine() {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 180, height: 57))
         label.text = "This text is too long for it\'s own good!"
@@ -113,6 +121,14 @@ class UILabelTests: XCTestCase {
         XCTAssertEqual(lint?.findings.count, 1)
         XCTAssertEqual(lint?.findings.first?.severity, .error)
         XCTAssertEqual(lint?.findings.first?.message, "Label is clipped vertically")
+    }
+
+    func testUILabelEmptyNotClippedVertically() {
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: 157, height: 1))
+        label.text = ""
+        sut.view.addSubview(label)
+        let lint = UILint(view: sut.view)
+        XCTAssertEqual(lint?.findings.count, 0)
     }
 
     func testUILabelOffscreen() {
