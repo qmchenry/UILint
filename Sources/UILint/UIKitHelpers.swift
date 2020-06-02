@@ -5,6 +5,18 @@
 //  Created by Quinn McHenry on 5/26/20.
 //
 
+
+import Foundation
+
+extension NSObject {
+    var className: String {
+        return NSStringFromClass(type(of: self))
+    }
+}
+
+
+#if os(iOS)
+
 import UIKit
 
 extension UIView {
@@ -40,12 +52,6 @@ extension UIView {
     }
 }
 
-extension NSObject {
-    var className: String {
-        return NSStringFromClass(type(of: self))
-    }
-}
-
 extension UIImage {
     func crop(to rect: CGRect, viewSize: CGSize) -> UIImage {
         let cropScale = max(size.width/viewSize.width, size.height/viewSize.height) * scale
@@ -59,3 +65,9 @@ extension UIImage {
         return UIImage(cgImage: cropped)
     }
 }
+
+
+#elseif os(macOS)
+
+
+#endif

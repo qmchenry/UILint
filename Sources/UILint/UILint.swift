@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SimplePDF
 
 public struct UILint {
     
@@ -40,7 +39,7 @@ public struct UILint {
     }
 
     public func makePDF() -> Data {
-        QAReport().makePDF(elements: elements, findings: findings, screenshot: screenshot)
+        QAReport(elements: elements, findings: findings, screenshot: screenshot).makePDF()
     }
     
 }

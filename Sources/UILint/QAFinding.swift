@@ -9,7 +9,7 @@ import UIKit
 
 struct QAFinding: CustomDebugStringConvertible {
     let message: String
-    let severity: UIFindingSeverity
+    let severity: QAFindingSeverity
     let screenshot: UIImage?
     let element: QAElement
     
@@ -18,7 +18,7 @@ struct QAFinding: CustomDebugStringConvertible {
     }
 }
 
-enum UIFindingSeverity: String {
+enum QAFindingSeverity: String {
     case warning
     case error
     
