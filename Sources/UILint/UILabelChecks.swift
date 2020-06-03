@@ -25,8 +25,8 @@ extension QAElement {
         return windowRect.union(labelFrame) != windowRect
     }
     
-    func numberOfLines(text: String, font: UIFont, frame: CGRect) -> Int {
-        guard text.count > 0 else { return 0 }
+    func numberOfLines(text: String, font: UIFont, frame: CGRect?) -> Int {
+        guard let frame = frame, text.count > 0 else { return 0 }
         let size = labelSize(text: text, font: font, frame: frame)
         return Int(ceil(size.height) / font.lineHeight)
     }

@@ -9,7 +9,7 @@ import UIKit
 
 enum QAElement: Comparable {
     
-    case label(font: UIFont, maxLines: Int, text: String, base: Base)
+    case label(font: UIFont, maxLines: Int, text: String, minimumScaleFactor: CGFloat, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
     case image(imageAccessibilityLabel: String?, base: Base)
     case other(base: Base)
@@ -32,7 +32,7 @@ enum QAElement: Comparable {
     
     var base: Base {
         switch self {
-        case .label(_, _, _, let base): return base
+        case .label(_, _, _, _, let base): return base
         case .button(_, _, _, _, _, let base): return base
         case .image(_, let base): return base
         case .other(let base): return base
@@ -45,17 +45,17 @@ enum QAElement: Comparable {
     
     var sortOrder: Int {
         switch self {
-        case .label(_, _, _, _): return 100
-        case .button(_, _, _, _, _, _): return 200
-        case .image(_, _): return 300
-        case .other(_): return 10000
+        case .label: return 100
+        case .button: return 200
+        case .image: return 300
+        case .other: return 10000
         }
     }
         
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
         switch self {
-        case .label(let font, let maxLines, let text, let base):
+        case .label(let font, let maxLines, let text, _, let base):
             if let windowFrame = base.windowFrame {
                 let croppedScreenshot = screenshot?.crop(to: windowFrame, viewSize: screenshot!.size)
                 if isLabelTruncated(text: text, font: font, maxLines: maxLines, frame: windowFrame) {
@@ -105,6 +105,7 @@ enum QAElement: Comparable {
             self = QAElement.label(font: view.font,
                                    maxLines: view.numberOfLines,
                                    text: view.text ?? "",
+                                   minimumScaleFactor: view.minimumScaleFactor,
                                    base: base)
         } else if let view = view as? UIButton {
             let font = view.titleLabel?.font

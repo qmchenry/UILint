@@ -87,18 +87,20 @@ struct QAReport {
         @discardableResult func draw(_ element: QAElement, draw performDraw: Bool = true) -> CGFloat {
             var x = padding
             switch element {
-            case .label(let font, let maxLines, let text, _):
+            case .label(let font, let maxLines, let text, let minimumScaleFactor, let base):
                 let size0 = draw("Label: \(font.pointSize)pt", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
                 x += 120 + padding
                 let size1 = draw("\(font.fontName)", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
                 x += 200 + padding
-                let size2 = draw("\(maxLines)", attributes: body, x: x, width: 60, updateHeight: false, draw: performDraw)
-                let rowHeight = max(size0.height, size1.height, size2.height)
+                let size2 = draw("\(element.numberOfLines(text: text, font: font, frame: base.windowFrame)) / \(maxLines) lines", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
+                x += 120 + padding
+                let size3 = draw("\(minimumScaleFactor)", attributes: body, x: x, width: 80, updateHeight: false, draw: performDraw)
+                let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
                 if performDraw {
                     currentY += rowHeight + padding
                 }
-                let size3 = draw(text, attributes: detail, x: 40, draw: performDraw)
-                let height = rowHeight + padding + size3.height
+                let sizeText = draw(text, attributes: detail, x: 40, draw: performDraw)
+                let height = rowHeight + padding + sizeText.height
                 return height
             default: break
             }
