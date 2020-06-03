@@ -88,16 +88,27 @@ struct QAReport {
             var x = padding
             switch element {
             case .label(let font, let maxLines, let text, _):
-                let size0 = draw("\(font.pointSize)pt", attributes: body, x: x, width: 60, updateHeight: false, draw: performDraw)
-                x += 60 + padding
+                let size0 = draw("Label: \(font.pointSize)pt", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
+                x += 120 + padding
                 let size1 = draw("\(font.fontName)", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
                 x += 200 + padding
-                let size2 = draw("\(maxLines)", attributes: body, x: x, width: 60, updateHeight: true, draw: performDraw)
-                let size3 = draw(text, attributes: body, x: 40, draw: performDraw)
-                return max(size0.height, size1.height, size2.height) + size3.height
+                let size2 = draw("\(maxLines)", attributes: body, x: x, width: 60, updateHeight: false, draw: performDraw)
+                let rowHeight = max(size0.height, size1.height, size2.height)
+                if performDraw {
+                    currentY += rowHeight + padding
+                }
+                let size3 = draw(text, attributes: detail, x: 40, draw: performDraw)
+                let height = rowHeight + padding + size3.height
+                return height
             default: break
             }
             return 0
+        }
+        
+        func drawRule(color: UIColor = .gray, height: CGFloat = 1) {
+            color.set()
+            UIRectFrame(CGRect(x: padding, y: currentY, width: pageSize.width - 2 * padding, height: height))
+            currentY += height
         }
 
         newPage()
@@ -144,14 +155,19 @@ struct QAReport {
         newPage()
         draw("Elements", attributes: h2, x: padding)
 
-        elements.forEach { element in
+        elements.sorted().forEach { element in
             let height = draw(element, draw: false)
-            if currentY + height > pageSize.height {
-                newPage()
-                draw("Elements (continued)", attributes: h2, x: padding)
+            if height > 0 {
+                drawRule()
+                if currentY + height > pageSize.height {
+                    newPage()
+                    draw("Elements (continued)", attributes: h2, x: padding)
+                    drawRule()
+                }
+                draw(element)
             }
-            draw(element)
         }
+        drawRule()
 
         UIGraphicsEndPDFContext()
         return pdfData as Data
@@ -176,6 +192,14 @@ struct QAReport {
         style.alignment = .left
         style.lineBreakMode = .byWordWrapping
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
+                NSAttributedString.Key.paragraphStyle: style]
+    }()
+    
+    let detail: [NSAttributedString.Key : Any] = {
+        var style = NSMutableParagraphStyle()
+        style.alignment = .left
+        style.lineBreakMode = .byWordWrapping
+        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1),
                 NSAttributedString.Key.paragraphStyle: style]
     }()
     

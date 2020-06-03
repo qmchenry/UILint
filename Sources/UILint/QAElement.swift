@@ -7,7 +7,8 @@
 
 import UIKit
 
-enum QAElement {
+enum QAElement: Comparable {
+    
     case label(font: UIFont, maxLines: Int, text: String, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
     case image(imageAccessibilityLabel: String?, base: Base)
@@ -42,6 +43,15 @@ enum QAElement {
         return base.depth
     }
     
+    var sortOrder: Int {
+        switch self {
+        case .label(_, _, _, _): return 100
+        case .button(_, _, _, _, _, _): return 200
+        case .image(_, _): return 300
+        case .other(_): return 10000
+        }
+    }
+        
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
         switch self {
@@ -111,6 +121,14 @@ enum QAElement {
             self = QAElement.other(base: base)
         }
     }
-    
-    
+
+    static func < (lhs: QAElement, rhs: QAElement) -> Bool {
+        return lhs.sortOrder < rhs.sortOrder
+    }
+
+    static func == (lhs: QAElement, rhs: QAElement) -> Bool {
+        return lhs.sortOrder == rhs.sortOrder
+    }
+
 }
+
