@@ -16,7 +16,7 @@ extension NSObject {
 extension UIView {
     func parentViewController() -> UIViewController? {
         if let ancestor = self.next as? UIViewController {
-            return UIViewController.topViewController(withRootViewController: ancestor)
+            return ancestor.topmostViewController()
         } else if let ancestor = self.next as? UIView {
             return ancestor.parentViewController()
         } else {
@@ -61,16 +61,29 @@ extension UIImage {
 }
 
 extension UIViewController {
-    static func topViewController(withRootViewController rootVC: UIViewController) -> UIViewController {
-        if let rootVC = rootVC as? UITabBarController, let selectedViewController = rootVC.selectedViewController {
-            return topViewController(withRootViewController: selectedViewController)
+    @objc func topmostViewController() -> UIViewController {
+        // Modal views
+        if let presentedViewController = self.presentedViewController {
+            return presentedViewController.topmostViewController()
         }
-        if let rootVC = rootVC as? UINavigationController, let visibleViewController = rootVC.visibleViewController {
-            return topViewController(withRootViewController: visibleViewController)
+        // Follow responder chain
+        for subview in view.subviews {
+            if let subViewController = subview.next as? UIViewController {
+                return subViewController.topmostViewController()
+            }
         }
-        if let presentedViewController = rootVC.presentedViewController {
-            return topViewController(withRootViewController: presentedViewController)
-        }
-        return rootVC
+        return self
+    }
+}
+
+extension UITabBarController {
+    override func topmostViewController() -> UIViewController {
+        return selectedViewController?.topmostViewController() ?? self
+    }
+}
+
+extension UINavigationController {
+    override func topmostViewController() -> UIViewController {
+        return visibleViewController?.topmostViewController() ?? self
     }
 }

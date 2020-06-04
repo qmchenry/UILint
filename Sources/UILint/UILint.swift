@@ -54,8 +54,7 @@ public struct UILint {
             else { return }
             let pdfData = lint.makePDF()
             let activityVC = UIActivityViewController(activityItems: [pdfData], applicationActivities: nil)
-            let topVC = UIViewController.topViewController(withRootViewController: rootVC)
-            topVC.present(activityVC, animated: true)
+            rootVC.topmostViewController().present(activityVC, animated: true)
         }
         window.addGestureRecognizer(recognizer)
     }
