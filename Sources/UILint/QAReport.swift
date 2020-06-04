@@ -44,37 +44,18 @@ class QAReport {
 
         newPage()
         draw("Findings", attributes: h2, x: padding)
-
-        let severityWidth = CGFloat(60)
-        let severityHeight = CGFloat(40)
-        let remainingWidth = pageSize.width - 4 * padding - severityWidth
-        let messageWidth = remainingWidth * 0.6
-        let screenshotWidth = remainingWidth - messageWidth
         
         findings.forEach { finding in
-            let size1 = draw(finding.message, attributes: body, x: 0, width: messageWidth, updateHeight: false, draw: false)
-            let size2 = draw(finding.screenshot, x: 0, width: screenshotWidth, draw: false)
-            let findingHeight = max(size1.height, size2.height, severityHeight)
-            
-            currentY += 5
-
-            if currentY + findingHeight > pageSize.height {
+            let height = draw(finding, draw: false)
+            drawRule()
+            if currentY + height > pageSize.height {
                 newPage()
+                currentY += 50
                 draw("Findings (continued)", attributes: h2, x: padding)
+                drawRule()
             }
-            
-            var x = padding
-            color(severity: finding.severity).set()
-            UIRectFill(CGRect(x: x, y: currentY, width: severityWidth, height: severityHeight))
-            
-            drawCentered(NSAttributedString(string: finding.severity.rawValue,
-                                            attributes: style(severity: finding.severity)),
-                                            rect: CGRect(x: x, y: currentY, width: severityWidth, height: 40))
-            x += severityWidth + padding
-            draw(finding.message, attributes: body, x: x, width: messageWidth, updateHeight: false)
-            x += messageWidth + padding
-            draw(finding.screenshot, x: x, width: screenshotWidth, updateHeight: false)
-            currentY += findingHeight + padding
+            currentY += 5
+            draw(finding)
         }
 
         newPage()
@@ -121,7 +102,7 @@ class QAReport {
         let attributedString = NSAttributedString(string: string, attributes: attributes)
         let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
         let stringSize = attributedString.boundingRect(with: CGSize(width: actualWidth, height: .greatestFiniteMagnitude), options: drawingOptions, context: nil)
-        if stringSize.height + currentY > pageSize.height {
+        if draw && stringSize.height + currentY > pageSize.height {
             newPage()
         }
         let stringRect = CGRect(x: x, y: currentY, width: actualWidth, height: stringSize.height)
@@ -151,8 +132,32 @@ class QAReport {
         return drawRect.size
     }
 
-//        @discardableResult func draw(_ finding: QAFinding, draw performDraw: Bool = true) -> CGFloat {
-//        }
+    @discardableResult func draw(_ finding: QAFinding, draw performDraw: Bool = true) -> CGFloat {
+        let severityWidth = CGFloat(60)
+        let severityHeight = CGFloat(40)
+        let remainingWidth = pageSize.width - 4 * padding - severityWidth
+        let messageWidth = remainingWidth * 0.6
+        let screenshotWidth = remainingWidth - messageWidth
+        
+        var x = padding
+        
+        if performDraw {
+            color(severity: finding.severity).set()
+            UIRectFill(CGRect(x: x, y: currentY, width: severityWidth, height: severityHeight))
+            drawCentered(NSAttributedString(string: finding.severity.rawValue,
+                                            attributes: style(severity: finding.severity)),
+                                            rect: CGRect(x: x, y: currentY, width: severityWidth, height: 40))
+        }
+        x += severityWidth + padding
+        let size0 = draw(finding.message, attributes: body, x: x, width: messageWidth, updateHeight: false, draw: performDraw)
+        x += messageWidth + padding
+        let size1 = draw(finding.screenshot, x: x, width: screenshotWidth, updateHeight: false, draw: performDraw)
+        let rowHeight = max(severityHeight, size0.height, size1.height)
+        if performDraw {
+            currentY += rowHeight + padding
+        }
+        return rowHeight
+     }
     
     @discardableResult func draw(_ element: QAElement, draw performDraw: Bool = true) -> CGFloat {
         var x = padding
