@@ -42,5 +42,44 @@ public struct UILint {
         QAReport(elements: elements, findings: findings, screenshot: screenshot).makePDF()
     }
     
+    static weak var window: UIWindow?
+    public static func register(window: UIWindow?) {
+        guard let window = window else { return }
+        Self.window = window
+        let recognizer = UILintGestureRecognizer() {
+            guard let window = Self.window,
+                let rootVC = window.rootViewController,
+                let lint = UILint(view: rootVC.view)
+            else { return }
+            let pdfData = lint.makePDF()
+            let activityVC = UIActivityViewController(activityItems: [pdfData], applicationActivities: nil)
+            rootVC.present(activityVC, animated: true)
+        }
+        window.addGestureRecognizer(recognizer)
+    }
+    
+    public static func deregister() {
+        guard let window = Self.window, let recognizers = window.gestureRecognizers
+            else { return }
+        recognizers.filter { $0 is UILintGestureRecognizer }
+            .forEach { window.removeGestureRecognizer($0) }
+        Self.window = nil
+    }
+    
 }
 
+final class UILintGestureRecognizer: UITapGestureRecognizer {
+    private var action: () -> Void
+
+    init(action: @escaping () -> Void) {
+        self.action = action
+        super.init(target: nil, action: nil)
+        numberOfTapsRequired = 2
+        numberOfTouchesRequired = 2
+        addTarget(self, action: #selector(callback))
+    }
+
+    @objc private func callback() {
+        action()
+    }
+}
