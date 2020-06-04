@@ -51,7 +51,6 @@ struct QAReport {
             let attributedString = NSAttributedString(string: string, attributes: attributes)
             let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
             let stringSize = attributedString.boundingRect(with: CGSize(width: actualWidth, height: .greatestFiniteMagnitude), options: drawingOptions, context: nil)
-            print("'\(string)' \(stringSize) \(attributedString.size())")
             if stringSize.height + currentY > pageSize.height {
                 newPage()
             }

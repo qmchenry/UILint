@@ -27,7 +27,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         let tapFindings = findings.filter { $0.message == "Tappable view UIButton is obscured by UIView" }
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
@@ -43,7 +42,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         let tapFindings = findings.filter { $0.message == "Tappable view UIButton is obscured by UIView" }
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
@@ -59,7 +57,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         XCTAssertEqual(findings.count, 0)
     }
     
@@ -73,7 +70,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         XCTAssertEqual(findings.count, 0)
     }
     
@@ -88,7 +84,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         XCTAssertEqual(findings.count, 0)
     }
     
@@ -103,7 +98,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         XCTAssertEqual(findings.count, 0)
     }
     
@@ -119,7 +113,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         let tapFindings = findings.filter { $0.message == "Tappable view UIView is obscured by UIView" }
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
@@ -138,7 +131,6 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        print(findings.map { $0.debugDescription }.joined(separator: "\n"))
         let tapFindings = findings.filter { $0.message == "Tappable view UIView is obscured by UIView" }
         XCTAssertEqual(tapFindings.count, 0)
     }
