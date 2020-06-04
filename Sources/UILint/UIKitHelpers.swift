@@ -5,8 +5,7 @@
 //  Created by Quinn McHenry on 5/26/20.
 //
 
-
-import Foundation
+import UIKit
 
 extension NSObject {
     var className: String {
@@ -14,15 +13,10 @@ extension NSObject {
     }
 }
 
-
-#if os(iOS)
-
-import UIKit
-
 extension UIView {
     func parentViewController() -> UIViewController? {
         if let ancestor = self.next as? UIViewController {
-            return ancestor
+            return UIViewController.topViewController(withRootViewController: ancestor)
         } else if let ancestor = self.next as? UIView {
             return ancestor.parentViewController()
         } else {
@@ -66,8 +60,17 @@ extension UIImage {
     }
 }
 
-
-#elseif os(macOS)
-
-
-#endif
+extension UIViewController {
+    static func topViewController(withRootViewController rootVC: UIViewController) -> UIViewController {
+        if let rootVC = rootVC as? UITabBarController, let selectedViewController = rootVC.selectedViewController {
+            return topViewController(withRootViewController: selectedViewController)
+        }
+        if let rootVC = rootVC as? UINavigationController, let visibleViewController = rootVC.visibleViewController {
+            return topViewController(withRootViewController: visibleViewController)
+        }
+        if let presentedViewController = rootVC.presentedViewController {
+            return topViewController(withRootViewController: presentedViewController)
+        }
+        return rootVC
+    }
+}

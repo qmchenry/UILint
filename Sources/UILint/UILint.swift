@@ -45,6 +45,7 @@ public struct UILint {
     static weak var window: UIWindow?
     public static func register(window: UIWindow?) {
         guard let window = window else { return }
+        deregister()
         Self.window = window
         let recognizer = UILintGestureRecognizer() {
             guard let window = Self.window,
@@ -53,7 +54,8 @@ public struct UILint {
             else { return }
             let pdfData = lint.makePDF()
             let activityVC = UIActivityViewController(activityItems: [pdfData], applicationActivities: nil)
-            rootVC.present(activityVC, animated: true)
+            let topVC = UIViewController.topViewController(withRootViewController: rootVC)
+            topVC.present(activityVC, animated: true)
         }
         window.addGestureRecognizer(recognizer)
     }
