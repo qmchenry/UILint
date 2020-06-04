@@ -8,7 +8,7 @@
 import PDFKit
 import UIKit
 
-struct QAReport {
+class QAReport {
     
     let elements: [QAElement]
     let findings: [QAFinding]
@@ -17,6 +17,13 @@ struct QAReport {
     let padding = CGFloat(10)
     let paddingLarge = CGFloat(20)
 
+    var currentY = CGFloat(0)
+
+    public init(elements: [QAElement], findings: [QAFinding], screenshot: UIImage?) {
+        self.elements = elements
+        self.findings = findings
+        self.screenshot = screenshot
+    }
 
     public func makePDF() -> Data {
 
@@ -26,91 +33,8 @@ struct QAReport {
             kCGPDFContextTitle: pdfTitle,
         ]
 
-        var currentY = CGFloat(0)
-
         let pdfData = NSMutableData()
         UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, pdfMetadata)
-        let pageSize = UIGraphicsGetPDFContextBounds().size
-
-        func newPage() {
-            UIGraphicsBeginPDFPage()
-            currentY = padding
-        }
-
-        func drawCentered(_ string: NSAttributedString, rect: CGRect) {
-            let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
-            let stringSize = string.boundingRect(with: rect.size, options: drawingOptions, context: nil)
-            string.draw(in: CGRect(x: rect.origin.x + (rect.width - stringSize.width) / 2,
-                                   y: rect.origin.y + (rect.height - stringSize.height) / 2,
-                                   width: stringSize.width,
-                                   height: stringSize.height))
-        }
-        
-        @discardableResult func draw(_ string: String, attributes: [NSAttributedString.Key : Any], x: CGFloat = padding, width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
-            let actualWidth = width ?? (pageSize.width - 2 * padding)
-            let attributedString = NSAttributedString(string: string, attributes: attributes)
-            let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
-            let stringSize = attributedString.boundingRect(with: CGSize(width: actualWidth, height: .greatestFiniteMagnitude), options: drawingOptions, context: nil)
-            if stringSize.height + currentY > pageSize.height {
-                newPage()
-            }
-            let stringRect = CGRect(x: x, y: currentY, width: actualWidth, height: stringSize.height)
-            if draw {
-                attributedString.draw(in: stringRect)
-                if updateHeight {
-                    currentY += stringRect.height + padding
-                }
-            }
-            return stringSize.size
-        }
-        
-        @discardableResult func draw(_ image: UIImage?, x: CGFloat = padding, width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
-            guard let image = image else { return .zero }
-            let actualWidth = width ?? (pageSize.width - x - 2 * padding)
-            let scaleW = min(image.size.width, actualWidth) / image.size.width
-            let scaleH = min(image.size.height, pageSize.height - currentY - padding) / image.size.height
-            let scale = min(scaleW, scaleH)
-            let drawRect = CGRect(x: x, y: currentY, width: image.size.width * scale, height: image.size.height * scale)
-            if draw {
-                image.draw(in: drawRect)
-                if updateHeight {
-                    currentY += drawRect.height + padding
-                }
-            }
-            return drawRect.size
-        }
-
-//        @discardableResult func draw(_ finding: QAFinding, draw performDraw: Bool = true) -> CGFloat {
-//        }
-        
-        @discardableResult func draw(_ element: QAElement, draw performDraw: Bool = true) -> CGFloat {
-            var x = padding
-            switch element {
-            case .label(let font, let maxLines, let text, let minimumScaleFactor, let base):
-                let size0 = draw("Label: \(font.pointSize)pt", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
-                x += 120 + padding
-                let size1 = draw("\(font.fontName)", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
-                x += 200 + padding
-                let size2 = draw("\(element.numberOfLines(text: text, font: font, frame: base.windowFrame)) / \(maxLines) lines", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
-                x += 120 + padding
-                let size3 = draw("\(minimumScaleFactor)", attributes: body, x: x, width: 80, updateHeight: false, draw: performDraw)
-                let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
-                if performDraw {
-                    currentY += rowHeight + padding
-                }
-                let sizeText = draw(text, attributes: detail, x: 40, draw: performDraw)
-                let height = rowHeight + padding + sizeText.height
-                return height
-            default: break
-            }
-            return 0
-        }
-        
-        func drawRule(color: UIColor = .gray, height: CGFloat = 1) {
-            color.set()
-            UIRectFrame(CGRect(x: padding, y: currentY, width: pageSize.width - 2 * padding, height: height))
-            currentY += height
-        }
 
         newPage()
 
@@ -168,11 +92,97 @@ struct QAReport {
                 draw(element)
             }
         }
+        
         drawRule()
 
         UIGraphicsEndPDFContext()
         return pdfData as Data
     }
+    
+    var pageSize: CGSize { UIGraphicsGetPDFContextBounds().size }
+
+    func newPage() {
+        UIGraphicsBeginPDFPage()
+        currentY = padding
+    }
+
+    func drawCentered(_ string: NSAttributedString, rect: CGRect) {
+        let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
+        let stringSize = string.boundingRect(with: rect.size, options: drawingOptions, context: nil)
+        string.draw(in: CGRect(x: rect.origin.x + (rect.width - stringSize.width) / 2,
+                               y: rect.origin.y + (rect.height - stringSize.height) / 2,
+                               width: stringSize.width,
+                               height: stringSize.height))
+    }
+    
+    @discardableResult func draw(_ string: String, attributes: [NSAttributedString.Key : Any], x _x: CGFloat? = nil, width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
+        let x = _x ?? padding
+        let actualWidth = width ?? (pageSize.width - 2 * padding)
+        let attributedString = NSAttributedString(string: string, attributes: attributes)
+        let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
+        let stringSize = attributedString.boundingRect(with: CGSize(width: actualWidth, height: .greatestFiniteMagnitude), options: drawingOptions, context: nil)
+        if stringSize.height + currentY > pageSize.height {
+            newPage()
+        }
+        let stringRect = CGRect(x: x, y: currentY, width: actualWidth, height: stringSize.height)
+        if draw {
+            attributedString.draw(in: stringRect)
+            if updateHeight {
+                currentY += stringRect.height + padding
+            }
+        }
+        return stringSize.size
+    }
+    
+    @discardableResult func draw(_ image: UIImage?, x _x: CGFloat? = nil, width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
+        guard let image = image else { return .zero }
+        let x = _x ?? padding
+        let actualWidth = width ?? (pageSize.width - x - 2 * padding)
+        let scaleW = min(image.size.width, actualWidth) / image.size.width
+        let scaleH = min(image.size.height, pageSize.height - currentY - padding) / image.size.height
+        let scale = min(scaleW, scaleH)
+        let drawRect = CGRect(x: x, y: currentY, width: image.size.width * scale, height: image.size.height * scale)
+        if draw {
+            image.draw(in: drawRect)
+            if updateHeight {
+                currentY += drawRect.height + padding
+            }
+        }
+        return drawRect.size
+    }
+
+//        @discardableResult func draw(_ finding: QAFinding, draw performDraw: Bool = true) -> CGFloat {
+//        }
+    
+    @discardableResult func draw(_ element: QAElement, draw performDraw: Bool = true) -> CGFloat {
+        var x = padding
+        switch element {
+        case .label(let font, let maxLines, let text, let minimumScaleFactor, let base):
+            let size0 = draw("Label: \(font.pointSize)pt", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
+            x += 120 + padding
+            let size1 = draw("\(font.fontName)", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
+            x += 200 + padding
+            let size2 = draw("\(element.numberOfLines(text: text, font: font, frame: base.windowFrame)) / \(maxLines) lines", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
+            x += 120 + padding
+            let size3 = draw("\(minimumScaleFactor)", attributes: body, x: x, width: 80, updateHeight: false, draw: performDraw)
+            let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
+            if performDraw {
+                currentY += rowHeight + padding
+            }
+            let sizeText = draw(text, attributes: detail, x: 40, draw: performDraw)
+            let height = rowHeight + padding + sizeText.height
+            return height
+        default: break
+        }
+        return 0
+    }
+    
+    func drawRule(color: UIColor = .gray, height: CGFloat = 1) {
+        color.set()
+        UIRectFrame(CGRect(x: padding, y: currentY, width: pageSize.width - 2 * padding, height: height))
+        currentY += height
+    }
+
     
     let h1: [NSAttributedString.Key : Any] = {
         var style = NSMutableParagraphStyle()
