@@ -12,7 +12,7 @@ struct QAFinding: CustomDebugStringConvertible {
     let severity: QAFindingSeverity
     let screenshot: UIImage?
     let element: QAElement
-    
+
     var debugDescription: String {
         "Finding (\(element.base.className)): [\(severity)] \(message)"
     }
@@ -21,7 +21,7 @@ struct QAFinding: CustomDebugStringConvertible {
 enum QAFindingSeverity: String {
     case warning
     case error
-    
+
     var textColor: UIColor {
         switch self {
         case .warning: return .blue

@@ -2,20 +2,20 @@ import XCTest
 @testable import UILint
 
 final class UILintTests: XCTestCase {
-    
+
     var sut: UIViewController!
 
     override func setUp() {
         super.setUp()
         sut = UIViewController()
     }
-    
+
     func testDepth() {
-        let v = UIView() // 0
-        v.addSubview(UISlider()) // 3
-        v.addSubview(UIImageView()) // 4
+        let view = UIView() // 0
+        view.addSubview(UISlider()) // 3
+        view.addSubview(UIImageView()) // 4
         sut.view.addSubview(UIImageView()) // 1
-        sut.view.addSubview(v) // 2
+        sut.view.addSubview(view) // 2
         sut.view.addSubview(UILabel()) // 5
 
         let lint = UILint(view: sut.view)
@@ -26,7 +26,7 @@ final class UILintTests: XCTestCase {
         XCTAssertEqual(lint?.elements[3].depth, 3)
         XCTAssertEqual(lint?.elements[4].depth, 4)
         XCTAssertEqual(lint?.elements[5].depth, 5)
-        
+
         XCTAssertEqual(lint?.elements[0].base.className, "UIView")
         XCTAssertEqual(lint?.elements[1].base.className, "UIImageView")
         XCTAssertEqual(lint?.elements[2].base.className, "UIView")

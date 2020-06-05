@@ -1,6 +1,6 @@
 //
 //  QAReport.swift
-//  
+//
 //
 //  Created by Quinn McHenry on 6/1/20.
 //
@@ -9,7 +9,7 @@ import PDFKit
 import UIKit
 
 class QAReport {
-    
+
     let elements: [QAElement]
     let findings: [QAFinding]
     let screenshot: UIImage?
@@ -30,7 +30,7 @@ class QAReport {
         let pdfTitle = "UILint Report"
         let pdfMetadata = [
             kCGPDFContextCreator: "UILint",
-            kCGPDFContextTitle: pdfTitle,
+            kCGPDFContextTitle: pdfTitle
         ]
 
         let pdfData = NSMutableData()
@@ -38,20 +38,20 @@ class QAReport {
 
         newPage()
 
-        draw(pdfTitle, attributes: h1)
-        draw("Screenshot", attributes: h2, x: padding)
+        draw(pdfTitle, attributes: title1)
+        draw("Screenshot", attributes: title2, xPosition: padding)
         draw(screenshot)
 
         newPage()
-        draw("Findings", attributes: h2, x: padding)
-        
+        draw("Findings", attributes: title2, xPosition: padding)
+
         findings.forEach { finding in
             let height = draw(finding, draw: false)
             drawRule()
             if currentY + height > pageSize.height {
                 newPage()
                 currentY += 50
-                draw("Findings (continued)", attributes: h2, x: padding)
+                draw("Findings (continued)", attributes: title2, xPosition: padding)
                 drawRule()
             }
             currentY += 5
@@ -59,7 +59,7 @@ class QAReport {
         }
 
         newPage()
-        draw("Elements", attributes: h2, x: padding)
+        draw("Elements", attributes: title2, xPosition: padding)
 
         elements.sorted().forEach { element in
             let height = draw(element, draw: false)
@@ -67,19 +67,19 @@ class QAReport {
                 drawRule()
                 if currentY + height > pageSize.height {
                     newPage()
-                    draw("Elements (continued)", attributes: h2, x: padding)
+                    draw("Elements (continued)", attributes: title2, xPosition: padding)
                     drawRule()
                 }
                 draw(element)
             }
         }
-        
+
         drawRule()
 
         UIGraphicsEndPDFContext()
         return pdfData as Data
     }
-    
+
     var pageSize: CGSize { UIGraphicsGetPDFContextBounds().size }
 
     func newPage() {
@@ -95,17 +95,19 @@ class QAReport {
                                width: stringSize.width,
                                height: stringSize.height))
     }
-    
-    @discardableResult func draw(_ string: String, attributes: [NSAttributedString.Key : Any], x _x: CGFloat? = nil, width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
-        let x = _x ?? padding
+
+    @discardableResult func draw(_ string: String, attributes: [NSAttributedString.Key: Any], xPosition: CGFloat? = nil,
+                                 width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
+        let xPosition = xPosition ?? padding
         let actualWidth = width ?? (pageSize.width - 2 * padding)
         let attributedString = NSAttributedString(string: string, attributes: attributes)
         let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
-        let stringSize = attributedString.boundingRect(with: CGSize(width: actualWidth, height: .greatestFiniteMagnitude), options: drawingOptions, context: nil)
+        let boundingSize = CGSize(width: actualWidth, height: .greatestFiniteMagnitude)
+        let stringSize = attributedString.boundingRect(with: boundingSize, options: drawingOptions, context: nil)
         if draw && stringSize.height + currentY > pageSize.height {
             newPage()
         }
-        let stringRect = CGRect(x: x, y: currentY, width: actualWidth, height: stringSize.height)
+        let stringRect = CGRect(x: xPosition, y: currentY, width: actualWidth, height: stringSize.height)
         if draw {
             attributedString.draw(in: stringRect)
             if updateHeight {
@@ -114,15 +116,19 @@ class QAReport {
         }
         return stringSize.size
     }
-    
-    @discardableResult func draw(_ image: UIImage?, x _x: CGFloat? = nil, width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
+
+    @discardableResult func draw(_ image: UIImage?, xPosition: CGFloat? = nil, width: CGFloat? = nil,
+                                 updateHeight: Bool = true, draw: Bool = true) -> CGSize {
         guard let image = image else { return .zero }
-        let x = _x ?? padding
-        let actualWidth = width ?? (pageSize.width - x - 2 * padding)
+        let xPosition = xPosition ?? padding
+        let actualWidth = width ?? (pageSize.width - xPosition - 2 * padding)
         let scaleW = min(image.size.width, actualWidth) / image.size.width
         let scaleH = min(image.size.height, pageSize.height - currentY - padding) / image.size.height
         let scale = min(scaleW, scaleH)
-        let drawRect = CGRect(x: x, y: currentY, width: image.size.width * scale, height: image.size.height * scale)
+        let drawRect = CGRect(x: xPosition,
+                              y: currentY,
+                              width: image.size.width * scale,
+                              height: image.size.height * scale)
         if draw {
             image.draw(in: drawRect)
             if updateHeight {
@@ -138,51 +144,61 @@ class QAReport {
         let remainingWidth = pageSize.width - 4 * padding - severityWidth
         let messageWidth = remainingWidth * 0.6
         let screenshotWidth = remainingWidth - messageWidth
-        
-        var x = padding
-        
+
+        var xPosition = padding
+
         if performDraw {
             color(severity: finding.severity).set()
-            UIRectFill(CGRect(x: x, y: currentY, width: severityWidth, height: severityHeight))
+            UIRectFill(CGRect(x: xPosition, y: currentY, width: severityWidth, height: severityHeight))
             drawCentered(NSAttributedString(string: finding.severity.rawValue,
                                             attributes: style(severity: finding.severity)),
-                                            rect: CGRect(x: x, y: currentY, width: severityWidth, height: 40))
+                                            rect: CGRect(x: xPosition, y: currentY, width: severityWidth, height: 40))
         }
-        x += severityWidth + padding
-        let size0 = draw(finding.message, attributes: body, x: x, width: messageWidth, updateHeight: false, draw: performDraw)
-        x += messageWidth + padding
-        let size1 = draw(finding.screenshot, x: x, width: screenshotWidth, updateHeight: false, draw: performDraw)
+        xPosition += severityWidth + padding
+        let size0 = draw(finding.message, attributes: body, xPosition: xPosition, width: messageWidth,
+                         updateHeight: false, draw: performDraw)
+        xPosition += messageWidth + padding
+        let size1 = draw(finding.screenshot, xPosition: xPosition, width: screenshotWidth,
+                         updateHeight: false, draw: performDraw)
         let rowHeight = max(severityHeight, size0.height, size1.height)
         if performDraw {
             currentY += rowHeight + padding
         }
         return rowHeight
      }
-    
+
     @discardableResult func draw(_ element: QAElement, draw performDraw: Bool = true) -> CGFloat {
-        var x = padding
+        var xPosition = padding
         switch element {
         case .label(let font, let maxLines, let text, let minimumScaleFactor, let base):
-            let size0 = draw("Label: \(font.pointSize)pt", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
-            x += 120 + padding
-            let size1 = draw("\(font.fontName)", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
-            x += 200 + padding
-            let size2 = draw("\(element.numberOfLines(text: text, font: font, frame: base.windowFrame)) / \(maxLines) lines", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
-            x += 120 + padding
-            let size3 = draw("\(minimumScaleFactor)", attributes: body, x: x, width: 80, updateHeight: false, draw: performDraw)
+            let size0 = draw("Label: \(font.pointSize)pt", attributes: body, xPosition: xPosition, width: 120,
+                             updateHeight: false, draw: performDraw)
+            xPosition += 120 + padding
+            let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 200,
+                             updateHeight: false, draw: performDraw)
+            xPosition += 200 + padding
+            let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
+            let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition, width: 120,
+                             updateHeight: false, draw: performDraw)
+            xPosition += 120 + padding
+            let size3 = draw("\(minimumScaleFactor)", attributes: body, xPosition: xPosition, width: 80,
+                             updateHeight: false, draw: performDraw)
             let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
             if performDraw {
                 currentY += rowHeight + padding
             }
-            let sizeText = draw(text, attributes: detail, x: 40, draw: performDraw)
+            let sizeText = draw(text, attributes: detail, xPosition: 40, draw: performDraw)
             let height = rowHeight + padding + sizeText.height
             return height
         case .image(let image, let imageAccessibilityLabel, let base):
-            let size0 = draw("\(base.className)", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
-            x += 120 + padding
-            let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
-            x += 200 + padding
-            let size2 = draw(image, x: x, width: pageSize.width - x - padding, updateHeight: false, draw: performDraw)
+            let size0 = draw("\(base.className)", attributes: body, xPosition: xPosition, width: 120,
+                             updateHeight: false, draw: performDraw)
+            xPosition += 120 + padding
+            let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
+                             xPosition: xPosition, width: 200, updateHeight: false, draw: performDraw)
+            xPosition += 200 + padding
+            let size2 = draw(image, xPosition: xPosition, width: pageSize.width - xPosition - padding,
+                             updateHeight: false, draw: performDraw)
             let rowHeight = max(size0.height, size1.height, size2.height) + padding
             if performDraw {
                 currentY += rowHeight
@@ -192,45 +208,44 @@ class QAReport {
         }
         return 0
     }
-    
+
     func drawRule(color: UIColor = .gray, height: CGFloat = 1) {
         color.set()
         UIRectFrame(CGRect(x: padding, y: currentY, width: pageSize.width - 2 * padding, height: height))
         currentY += height
     }
 
-    
-    let h1: [NSAttributedString.Key : Any] = {
+    let title1: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .center
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .largeTitle),
                 NSAttributedString.Key.paragraphStyle: style]
     }()
 
-    let h2: [NSAttributedString.Key : Any] = {
+    let title2: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .left
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title1),
                 NSAttributedString.Key.paragraphStyle: style]
     }()
 
-    let body: [NSAttributedString.Key : Any] = {
+    let body: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .left
         style.lineBreakMode = .byWordWrapping
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
                 NSAttributedString.Key.paragraphStyle: style]
     }()
-    
-    let detail: [NSAttributedString.Key : Any] = {
+
+    let detail: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .left
         style.lineBreakMode = .byWordWrapping
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1),
                 NSAttributedString.Key.paragraphStyle: style]
     }()
-    
-    let warning: [NSAttributedString.Key : Any] = {
+
+    let warning: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .left
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
@@ -238,8 +253,8 @@ class QAReport {
                 NSAttributedString.Key.backgroundColor: UIColor.yellow,
                 NSAttributedString.Key.paragraphStyle: style]
     }()
-    
-    let error: [NSAttributedString.Key : Any] = {
+
+    let error: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .left
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
@@ -247,8 +262,8 @@ class QAReport {
                 NSAttributedString.Key.backgroundColor: UIColor.red,
                 NSAttributedString.Key.paragraphStyle: style]
     }()
-    
-    func style(severity: QAFindingSeverity) -> [NSAttributedString.Key : Any] {
+
+    func style(severity: QAFindingSeverity) -> [NSAttributedString.Key: Any] {
         if case QAFindingSeverity.error = severity {
             return error
         }

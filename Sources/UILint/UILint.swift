@@ -9,7 +9,7 @@
 import UIKit
 
 public struct UILint {
-    
+
     let elements: [QAElement]
     let windowSize: CGSize
     let screenshot: UIImage?
@@ -19,21 +19,21 @@ public struct UILint {
             print("Unable to find parent view controller from view")
             return nil
         }
-        
+
         var currentDepth = 0
-                
+
         screenshot = grandparent.makeSnapshot()
         windowSize = screenshot?.size ?? .zero
-        
+
         func recurse(_ view: UIView) -> [QAElement] {
-            let viewOutput = [QAElement(view: view, depth: currentDepth)].compactMap{$0}
+            let viewOutput = [QAElement(view: view, depth: currentDepth)].compactMap { $0 }
             currentDepth += 1
             return view.allSubviews.compactMap { recurse($0) }.reduce(viewOutput, +)
         }
-        
+
         elements = recurse(grandparent)
     }
-    
+
     var findings: [QAFinding] {
         elements.flatMap { $0.findings(elements: elements, windowSize: windowSize, screenshot: screenshot) }
     }
@@ -41,13 +41,13 @@ public struct UILint {
     public func makePDF() -> Data {
         QAReport(elements: elements, findings: findings, screenshot: screenshot).makePDF()
     }
-    
+
     static weak var window: UIWindow?
     public static func register(window: UIWindow?) {
         guard let window = window else { return }
         deregister()
         Self.window = window
-        let recognizer = UILintGestureRecognizer() {
+        let recognizer = UILintGestureRecognizer {
             guard let window = Self.window,
                 let rootVC = window.rootViewController,
                 let lint = UILint(view: rootVC.view)
@@ -58,7 +58,7 @@ public struct UILint {
         }
         window.addGestureRecognizer(recognizer)
     }
-    
+
     public static func deregister() {
         guard let window = Self.window, let recognizers = window.gestureRecognizers
             else { return }
@@ -66,7 +66,7 @@ public struct UILint {
             .forEach { window.removeGestureRecognizer($0) }
         Self.window = nil
     }
-    
+
 }
 
 final class UILintGestureRecognizer: UITapGestureRecognizer {

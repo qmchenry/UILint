@@ -16,7 +16,7 @@ class TappabilityTests: XCTestCase {
         super.setUp()
         sut = UIViewController()
     }
-    
+
     func testUIButtonPartiallyCovered() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -31,7 +31,7 @@ class TappabilityTests: XCTestCase {
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
-    
+
     func testUIButtonPartiallyCovered1x1pt() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -46,7 +46,7 @@ class TappabilityTests: XCTestCase {
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
-    
+
     func testUIButtonPartiallyCovered0x0pt() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -59,7 +59,7 @@ class TappabilityTests: XCTestCase {
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
-    
+
     func testUIButtonNotCovered() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -72,7 +72,7 @@ class TappabilityTests: XCTestCase {
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
-    
+
     func testUIButtonCoveredUIEDisabled() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -86,7 +86,7 @@ class TappabilityTests: XCTestCase {
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
-    
+
     func testUIButtonCoveredByHiddenView() {
         let origin = CGPoint(x: 100, y: 100)
         let button = UIButton(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -100,7 +100,7 @@ class TappabilityTests: XCTestCase {
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
-    
+
     func testUIViewWithGestureRecognizerPartiallyCovered() {
         let origin = CGPoint(x: 100, y: 100)
         let tappable = UIView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))
@@ -117,7 +117,7 @@ class TappabilityTests: XCTestCase {
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
-    
+
     func testUIViewWithDisabledGestureRecognizerPartiallyCovered() {
         let origin = CGPoint(x: 100, y: 100)
         let tappable = UIView(frame: CGRect(origin: origin, size: CGSize(width: 100, height: 100)))

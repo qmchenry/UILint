@@ -6,7 +6,8 @@
 //  Copyright © 2020 Quinn McHenry. All rights reserved.
 //
 
-// Lovingly copied and pasted from https://stackoverflow.com/questions/25448879/how-do-i-take-a-full-screen-screenshot-in-swift
+// Lovingly copied and pasted from
+// https://stackoverflow.com/questions/25448879/how-do-i-take-a-full-screen-screenshot-in-swift
 
 // Usage:
 // image = UIApplication.shared.makeSnapshot()
@@ -28,12 +29,11 @@ extension UIApplication {
     func makeSnapshot() -> UIImage? {
         getKeyWindow()?.layer.makeSnapshot()
     }
-    
+
     var windowSize: CGSize? {
         getKeyWindow()?.bounds.size
     }
 }
-
 
 extension CALayer {
     func makeSnapshot() -> UIImage? {

@@ -23,12 +23,12 @@ extension UIView {
             return nil
         }
     }
-    
+
     // View's frame in global/window coordinates
     var windowFrame: CGRect? {
         superview?.convert(frame, to: parentViewController()?.view)
     }
-    
+
     // Return an array of all subviews including those not included in the
     // default subviews property
     var allSubviews: [UIView] {
@@ -37,7 +37,7 @@ extension UIView {
         }
         return subviews
     }
-    
+
     var consumesTouches: Bool {
         // todo consider multiple points (8 points perimeter and center) but how to handle partial hits?
         // todo handle layer transform
