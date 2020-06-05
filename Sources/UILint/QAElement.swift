@@ -20,6 +20,8 @@ enum QAElement: Comparable {
         let wantsTouches: Bool // like a button
         let consumesTouches: Bool // opaque view that blocks
         let depth: Int
+        let contentScaleFactor: CGFloat
+        let contentMode: UIView.ContentMode
         init(_ view: UIView, depth: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
@@ -27,6 +29,8 @@ enum QAElement: Comparable {
             wantsTouches = (view is UIControl) || enabledGestureRecognizers > 0
             consumesTouches = view.consumesTouches
             self.depth = depth
+            contentScaleFactor = view.contentScaleFactor
+            contentMode = view.contentMode
         }
     }
     
@@ -51,6 +55,8 @@ enum QAElement: Comparable {
         case .other: return 10000
         }
     }
+    
+    var isLabel: Bool { sortOrder == 100 }
         
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
@@ -67,6 +73,15 @@ enum QAElement: Comparable {
                 if windowSize != .zero && isLabelOffscreen(labelFrame: windowFrame, windowSize: windowSize) {
                     results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error, screenshot: croppedScreenshot, element: self))
                 }
+                elements.filter { $0.isLabel && $0.depth > depth }.forEach { element in
+                    // considering only depths > self's depth prevents duplication of findings as they both overlap each other and also checking against self
+                    if overlaps(element) {
+                        let unionBounds = windowFrame.union(element.base.windowFrame!)
+                        let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
+                        results.append(QAFinding(message: "\(base.className) overlaps \(element.base.className)", severity: .warning, screenshot: croppedScreenshot, element: self))
+                    }
+                }
+
             }
         default:
             break

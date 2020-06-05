@@ -133,7 +133,7 @@ class QAReport {
     }
 
     @discardableResult func draw(_ finding: QAFinding, draw performDraw: Bool = true) -> CGFloat {
-        let severityWidth = CGFloat(60)
+        let severityWidth = CGFloat(75)
         let severityHeight = CGFloat(40)
         let remainingWidth = pageSize.width - 4 * padding - severityWidth
         let messageWidth = remainingWidth * 0.6
