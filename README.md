@@ -31,7 +31,9 @@ let pdfData = lint.makePDF()
 try? pdfData.write(to: URL(fileURLWithPath: "/tmp/test.pdf"))
 ```
 
-**Experimental behavior**: Register UILint with your application to enable a gesture to create a UILint PDF report of the current scene and share with a share sheet. Add the following line to the SceneDelegate function `scene(_:willConnectTo:options:)`, then a two-touch double-tap will perform the linting. To perform this in the simulator, press Option while mousing over the simulator and click twice.
+**Experimental behavior**: Register UILint with your application to enable a gesture to create a UILint PDF report of the current scene and share with a share sheet. 
+Add `import UILint` to the SceneDelegate.swift, then add the following to the function `scene(_:willConnectTo:options:)`, then a two-touch double-tap will perform the linting. To perform 
+this in the simulator, press Option while mousing over the simulator and click twice.
 
 ```swift
 UILint.register(window: window)
@@ -41,6 +43,6 @@ And deregester UILint with this line in `sceneDidDisconnect(_:)`
 ```swift
 UILint.deregister()
 ```
-
+For apps supporting iOS 12 and earlier, add these lines to the project's AppDelegate functions `application(_:didFinishLaunchingWithOptions:)` and `applicationWillTerminate()`.
 
 A demo UIKit app is available in the TestApps/ directory. It has been integrated with UILint and has these calls in place.
