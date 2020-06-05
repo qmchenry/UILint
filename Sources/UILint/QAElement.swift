@@ -61,33 +61,8 @@ enum QAElement: Comparable {
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
         switch self {
-        case .label(let font, let maxLines, let text, _, let base):
-            if let windowFrame = base.windowFrame {
-                let croppedScreenshot = screenshot?.crop(to: windowFrame, viewSize: screenshot!.size)
-                if isLabelTruncated(text: text, font: font, maxLines: maxLines, frame: windowFrame) {
-                    results.append(QAFinding(message: "Label is truncated", severity: .error,
-                                             screenshot: croppedScreenshot, element: self))
-                }
-                if isLabelClippedVertically(text: text, font: font, frame: windowFrame) {
-                    results.append(QAFinding(message: "Label is clipped vertically", severity: .error,
-                                             screenshot: croppedScreenshot, element: self))
-                }
-                if windowSize != .zero && isLabelOffscreen(labelFrame: windowFrame, windowSize: windowSize) {
-                    results.append(QAFinding(message: "Label is (partially) offscreen", severity: .error,
-                                             screenshot: croppedScreenshot, element: self))
-                }
-                elements.filter { $0.isLabel && $0.depth > depth }.forEach { element in
-                    // considering only depths > self's depth prevents duplication of findings as they both
-                    // overlap each other and also checking against self
-                    if overlaps(element) {
-                        let unionBounds = windowFrame.union(element.base.windowFrame!)
-                        let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
-                        results.append(QAFinding(message: "\(base.className) overlaps \(element.base.className)",
-                            severity: .warning, screenshot: croppedScreenshot, element: self))
-                    }
-                }
-
-            }
+        case .label:
+            results += labelChecks(windowSize: windowSize, screenshot: screenshot, elements: elements)
         default:
             break
         }
