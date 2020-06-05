@@ -6,7 +6,7 @@ import PackageDescription
 let package = Package(
     name: "UILint",
     platforms: [
-        .iOS(.v12),
+        .iOS(.v11),
         .macOS(.v10_14)
     ],
     products: [
