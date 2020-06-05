@@ -177,6 +177,17 @@ class QAReport {
             let sizeText = draw(text, attributes: detail, x: 40, draw: performDraw)
             let height = rowHeight + padding + sizeText.height
             return height
+        case .image(let image, let imageAccessibilityLabel, let base):
+            let size0 = draw("\(base.className)", attributes: body, x: x, width: 120, updateHeight: false, draw: performDraw)
+            x += 120 + padding
+            let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body, x: x, width: 200, updateHeight: false, draw: performDraw)
+            x += 200 + padding
+            let size2 = draw(image, x: x, width: pageSize.width - x - padding, updateHeight: false, draw: performDraw)
+            let rowHeight = max(size0.height, size1.height, size2.height) + padding
+            if performDraw {
+                currentY += rowHeight
+            }
+            return rowHeight
         default: break
         }
         return 0

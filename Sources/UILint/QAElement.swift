@@ -11,7 +11,7 @@ enum QAElement: Comparable {
     
     case label(font: UIFont, maxLines: Int, text: String, minimumScaleFactor: CGFloat, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, imageAccessibilityLabel: String?, base: Base)
-    case image(imageAccessibilityLabel: String?, base: Base)
+    case image(image: UIImage?, imageAccessibilityLabel: String?, base: Base)
     case other(base: Base)
 
     struct Base {
@@ -34,7 +34,7 @@ enum QAElement: Comparable {
         switch self {
         case .label(_, _, _, _, let base): return base
         case .button(_, _, _, _, _, let base): return base
-        case .image(_, let base): return base
+        case .image(_, _, let base): return base
         case .other(let base): return base
         }
     }
@@ -116,7 +116,8 @@ enum QAElement: Comparable {
                                     imageAccessibilityLabel: view.imageView?.image?.accessibilityLabel,
                                     base: base)
         } else if let view = view as? UIImageView {
-            self = QAElement.image(imageAccessibilityLabel: view.image?.accessibilityLabel,
+            self = QAElement.image(image: view.image,
+                                   imageAccessibilityLabel: view.image?.accessibilityLabel,
                                    base: base)
         } else {
             self = QAElement.other(base: base)
