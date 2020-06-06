@@ -87,3 +87,22 @@ extension UINavigationController {
         return visibleViewController?.topmostViewController() ?? self
     }
 }
+
+extension UIColor {
+    var hex: String {
+        guard let components = cgColor.components, components.count >= 3 else {
+            return "#00000000"
+        }
+        let alpha: Float
+        if components.count >= 4 {
+            alpha = Float(components[3])
+        } else {
+            alpha = 1
+        }
+        return String(format: "%02lX%02lX%02lX%02lX",
+                      lroundf(Float(components[0]) * 255),
+                      lroundf(Float(components[1]) * 255),
+                      lroundf(Float(components[2]) * 255),
+                      lroundf(alpha * 255))
+    }
+}

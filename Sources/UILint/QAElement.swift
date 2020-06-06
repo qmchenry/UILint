@@ -9,7 +9,7 @@ import UIKit
 
 enum QAElement: Comparable {
 
-    case label(font: UIFont, maxLines: Int, text: String, minimumScaleFactor: CGFloat, base: Base)
+    case label(font: UIFont, maxLines: Int, text: String, textColor: UIColor, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, base: Base)
     case image(image: UIImage?, imageAccessibilityLabel: String?, base: Base)
     case other(base: Base)
@@ -108,7 +108,7 @@ enum QAElement: Comparable {
             self = QAElement.label(font: view.font,
                                    maxLines: view.numberOfLines,
                                    text: view.text ?? "",
-                                   minimumScaleFactor: view.minimumScaleFactor,
+                                   textColor: view.textColor,
                                    base: base)
         } else if let view = view as? UIButton {
             let font = view.titleLabel?.font
