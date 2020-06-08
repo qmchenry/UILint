@@ -7,18 +7,18 @@
 
 import UIKit
 
-struct QAFinding: CustomDebugStringConvertible {
+public struct QAFinding: CustomDebugStringConvertible {
     let message: String
     let severity: QAFindingSeverity
     let screenshot: UIImage?
     let element: QAElement
 
-    var debugDescription: String {
+    public var debugDescription: String {
         "Finding (\(element.base.className)): [\(severity)] \(message)"
     }
 }
 
-enum QAFindingSeverity: String {
+public enum QAFindingSeverity: String {
     case warning
     case error
 

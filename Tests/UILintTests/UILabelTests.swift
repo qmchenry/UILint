@@ -140,13 +140,13 @@ class UILabelTests: XCTestCase {
             element.isLabelOffscreen(labelFrame: CGRect(origin: origin, size: size), windowSize: windowSize)
         }
         XCTAssertFalse(isOffscreen(element: element, origin: .zero))
-        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 121, y: 0))
-        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: -1, y: 0))
-        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 0, y: -1))
-        XCTAssertFalse(isOffscreen(element: element, origin: CGPoint(x: 120, y: 430))
-        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 120, y: 431))
-        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 121, y: 430))
-        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 121, y: 431))
+        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 121, y: 0)))
+        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: -1, y: 0)))
+        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 0, y: -1)))
+        XCTAssertFalse(isOffscreen(element: element, origin: CGPoint(x: 120, y: 430)))
+        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 120, y: 431)))
+        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 121, y: 430)))
+        XCTAssertTrue(isOffscreen(element: element, origin: CGPoint(x: 121, y: 431)))
     }
 
 }

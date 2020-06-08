@@ -7,14 +7,14 @@
 
 import UIKit
 
-enum QAElement: Comparable {
+public enum QAElement: Comparable {
 
     case label(font: UIFont, maxLines: Int, text: String, textColor: UIColor, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, base: Base)
     case image(image: UIImage?, imageAccessibilityLabel: String?, base: Base)
     case other(base: Base)
 
-    struct Base {
+    public struct Base {
         let className: String
         let windowFrame: CGRect?
         let wantsTouches: Bool // like a button
@@ -67,29 +67,9 @@ enum QAElement: Comparable {
             break
         }
 
-        // Tappability check
-        if base.wantsTouches, let windowFrame = base.windowFrame {
-            // Overlapping tap consumers
-            let overlapping = elements.filter { $0.base.depth > base.depth && $0.base.consumesTouches }
-            overlapping.forEach { element in
-                if overlaps(element) {
-                    let unionBounds = windowFrame.union(element.base.windowFrame!)
-                    let cropped = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
-                    let message = "Tappable view \(base.className) is obscured by \(element.base.className)"
-                    let finding = QAFinding(message: message, severity: .error,
-                                            screenshot: cropped, element: self)
-                    results.append(finding)
-                }
-            }
-
-            // Minimum tappable size
-            if windowFrame.size.height < 44 || windowFrame.size.width < 44 {
-                let cropped = screenshot?.crop(to: windowFrame, viewSize: screenshot!.size)
-                let message = "Provide ample touch targets for interactive elements. \(base.className) width/height is "
-                              + "less than 44pt (\(windowFrame.width),\(windowFrame.height))"
-                let finding = QAFinding(message: message, severity: .error, screenshot: cropped, element: self)
-                results.append(finding)
-            }
+        allChecks.forEach { check in
+            results += check.init()
+                .findings(forElement: self, elements: elements, windowSize: windowSize, screenshot: screenshot)
         }
 
         return results
@@ -126,11 +106,11 @@ enum QAElement: Comparable {
         }
     }
 
-    static func < (lhs: QAElement, rhs: QAElement) -> Bool {
+    public static func < (lhs: QAElement, rhs: QAElement) -> Bool {
         return lhs.sortOrder < rhs.sortOrder
     }
 
-    static func == (lhs: QAElement, rhs: QAElement) -> Bool {
+    public static func == (lhs: QAElement, rhs: QAElement) -> Bool {
         return lhs.sortOrder == rhs.sortOrder
     }
 
