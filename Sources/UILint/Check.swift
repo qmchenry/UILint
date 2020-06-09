@@ -7,17 +7,17 @@
 
 import UIKit
 
-public protocol QACheck {
+public protocol Check {
     init()
     var description: String { get }
-    func findings(forElement element: QAElement,
-                  elements: [QAElement],
+    func findings(forElement element: Element,
+                  elements: [Element],
                   windowSize: CGSize,
-                  screenshot: UIImage?) -> [QAFinding]
+                  screenshot: UIImage?) -> [Finding]
     func cropped(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage?
 }
 
-public let allChecks: [QACheck.Type] = [
+public let allChecks: [Check.Type] = [
     LabelOffscreen.self,
     LabelOverlap.self,
     LabelTruncation.self,
@@ -27,7 +27,7 @@ public let allChecks: [QACheck.Type] = [
     OverlappingTouchBlock.self
 ]
 
-extension QACheck {
+extension Check {
 
     public func cropped(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage? {
         guard let screenshot = screenshot, let frame = frame else { return nil }

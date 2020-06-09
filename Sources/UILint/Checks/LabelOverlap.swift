@@ -7,16 +7,16 @@
 
 import UIKit
 
-public struct LabelOverlap: QACheck {
+public struct LabelOverlap: Check {
     public let description = "Labels overlap."
 
-    public func findings(forElement element: QAElement,
-                         elements: [QAElement],
+    public func findings(forElement element: Element,
+                         elements: [Element],
                          windowSize: CGSize,
-                         screenshot: UIImage?) -> [QAFinding] {
+                         screenshot: UIImage?) -> [Finding] {
         guard element.isLabel else { return [] }
         let findings = elements.filter { $0.isLabel && $0.depth > element.depth }
-            .compactMap { compareElement -> QAFinding? in
+            .compactMap { compareElement -> Finding? in
             // considering only depths > self's depth prevents duplication of findings as they both
             // overlap each other and also checking against self
             if element.overlaps(compareElement) {
@@ -24,7 +24,7 @@ public struct LabelOverlap: QACheck {
                 let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
                 let message = "\(description)\n\(compareElement.base.className)[\(compareElement.depth)] overlaps "
                     + "\(element.base.className)[\(element.depth)] "
-                let finding = QAFinding(message: message, severity: .warning,
+                let finding = Finding(message: message, severity: .warning,
                                         screenshot: croppedScreenshot, element: element)
                 return finding
             }

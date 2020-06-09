@@ -8,10 +8,10 @@
 import PDFKit
 import UIKit
 
-class QAReport {
+class Report {
 
-    let elements: [QAElement]
-    let findings: [QAFinding]
+    let elements: [Element]
+    let findings: [Finding]
     let screenshot: UIImage?
 
     let padding = CGFloat(10)
@@ -19,7 +19,7 @@ class QAReport {
 
     var currentY = CGFloat(0)
 
-    public init(elements: [QAElement], findings: [QAFinding], screenshot: UIImage?) {
+    public init(elements: [Element], findings: [Finding], screenshot: UIImage?) {
         self.elements = elements
         self.findings = findings
         self.screenshot = screenshot
@@ -147,7 +147,7 @@ class QAReport {
 
 }
 
-extension QAReport {
+extension Report {
 
     func newPage() {
         UIGraphicsBeginPDFPage()
@@ -226,7 +226,7 @@ extension QAReport {
         return CGSize(width: 2 * padding + textWidth, height: height)
     }
 
-    @discardableResult func draw(_ finding: QAFinding, draw performDraw: Bool = true) -> CGFloat {
+    @discardableResult func draw(_ finding: Finding, draw performDraw: Bool = true) -> CGFloat {
         let severityWidth = CGFloat(75)
         let severityHeight = CGFloat(40)
         let remainingWidth = pageSize.width - 4 * padding - severityWidth
@@ -255,7 +255,7 @@ extension QAReport {
         return rowHeight
      }
 
-    @discardableResult func draw(_ element: QAElement, draw performDraw: Bool = true) -> CGFloat {
+    @discardableResult func draw(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
         var xPosition = padding
         switch element {
         case .label(let font, let maxLines, let text, let textColor, let base):

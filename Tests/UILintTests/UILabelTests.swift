@@ -15,7 +15,7 @@ class UILabelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = UIViewController()
-        QAConfig.shared.reset()
+        UILintConfig.shared.reset()
     }
 
     func testUILabelTruncationZeroFrame() {
@@ -140,7 +140,7 @@ class UILabelTests: XCTestCase {
         // need to find a way to sneak windowSize into QAElement.Base
         func isOffscreen(origin: CGPoint) -> Bool {
             let view = UILabel(frame: CGRect(origin: origin, size: size))
-            let element = QAElement(view: view, depth: 0)!
+            let element = Element(view: view, depth: 0)!
             return element.isLabelOffscreen(windowSize: windowSize)
         }
         XCTAssertFalse(isOffscreen(origin: .zero))

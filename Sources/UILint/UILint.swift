@@ -10,7 +10,7 @@ import UIKit
 
 public struct UILint {
 
-    let elements: [QAElement]
+    let elements: [Element]
     let windowSize: CGSize
     let screenshot: UIImage?
 
@@ -25,8 +25,8 @@ public struct UILint {
         screenshot = grandparent.makeSnapshot()
         windowSize = screenshot?.size ?? .zero
 
-        func recurse(_ view: UIView) -> [QAElement] {
-            let viewOutput = [QAElement(view: view, depth: currentDepth)].compactMap { $0 }
+        func recurse(_ view: UIView) -> [Element] {
+            let viewOutput = [Element(view: view, depth: currentDepth)].compactMap { $0 }
             currentDepth += 1
             return view.allSubviews.compactMap { recurse($0) }.reduce(viewOutput, +)
         }
@@ -34,12 +34,12 @@ public struct UILint {
         elements = recurse(grandparent)
     }
 
-    var findings: [QAFinding] {
+    var findings: [Finding] {
         elements.flatMap { $0.findings(elements: elements, windowSize: windowSize, screenshot: screenshot) }
     }
 
     public func makePDF() -> Data {
-        QAReport(elements: elements, findings: findings, screenshot: screenshot).makePDF()
+        Report(elements: elements, findings: findings, screenshot: screenshot).makePDF()
     }
 
     static weak var window: UIWindow?

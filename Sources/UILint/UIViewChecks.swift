@@ -7,10 +7,10 @@
 
 import UIKit
 
-extension QAElement {
+extension Element {
 
     // Returns true if an element above the
-    func isTappingBlocked(elements: [QAElement]) -> Bool {
+    func isTappingBlocked(elements: [Element]) -> Bool {
 //        guard base.tappable else { return false }
         return false
     }

@@ -7,15 +7,15 @@
 
 import UIKit
 
-extension QAElement {
+extension Element {
 
     var labelText: String? {
-        guard case let QAElement.label(_, _, text, _, _) = self else { return nil }
+        guard case let Element.label(_, _, text, _, _) = self else { return nil }
         return text
     }
 
     func isLabelTruncated() -> Bool {
-        guard case let QAElement.label(font, maxLines, text, _, base) = self,
+        guard case let Element.label(font, maxLines, text, _, base) = self,
             let frame = base.windowFrame else { return false }
         guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
@@ -23,7 +23,7 @@ extension QAElement {
     }
 
     func isLabelClippedVertically() -> Bool {
-        guard case let QAElement.label(_, _, text, _, base) = self,
+        guard case let Element.label(_, _, text, _, base) = self,
             let frame = base.windowFrame else { return false }
         guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
@@ -31,7 +31,7 @@ extension QAElement {
     }
 
     func isLabelOffscreen(windowSize: CGSize) -> Bool {
-        guard case let QAElement.label(_, _, _, _, base) = self,
+        guard case let Element.label(_, _, _, _, base) = self,
             let frame = base.windowFrame else { return false }
         let windowRect = CGRect(origin: .zero, size: windowSize)
         return windowRect.union(frame) != windowRect
@@ -44,7 +44,7 @@ extension QAElement {
     }
 
     func labelSize() -> CGSize {
-        guard case let QAElement.label(font, _, text, _, base) = self,
+        guard case let Element.label(font, _, text, _, base) = self,
             let frame = base.windowFrame else { return .zero }
         return (text as NSString).boundingRect(with: CGSize(width: frame.size.width, height: .greatestFiniteMagnitude),
             options: .usesLineFragmentOrigin,

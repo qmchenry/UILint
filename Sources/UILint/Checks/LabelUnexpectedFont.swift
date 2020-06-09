@@ -7,21 +7,21 @@
 
 import UIKit
 
-public struct LabelUnexpectedFont: QACheck {
+public struct LabelUnexpectedFont: Check {
     public let description = "Label uses unexpected font."
 
-    public func findings(forElement element: QAElement,
-                         elements: [QAElement],
+    public func findings(forElement element: Element,
+                         elements: [Element],
                          windowSize: CGSize,
-                         screenshot: UIImage?) -> [QAFinding] {
-        guard case let QAElement.label(font, _, _, _, _) = element else { return [] }
-        guard !QAConfig.shared.expectedFontNames.isEmpty else { return [] }
-        guard !QAConfig.shared.expectedFontNames.contains(font.fontName) else { return [] }
+                         screenshot: UIImage?) -> [Finding] {
+        guard case let Element.label(font, _, _, _, _) = element else { return [] }
+        guard !UILintConfig.shared.expectedFontNames.isEmpty else { return [] }
+        guard !UILintConfig.shared.expectedFontNames.contains(font.fontName) else { return [] }
 
         let message = "\(description)\n\(element.base.className) font name is '\(font.fontName)'"
         let croppedScreenshot = cropped(screenshot: screenshot, toWindowFrame: element.base.windowFrame)
 
-        let finding = QAFinding(message: message, severity: .error,
+        let finding = Finding(message: message, severity: .error,
                                 screenshot: croppedScreenshot, element: element)
         return [finding]
     }

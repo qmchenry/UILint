@@ -15,7 +15,7 @@ final class GlobalConfigTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = UIViewController()
-        QAConfig.shared.reset()
+        UILintConfig.shared.reset()
     }
 
     func testExcludedChecks() {
@@ -25,7 +25,7 @@ final class GlobalConfigTests: XCTestCase {
         sut.view.addSubview(label)
         let lint = UILint(view: sut.view)
 
-        QAConfig.shared.excludedChecks.append(LabelTruncation.self)
+        UILintConfig.shared.excludedChecks.append(LabelTruncation.self)
         let findings = lint!.findings
         // sut without exclusions would contain 2 findings, LabelTruncation & LabelVerticalClipping
         XCTAssertEqual(findings.count, 1)
@@ -46,7 +46,7 @@ final class GlobalConfigTests: XCTestCase {
         sut.view.addSubview(label2)
         let lint = UILint(view: sut.view)
 
-        QAConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
+        UILintConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertTrue(findings.contains { $0.message.hasPrefix(LabelUnexpectedFont().description) })
@@ -66,11 +66,10 @@ final class GlobalConfigTests: XCTestCase {
         sut.view.addSubview(label2)
         let lint = UILint(view: sut.view)
 
-        QAConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
-        QAConfig.shared.expectedFontNames.append("AvenirNext-Bold")
+        UILintConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
+        UILintConfig.shared.expectedFontNames.append("AvenirNext-Bold")
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
-
 
 }

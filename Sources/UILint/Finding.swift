@@ -7,11 +7,11 @@
 
 import UIKit
 
-public struct QAFinding: CustomDebugStringConvertible {
+public struct Finding: CustomDebugStringConvertible {
     let message: String
     let severity: QAFindingSeverity
     let screenshot: UIImage?
-    let element: QAElement
+    let element: Element
 
     public var debugDescription: String {
         "Finding (\(element.base.className)): [\(severity)] \(message)"

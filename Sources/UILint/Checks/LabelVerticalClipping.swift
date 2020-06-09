@@ -7,20 +7,20 @@
 
 import UIKit
 
-public struct LabelVerticalClipping: QACheck {
+public struct LabelVerticalClipping: Check {
     public let description = "Label is clipped vertically."
 
-    public func findings(forElement element: QAElement,
-                         elements: [QAElement],
+    public func findings(forElement element: Element,
+                         elements: [Element],
                          windowSize: CGSize,
-                         screenshot: UIImage?) -> [QAFinding] {
+                         screenshot: UIImage?) -> [Finding] {
         guard element.isLabelClippedVertically() else { return [] }
         // todo handle auto font scaling
 
         let message = "\(description)\n\(element.base.className) full text is '\(element.labelText ?? "")' "
         let croppedScreenshot = cropped(screenshot: screenshot, toWindowFrame: element.base.windowFrame)
 
-        let finding = QAFinding(message: message, severity: .error,
+        let finding = Finding(message: message, severity: .error,
                                 screenshot: croppedScreenshot, element: element)
         return [finding]
     }

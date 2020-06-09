@@ -7,7 +7,7 @@
 
 import UIKit
 
-public enum QAElement: Comparable {
+public enum Element: Comparable {
 
     case label(font: UIFont, maxLines: Int, text: String, textColor: UIColor, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, base: Base)
@@ -58,10 +58,10 @@ public enum QAElement: Comparable {
 
     var isLabel: Bool { sortOrder == 100 }
 
-    func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
-        var results = [QAFinding]()
+    func findings(elements: [Element], windowSize: CGSize, screenshot: UIImage?) -> [Finding] {
+        var results = [Finding]()
         let enabledChecks = allChecks.filter { check in
-            !QAConfig.shared.excludedChecks.contains { $0 == check }
+            !UILintConfig.shared.excludedChecks.contains { $0 == check }
         }
         enabledChecks.forEach { check in
             results += check.init()
@@ -70,7 +70,7 @@ public enum QAElement: Comparable {
         return results
     }
 
-    func overlaps(_ element: QAElement) -> Bool {
+    func overlaps(_ element: Element) -> Bool {
         guard let windowFrame = base.windowFrame, let overlapWindowFrame = element.base.windowFrame else {
             return false
         }
@@ -80,32 +80,32 @@ public enum QAElement: Comparable {
     init?(view: UIView, depth: Int) {
         let base = Base(view, depth: depth)
         if let view = view as? UILabel {
-            self = QAElement.label(font: view.font,
+            self = Element.label(font: view.font,
                                    maxLines: view.numberOfLines,
                                    text: view.text ?? "",
                                    textColor: view.textColor,
                                    base: base)
         } else if let view = view as? UIButton {
             let font = view.titleLabel?.font
-            self = QAElement.button(fontName: font?.fontName,
+            self = Element.button(fontName: font?.fontName,
                                     fontSize: font?.pointSize,
                                     title: view.titleLabel?.text,
                                     hasImage: view.imageView?.image != nil,
                                     base: base)
         } else if let view = view as? UIImageView {
-            self = QAElement.image(image: view.image,
+            self = Element.image(image: view.image,
                                    imageAccessibilityLabel: view.image?.accessibilityLabel,
                                    base: base)
         } else {
-            self = QAElement.other(base: base)
+            self = Element.other(base: base)
         }
     }
 
-    public static func < (lhs: QAElement, rhs: QAElement) -> Bool {
+    public static func < (lhs: Element, rhs: Element) -> Bool {
         return lhs.sortOrder < rhs.sortOrder
     }
 
-    public static func == (lhs: QAElement, rhs: QAElement) -> Bool {
+    public static func == (lhs: Element, rhs: Element) -> Bool {
         return lhs.sortOrder == rhs.sortOrder
     }
 
