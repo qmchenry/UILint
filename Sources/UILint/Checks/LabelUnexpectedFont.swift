@@ -15,8 +15,8 @@ public struct LabelUnexpectedFont: QACheck {
                          windowSize: CGSize,
                          screenshot: UIImage?) -> [QAFinding] {
         guard case let QAElement.label(font, _, _, _, _) = element else { return [] }
-        guard !QAConfig.expectedFontNames.isEmpty,
-            !QAConfig.expectedFontNames.contains(font.fontName) else { return [] }
+        guard !QAConfig.shared.expectedFontNames.isEmpty else { return [] }
+        guard !QAConfig.shared.expectedFontNames.contains(font.fontName) else { return [] }
 
         let message = "\(description)\n\(element.base.className) font name is '\(font.fontName)'"
         let croppedScreenshot = cropped(screenshot: screenshot, toWindowFrame: element.base.windowFrame)

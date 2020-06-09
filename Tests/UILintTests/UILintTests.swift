@@ -8,6 +8,7 @@ final class UILintTests: XCTestCase {
     override func setUp() {
         super.setUp()
         sut = UIViewController()
+        QAConfig.shared.reset()
     }
 
     func testDepth() {

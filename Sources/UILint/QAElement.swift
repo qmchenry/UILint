@@ -61,7 +61,7 @@ public enum QAElement: Comparable {
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
         let enabledChecks = allChecks.filter { check in
-            !QAConfig.excludedChecks.contains { $0 == check }
+            !QAConfig.shared.excludedChecks.contains { $0 == check }
         }
         enabledChecks.forEach { check in
             results += check.init()

@@ -8,7 +8,16 @@
 import Foundation
 
 public struct QAConfig {
-    // If not empty, findings will be issued when fonts are discovered that are not in this list
-    public static var expectedFontNames = [String]()
-    public static var excludedChecks = [QACheck.Type]()
+    public static var shared = QAConfig()
+
+    /// If not empty, findings will be issued when fonts are discovered that are not in this list
+    public var expectedFontNames = [String]()
+
+    /// If a QACheck is included in this array, that check will be skipped when UILint is run
+    public var excludedChecks = [QACheck.Type]()
+
+    public func reset() {
+        Self.shared.expectedFontNames = []
+        Self.shared.excludedChecks = []
+    }
 }
