@@ -18,7 +18,10 @@ public protocol QACheck {
 }
 
 public let allChecks: [QACheck.Type] = [
+    LabelOffscreen.self,
+    LabelOverlap.self,
     LabelTruncation.self,
+    LabelUnexpectedFont.self,
     LabelVerticalClipping.self,
     MinimumTapSizeCheck.self,
     OverlappingTouchBlockCheck.self

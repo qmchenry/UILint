@@ -60,18 +60,10 @@ public enum QAElement: Comparable {
 
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
-        switch self {
-        case .label:
-            results += labelChecks(windowSize: windowSize, screenshot: screenshot, elements: elements)
-        default:
-            break
-        }
-
         allChecks.forEach { check in
             results += check.init()
                 .findings(forElement: self, elements: elements, windowSize: windowSize, screenshot: screenshot)
         }
-
         return results
     }
 
