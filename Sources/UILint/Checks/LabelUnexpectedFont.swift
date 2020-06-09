@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct LabelUnexpectedFont: QACheck {
+public struct LabelUnexpectedFont: QACheck {
     public let description = "Label uses unexpected font."
 
     public func findings(forElement element: QAElement,

@@ -23,7 +23,7 @@ class TouchSizeTests: XCTestCase {
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssert(findings[0].message.hasPrefix(MinimumTapSizeCheck().description))
+        XCTAssert(findings[0].message.hasPrefix(MinimumTapSize().description))
         XCTAssertEqual(findings[0].severity, .error)
     }
 
@@ -33,7 +33,7 @@ class TouchSizeTests: XCTestCase {
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssert(findings[0].message.hasPrefix(MinimumTapSizeCheck().description))
+        XCTAssert(findings[0].message.hasPrefix(MinimumTapSize().description))
         XCTAssertEqual(findings[0].severity, .error)
     }
 
@@ -43,7 +43,7 @@ class TouchSizeTests: XCTestCase {
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssert(findings[0].message.hasPrefix(MinimumTapSizeCheck().description))
+        XCTAssert(findings[0].message.hasPrefix(MinimumTapSize().description))
         XCTAssertEqual(findings[0].severity, .error)
     }
 
@@ -53,7 +53,7 @@ class TouchSizeTests: XCTestCase {
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssert(findings[0].message.hasPrefix(MinimumTapSizeCheck().description))
+        XCTAssert(findings[0].message.hasPrefix(MinimumTapSize().description))
         XCTAssertEqual(findings[0].severity, .error)
     }
 
@@ -74,7 +74,7 @@ class TouchSizeTests: XCTestCase {
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssert(findings[0].message.hasPrefix(MinimumTapSizeCheck().description))
+        XCTAssert(findings[0].message.hasPrefix(MinimumTapSize().description))
         XCTAssertEqual(findings[0].severity, .error)
     }
 
@@ -85,7 +85,7 @@ class TouchSizeTests: XCTestCase {
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssert(findings[0].message.hasPrefix(MinimumTapSizeCheck().description))
+        XCTAssert(findings[0].message.hasPrefix(MinimumTapSize().description))
         XCTAssertEqual(findings[0].severity, .error)
     }
 

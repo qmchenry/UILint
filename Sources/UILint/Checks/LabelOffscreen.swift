@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct LabelOffscreen: QACheck {
+public struct LabelOffscreen: QACheck {
     public let description = "Label is offscreen."
 
     public func findings(forElement element: QAElement,

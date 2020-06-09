@@ -60,7 +60,10 @@ public enum QAElement: Comparable {
 
     func findings(elements: [QAElement], windowSize: CGSize, screenshot: UIImage?) -> [QAFinding] {
         var results = [QAFinding]()
-        allChecks.forEach { check in
+        let enabledChecks = allChecks.filter { check in
+            !QAConfig.excludedChecks.contains { $0 == check }
+        }
+        enabledChecks.forEach { check in
             results += check.init()
                 .findings(forElement: self, elements: elements, windowSize: windowSize, screenshot: screenshot)
         }

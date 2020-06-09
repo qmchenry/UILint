@@ -23,8 +23,8 @@ public let allChecks: [QACheck.Type] = [
     LabelTruncation.self,
     LabelUnexpectedFont.self,
     LabelVerticalClipping.self,
-    MinimumTapSizeCheck.self,
-    OverlappingTouchBlockCheck.self
+    MinimumTapSize.self,
+    OverlappingTouchBlock.self
 ]
 
 extension QACheck {

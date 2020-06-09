@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct MinimumTapSizeCheck: QACheck {
+public struct MinimumTapSize: QACheck {
     public let description = "Provide ample touch targets for interactive elements."
 
     public func findings(forElement element: QAElement,

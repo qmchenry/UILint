@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct LabelOverlap: QACheck {
+public struct LabelOverlap: QACheck {
     public let description = "Labels overlap."
 
     public func findings(forElement element: QAElement,
@@ -22,7 +22,7 @@ struct LabelOverlap: QACheck {
             if element.overlaps(compareElement) {
                 let unionBounds = element.base.windowFrame!.union(compareElement.base.windowFrame!)
                 let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
-                let message = "\(description)\n\(compareElement.base.className)[\(compareElement.depth)] overlaps"
+                let message = "\(description)\n\(compareElement.base.className)[\(compareElement.depth)] overlaps "
                     + "\(element.base.className)[\(element.depth)] "
                 let finding = QAFinding(message: message, severity: .warning,
                                         screenshot: croppedScreenshot, element: element)

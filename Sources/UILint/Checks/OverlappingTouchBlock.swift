@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct OverlappingTouchBlockCheck: QACheck {
+public struct OverlappingTouchBlock: QACheck {
     public let description = "Touches to the target view may be blocked by another view."
 
     public func findings(forElement element: QAElement,
