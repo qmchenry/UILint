@@ -13,7 +13,7 @@ public protocol Check {
     func findings(forElement element: Element,
                   elements: [Element],
                   details: EnvironmentDetails) -> [Finding]
-    func cropped(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage?
+    func crop(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage?
 }
 
 public let allChecks: [Check.Type] = [
@@ -29,7 +29,7 @@ public let allChecks: [Check.Type] = [
 
 extension Check {
 
-    public func cropped(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage? {
+    public func crop(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage? {
         guard let screenshot = screenshot, let frame = frame else { return nil }
         return screenshot.crop(to: frame, viewSize: screenshot.size)
     }

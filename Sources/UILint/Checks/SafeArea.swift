@@ -17,10 +17,8 @@ public struct SafeArea: Check {
 
         let message = "\(description)\n\(element.base.className) [\(windowFrame)] extends into safe area "
             + "[\(details.safeAreaRect)]"
-        let croppedScreenshot = cropped(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
-
-        let finding = Finding(message: message, severity: .error,
-                                screenshot: croppedScreenshot, element: element)
+        let cropped = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
+        let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
         return [finding]
     }
 

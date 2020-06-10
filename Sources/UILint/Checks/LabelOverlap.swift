@@ -18,11 +18,10 @@ public struct LabelOverlap: Check {
             // overlap each other and also checking against self
             if element.overlaps(compareElement) {
                 let unionBounds = element.base.windowFrame!.union(compareElement.base.windowFrame!)
-                let croppedScreenshot = details.screenshot?.crop(to: unionBounds, viewSize: details.screenshot!.size)
+                let cropped = details.screenshot?.crop(to: unionBounds, viewSize: details.screenshot!.size)
                 let message = "\(description)\n\(compareElement.base.className)[\(compareElement.depth)] overlaps "
                     + "\(element.base.className)[\(element.depth)] "
-                let finding = Finding(message: message, severity: .warning,
-                                        screenshot: croppedScreenshot, element: element)
+                let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
                 return finding
             }
             return nil

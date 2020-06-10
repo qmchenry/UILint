@@ -16,10 +16,8 @@ public struct LabelUnexpectedFont: Check {
         guard !UILintConfig.shared.expectedFontNames.contains(font.fontName) else { return [] }
 
         let message = "\(description)\n\(element.base.className) font name is '\(font.fontName)'"
-        let croppedScreenshot = cropped(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
-
-        let finding = Finding(message: message, severity: .error,
-                                screenshot: croppedScreenshot, element: element)
+        let cropped = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
+        let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
         return [finding]
     }
 
