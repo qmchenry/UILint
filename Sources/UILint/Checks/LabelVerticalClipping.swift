@@ -15,7 +15,7 @@ public struct LabelVerticalClipping: Check {
         // todo handle auto font scaling
 
         let message = "\(description)\n\(element.base.className) full text is '\(element.labelText ?? "")' "
-        let crcroppedop = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
+        let cropped = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
         let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
         return [finding]
     }
