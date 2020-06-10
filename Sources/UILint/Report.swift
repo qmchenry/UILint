@@ -243,14 +243,21 @@ extension Report {
                                             rect: CGRect(x: xPosition, y: currentY, width: severityWidth, height: 40))
         }
         xPosition += severityWidth + padding
-        let size0 = draw(finding.message, attributes: body, xPosition: xPosition, width: messageWidth,
+        let size0 = draw(finding.description, attributes: body, xPosition: xPosition, width: messageWidth,
                          updateHeight: false, draw: performDraw)
+        let messageX = xPosition
         xPosition += messageWidth + padding
         let size1 = draw(finding.screenshot, xPosition: xPosition, width: screenshotWidth,
                          updateHeight: false, draw: performDraw)
-        let rowHeight = max(severityHeight, size0.height, size1.height)
         if performDraw {
-            currentY += rowHeight + padding
+            currentY += size0.height + padding / 2
+        }
+        let size2 = draw(finding.explanation, attributes: detail, xPosition: messageX, width: messageWidth,
+                         updateHeight: false, draw: performDraw)
+
+        let rowHeight = max(severityHeight, size0.height + size2.height + padding, size1.height)
+        if performDraw {
+            currentY += rowHeight - size0.height
         }
         return rowHeight
      }

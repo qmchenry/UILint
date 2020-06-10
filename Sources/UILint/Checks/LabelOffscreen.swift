@@ -13,10 +13,11 @@ public struct LabelOffscreen: Check {
     public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
         guard element.isLabelOffscreen(windowSize: details.windowSize) else { return [] }
 
-        let message = "\(description)\n\(element.base.className) full text is '\(element.labelText ?? "")',"
+        let explanation = "\(element.base.className) full text is '\(element.labelText ?? "")',"
         + " labelFrame=\(element.base.windowFrame!) screenSize=\(details.windowSize)"
         let cropped = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
-        let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
+        let finding = Finding(description: description, explanation: explanation, severity: .error,
+                              screenshot: cropped, element: element)
         return [finding]
     }
 

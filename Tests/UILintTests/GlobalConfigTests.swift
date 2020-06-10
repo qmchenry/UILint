@@ -29,8 +29,8 @@ final class GlobalConfigTests: XCTestCase {
         let findings = lint!.findings
         // sut without exclusions would contain 2 findings, LabelTruncation & LabelVerticalClipping
         XCTAssertEqual(findings.count, 1)
-        XCTAssertFalse(findings.contains { $0.message.hasPrefix(LabelTruncation().description) })
-        XCTAssertTrue(findings.contains { $0.message.hasPrefix(LabelVerticalClipping().description) })
+        XCTAssertNotEqual(findings[0].description, LabelTruncation().description)
+        XCTAssertEqual(findings[0].description, LabelVerticalClipping().description)
     }
 
     func testExcludedFontNames() {
@@ -49,8 +49,8 @@ final class GlobalConfigTests: XCTestCase {
         UILintConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
-        XCTAssertTrue(findings.contains { $0.message.hasPrefix(LabelUnexpectedFont().description) })
-        XCTAssertTrue(findings.contains { $0.message.contains("AvenirNext-Bold") })
+        XCTAssertEqual(findings[0].description, LabelUnexpectedFont().description)
+        XCTAssertTrue(findings[0].explanation.contains("AvenirNext-Bold"))
     }
 
     func testExcludedFontNames2() {

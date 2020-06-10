@@ -15,9 +15,10 @@ public struct MinimumTapSize: Check {
         guard windowFrame.size.height < 44 || windowFrame.size.width < 44 else { return [] }
 
         let cropped = details.screenshot?.crop(to: windowFrame, viewSize: details.screenshot!.size)
-        let message = "\(description)\n\(element.base.className) width/height is "
+        let explanation = "\(element.base.className) width/height is "
                       + "less than 44pt (\(windowFrame.width),\(windowFrame.height))"
-        let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
+        let finding = Finding(description: description, explanation: explanation, severity: .error,
+                              screenshot: cropped, element: element)
         return [finding]
     }
 

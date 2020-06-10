@@ -28,7 +28,7 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        let tapFindings = findings.filter { $0.message.hasPrefix(OverlappingTouchBlock().description) }
+        let tapFindings = findings.filter { $0.description == OverlappingTouchBlock().description }
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
@@ -43,7 +43,7 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        let tapFindings = findings.filter { $0.message.hasPrefix(OverlappingTouchBlock().description) }
+        let tapFindings = findings.filter { $0.description == OverlappingTouchBlock().description }
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
@@ -114,7 +114,7 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        let tapFindings = findings.filter { $0.message.hasPrefix(OverlappingTouchBlock().description) }
+        let tapFindings = findings.filter { $0.description == OverlappingTouchBlock().description }
         XCTAssertEqual(tapFindings.count, 1)
         XCTAssertEqual(tapFindings[0].severity, .error)
     }
@@ -132,7 +132,7 @@ class TappabilityTests: XCTestCase {
         sut.view.addSubview(over)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        let tapFindings = findings.filter { $0.message.hasPrefix(OverlappingTouchBlock().description) }
+        let tapFindings = findings.filter { $0.description == OverlappingTouchBlock().description }
         XCTAssertEqual(tapFindings.count, 0)
     }
 

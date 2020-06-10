@@ -8,13 +8,14 @@
 import UIKit
 
 public struct Finding: CustomDebugStringConvertible {
-    let message: String
+    let description: String
+    let explanation: String
     let severity: QAFindingSeverity
     let screenshot: UIImage?
     let element: Element
 
     public var debugDescription: String {
-        "Finding (\(element.base.className)): [\(severity)] \(message)"
+        "Finding (\(element.base.className)): [\(severity)] \(description) \(explanation)"
     }
 }
 

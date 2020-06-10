@@ -14,9 +14,10 @@ public struct LabelTruncation: Check {
         guard element.isLabelTruncated() else { return [] }
         // todo handle auto font scaling
 
-        let message = "\(description)\n\(element.base.className) full text is '\(element.labelText ?? "")' "
+        let explanation = "\(element.base.className) full text is '\(element.labelText ?? "")' "
         let cropped = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
-        let finding = Finding(message: message, severity: .error, screenshot: cropped, element: element)
+        let finding = Finding(description: description, explanation: explanation, severity: .error,
+                              screenshot: cropped, element: element)
         return [finding]
     }
 
