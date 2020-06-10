@@ -10,16 +10,12 @@ import UIKit
 public struct LabelTruncation: Check {
     public let description = "Label text is truncated."
 
-    public func findings(forElement element: Element,
-                         elements: [Element],
-                         windowSize: CGSize,
-                         safeAreaRect: CGRect,
-                         screenshot: UIImage?) -> [Finding] {
+    public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
         guard element.isLabelTruncated() else { return [] }
         // todo handle auto font scaling
 
         let message = "\(description)\n\(element.base.className) full text is '\(element.labelText ?? "")' "
-        let croppedScreenshot = cropped(screenshot: screenshot, toWindowFrame: element.base.windowFrame)
+        let croppedScreenshot = cropped(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
 
         let finding = Finding(message: message, severity: .error,
                                 screenshot: croppedScreenshot, element: element)

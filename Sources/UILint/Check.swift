@@ -12,9 +12,7 @@ public protocol Check {
     var description: String { get }
     func findings(forElement element: Element,
                   elements: [Element],
-                  windowSize: CGSize,
-                  safeAreaRect: CGRect,
-                  screenshot: UIImage?) -> [Finding]
+                  details: EnvironmentDetails) -> [Finding]
     func cropped(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage?
 }
 

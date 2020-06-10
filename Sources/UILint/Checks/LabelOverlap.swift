@@ -10,11 +10,7 @@ import UIKit
 public struct LabelOverlap: Check {
     public let description = "Labels overlap."
 
-    public func findings(forElement element: Element,
-                         elements: [Element],
-                         windowSize: CGSize,
-                         safeAreaRect: CGRect,
-                         screenshot: UIImage?) -> [Finding] {
+    public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
         guard element.isLabel else { return [] }
         let findings = elements.filter { $0.isLabel && $0.depth > element.depth }
             .compactMap { compareElement -> Finding? in
@@ -22,7 +18,7 @@ public struct LabelOverlap: Check {
             // overlap each other and also checking against self
             if element.overlaps(compareElement) {
                 let unionBounds = element.base.windowFrame!.union(compareElement.base.windowFrame!)
-                let croppedScreenshot = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
+                let croppedScreenshot = details.screenshot?.crop(to: unionBounds, viewSize: details.screenshot!.size)
                 let message = "\(description)\n\(compareElement.base.className)[\(compareElement.depth)] overlaps "
                     + "\(element.base.className)[\(element.depth)] "
                 let finding = Finding(message: message, severity: .warning,

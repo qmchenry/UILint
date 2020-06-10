@@ -10,16 +10,12 @@ import UIKit
 public struct LabelOffscreen: Check {
     public let description = "Label is offscreen."
 
-    public func findings(forElement element: Element,
-                         elements: [Element],
-                         windowSize: CGSize,
-                         safeAreaRect: CGRect,
-                         screenshot: UIImage?) -> [Finding] {
-        guard element.isLabelOffscreen(windowSize: windowSize) else { return [] }
+    public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
+        guard element.isLabelOffscreen(windowSize: details.windowSize) else { return [] }
 
         let message = "\(description)\n\(element.base.className) full text is '\(element.labelText ?? "")',"
-        + " labelFrame=\(element.base.windowFrame!) screenSize=\(windowSize)"
-        let croppedScreenshot = cropped(screenshot: screenshot, toWindowFrame: element.base.windowFrame)
+        + " labelFrame=\(element.base.windowFrame!) screenSize=\(details.windowSize)"
+        let croppedScreenshot = cropped(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
 
         let finding = Finding(message: message, severity: .error,
                                 screenshot: croppedScreenshot, element: element)

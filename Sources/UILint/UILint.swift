@@ -11,9 +11,7 @@ import UIKit
 public struct UILint {
 
     let elements: [Element]
-    let windowSize: CGSize
-    let screenshot: UIImage?
-    let safeAreaRect: CGRect
+    let details: EnvironmentDetails
 
     public init?(view: UIView) {
         guard let grandparent = view.parentViewController()?.view else {
@@ -23,9 +21,10 @@ public struct UILint {
 
         var currentDepth = 0
 
-        screenshot = grandparent.makeSnapshot()
-        windowSize = screenshot?.size ?? .zero
-        safeAreaRect = grandparent.frame.inset(by: grandparent.safeAreaInsets)
+        let screenshot = grandparent.makeSnapshot()
+        details = EnvironmentDetails(windowSize: screenshot?.size ?? .zero,
+                                     screenshot: screenshot,
+                                     safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets))
 
         func recurse(_ view: UIView) -> [Element] {
             let viewOutput = [Element(view: view, depth: currentDepth)].compactMap { $0 }
@@ -38,13 +37,12 @@ public struct UILint {
 
     var findings: [Finding] {
         elements.flatMap {
-            $0.findings(elements: elements, windowSize: windowSize, safeAreaRect: safeAreaRect,
-                        screenshot: screenshot)
+            $0.findings(elements: elements, details: details)
         }
     }
 
     public func makePDF() -> Data {
-        Report(elements: elements, findings: findings, screenshot: screenshot).makePDF()
+        Report(elements: elements, findings: findings, screenshot: details.screenshot).makePDF()
     }
 
     static weak var window: UIWindow?
@@ -71,7 +69,6 @@ public struct UILint {
             .forEach { window.removeGestureRecognizer($0) }
         Self.window = nil
     }
-
 }
 
 final class UILintGestureRecognizer: UITapGestureRecognizer {
@@ -88,4 +85,10 @@ final class UILintGestureRecognizer: UITapGestureRecognizer {
     @objc private func callback() {
         action()
     }
+}
+
+public struct EnvironmentDetails {
+    let windowSize: CGSize
+    let screenshot: UIImage?
+    let safeAreaRect: CGRect
 }

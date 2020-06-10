@@ -10,11 +10,7 @@ import UIKit
 public struct OverlappingTouchBlock: Check {
     public let description = "Touches to the target view may be blocked by another view."
 
-    public func findings(forElement element: Element,
-                         elements: [Element],
-                         windowSize: CGSize,
-                         safeAreaRect: CGRect,
-                         screenshot: UIImage?) -> [Finding] {
+    public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
         guard element.base.wantsTouches, let windowFrame = element.base.windowFrame else { return [] }
 
         let overlapping: [Element] = elements.filter {
@@ -24,7 +20,7 @@ public struct OverlappingTouchBlock: Check {
         }
         let findings = overlapping.map { checkElement -> Finding in
             let unionBounds = windowFrame.union(checkElement.base.windowFrame!)
-            let cropped = screenshot?.crop(to: unionBounds, viewSize: screenshot!.size)
+            let cropped = details.screenshot?.crop(to: unionBounds, viewSize: details.screenshot!.size)
             let message = "\(description)\n\(element.base.className) is obscured by \(checkElement.base.className)"
             let finding = Finding(message: message, severity: .error,
                                     screenshot: cropped, element: element)
