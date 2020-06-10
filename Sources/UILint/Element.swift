@@ -57,15 +57,18 @@ public enum Element: Comparable {
     }
 
     var isLabel: Bool { sortOrder == 100 }
+    var isButton: Bool { sortOrder == 200 }
+    var isImage: Bool { sortOrder == 300 }
 
-    func findings(elements: [Element], windowSize: CGSize, screenshot: UIImage?) -> [Finding] {
+    func findings(elements: [Element], windowSize: CGSize, safeAreaRect: CGRect, screenshot: UIImage?) -> [Finding] {
         var results = [Finding]()
         let enabledChecks = allChecks.filter { check in
             !UILintConfig.shared.excludedChecks.contains { $0 == check }
         }
         enabledChecks.forEach { check in
             results += check.init()
-                .findings(forElement: self, elements: elements, windowSize: windowSize, screenshot: screenshot)
+                .findings(forElement: self, elements: elements, windowSize: windowSize,
+                          safeAreaRect: safeAreaRect, screenshot: screenshot)
         }
         return results
     }

@@ -13,6 +13,7 @@ public struct LabelTruncation: Check {
     public func findings(forElement element: Element,
                          elements: [Element],
                          windowSize: CGSize,
+                         safeAreaRect: CGRect,
                          screenshot: UIImage?) -> [Finding] {
         guard element.isLabelTruncated() else { return [] }
         // todo handle auto font scaling

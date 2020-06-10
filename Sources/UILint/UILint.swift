@@ -13,6 +13,7 @@ public struct UILint {
     let elements: [Element]
     let windowSize: CGSize
     let screenshot: UIImage?
+    let safeAreaRect: CGRect
 
     public init?(view: UIView) {
         guard let grandparent = view.parentViewController()?.view else {
@@ -24,6 +25,7 @@ public struct UILint {
 
         screenshot = grandparent.makeSnapshot()
         windowSize = screenshot?.size ?? .zero
+        safeAreaRect = grandparent.frame.inset(by: grandparent.safeAreaInsets)
 
         func recurse(_ view: UIView) -> [Element] {
             let viewOutput = [Element(view: view, depth: currentDepth)].compactMap { $0 }
@@ -35,7 +37,10 @@ public struct UILint {
     }
 
     var findings: [Finding] {
-        elements.flatMap { $0.findings(elements: elements, windowSize: windowSize, screenshot: screenshot) }
+        elements.flatMap {
+            $0.findings(elements: elements, windowSize: windowSize, safeAreaRect: safeAreaRect,
+                        screenshot: screenshot)
+        }
     }
 
     public func makePDF() -> Data {

@@ -13,6 +13,7 @@ public protocol Check {
     func findings(forElement element: Element,
                   elements: [Element],
                   windowSize: CGSize,
+                  safeAreaRect: CGRect,
                   screenshot: UIImage?) -> [Finding]
     func cropped(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage?
 }
@@ -24,7 +25,8 @@ public let allChecks: [Check.Type] = [
     LabelUnexpectedFont.self,
     LabelVerticalClipping.self,
     MinimumTapSize.self,
-    OverlappingTouchBlock.self
+    OverlappingTouchBlock.self,
+    SafeArea.self
 ]
 
 extension Check {

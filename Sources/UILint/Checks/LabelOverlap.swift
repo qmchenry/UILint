@@ -13,6 +13,7 @@ public struct LabelOverlap: Check {
     public func findings(forElement element: Element,
                          elements: [Element],
                          windowSize: CGSize,
+                         safeAreaRect: CGRect,
                          screenshot: UIImage?) -> [Finding] {
         guard element.isLabel else { return [] }
         let findings = elements.filter { $0.isLabel && $0.depth > element.depth }

@@ -13,6 +13,7 @@ public struct LabelOffscreen: Check {
     public func findings(forElement element: Element,
                          elements: [Element],
                          windowSize: CGSize,
+                         safeAreaRect: CGRect,
                          screenshot: UIImage?) -> [Finding] {
         guard element.isLabelOffscreen(windowSize: windowSize) else { return [] }
 
