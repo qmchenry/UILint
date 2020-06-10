@@ -21,7 +21,8 @@ public struct OverlappingTouchBlock: Check {
         let findings = overlapping.map { checkElement -> Finding in
             let unionBounds = windowFrame.union(checkElement.base.windowFrame!)
             let cropped = details.screenshot?.crop(to: unionBounds, viewSize: details.screenshot!.size)
-            let explanation = "\(element.base.className) is obscured by \(checkElement.base.className)"
+            let explanation = "\(element.base.className) [\(element.base.depth)] is obscured by "
+                + "\(checkElement.base.className) [\(checkElement.base.depth)]"
             let finding = Finding(description: description, explanation: explanation, severity: .error,
                                   screenshot: cropped, element: element)
             return finding

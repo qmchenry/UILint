@@ -266,15 +266,15 @@ extension Report {
         var xPosition = padding
         switch element {
         case .label(let font, let maxLines, let text, let textColor, let base):
-            let size0 = draw("Label: \(font.pointSize)pt", attributes: body, xPosition: xPosition, width: 120,
+            let size0 = draw("\(element.base.depth) Label: \(font.pointSize)pt", attributes: body,
+                             xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
+            xPosition += 140 + padding
+            let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 180,
                              updateHeight: false, draw: performDraw)
-            xPosition += 120 + padding
-            let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 200,
-                             updateHeight: false, draw: performDraw)
-            xPosition += 200 + padding
+            xPosition += 180 + padding
             let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
-            let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition, width: 100,
-                             updateHeight: false, draw: performDraw)
+            let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition,
+                             width: 100, updateHeight: false, draw: performDraw)
             xPosition += 100 + padding
             let size3 = draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
             let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
@@ -285,12 +285,12 @@ extension Report {
             let height = rowHeight + padding + sizeText.height
             return height
         case .image(let image, let imageAccessibilityLabel, let base):
-            let size0 = draw("\(base.className)", attributes: body, xPosition: xPosition, width: 120,
-                             updateHeight: false, draw: performDraw)
-            xPosition += 120 + padding
+            let size0 = draw("\(element.base.depth) \(base.className):", attributes: body,
+                             xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
+            xPosition += 140 + padding
             let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
-                             xPosition: xPosition, width: 200, updateHeight: false, draw: performDraw)
-            xPosition += 200 + padding
+                             xPosition: xPosition, width: 240, updateHeight: false, draw: performDraw)
+            xPosition += 240 + padding
             let size2 = draw(image, xPosition: xPosition, width: pageSize.width - xPosition - padding,
                              updateHeight: false, draw: performDraw)
             let rowHeight = max(size0.height, size1.height, size2.height) + padding

@@ -99,7 +99,7 @@ extension UIColor {
         } else {
             alpha = 1
         }
-        return String(format: "%02lX%02lX%02lX%02lX",
+        return String(format: "#%02lX%02lX%02lX%02lX",
                       lroundf(Float(components[0]) * 255),
                       lroundf(Float(components[1]) * 255),
                       lroundf(Float(components[2]) * 255),

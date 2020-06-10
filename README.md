@@ -1,5 +1,7 @@
 # UILint
 
+[![Build Status](https://app.bitrise.io/app/5571d1f22e8bc4dd/status.svg?token=iDAtzso4K447H1xEf55VoA&branch=master)](https://app.bitrise.io/app/5571d1f22e8bc4dd)
+
 The goal of this project is to ease the burden of making high quality user interfaces _just so_ both for developers and designers. Similar to a linter that monitors code for issues, UILint examines a UI at runtime to find potential issues.
 
 The MVP of UILInt will examine a UIKIt, SwiftUI, or hybrid scene, check for several high-yield potential UI issues, and be able to report these findings to the user through a PDF shared from the device.

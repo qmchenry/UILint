@@ -15,8 +15,8 @@ public struct SafeArea: Check {
         guard element.isLabel || element.isButton || element.isImage else { return [] }
         guard details.safeAreaRect.union(windowFrame) != details.safeAreaRect else { return [] }
 
-        let explanation = "\(element.base.className) [\(windowFrame)] extends into safe area "
-            + "[\(details.safeAreaRect)]"
+        let explanation = "\(element.base.className) [\(element.base.depth)] [\(windowFrame)] "
+            + "extends outside of safe area [\(details.safeAreaRect)]"
         let cropped = crop(screenshot: details.screenshot, toWindowFrame: element.base.windowFrame)
         let finding = Finding(description: description, explanation: explanation, severity: .error,
                               screenshot: cropped, element: element)
