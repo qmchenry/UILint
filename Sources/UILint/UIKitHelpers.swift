@@ -181,88 +181,35 @@ extension UIColor {
     }
 }
 
-// Cool color at pixel code from https://stackoverflow.com/questions/3284185/get-pixel-color-of-uiimage
-public extension UIImage {
-    func getPixelColor(_ point: CGPoint) -> UIColor? {
-        guard let cgImage = self.cgImage else {
-            return nil
+extension UIImage {
+    func getPixels(points: [CGPoint]) -> [UIColor] {
+        guard let cgImage = self.cgImage,
+            cgImage.bitsPerPixel == 32,
+            cgImage.bitsPerComponent == 8,
+            let imageData = cgImage.dataProvider?.data as Data?
+        else {
+            return []
         }
-        return cgImage.getPixelColor(point)
+        let size = cgImage.width * cgImage.height
+        let buffer = UnsafeMutableBufferPointer<UInt32>.allocate(capacity: size)
+        _ = imageData.copyBytes(to: buffer)
+        let indexes = points.map { point -> Int in
+            Int(point.x) + Int(point.y) * Int(cgImage.width)
+        }
+        guard indexes.filter({ $0 < 0 || $0 >= buffer.count }).isEmpty else { return [] }
+        let colors = indexes.map { index -> UIColor in
+            let pixel = buffer[index]
+            return UIColor(red: CGFloat(pixel & 255) / 255.0,
+                           green: CGFloat((pixel >> 8) & 255) / 255.0,
+                           blue: CGFloat((pixel >> 16) & 255) / 255.0,
+                           alpha: CGFloat((pixel >> 24) & 255) / 255.0)
+        }
+        return colors
     }
 }
 
-public extension CGBitmapInfo {
-    // See https://stackoverflow.com/a/60247648/1765629
-    enum ComponentLayout {
-        case alpha
-        case bgra
-        case abgr
-        case argb
-        case rgba
-        case bgr
-        case rgb
-
-        var count: Int {
-            switch self {
-            case .alpha: return 1
-            case .bgr, .rgb: return 3
-            default: return 4
-            }
-        }
-    }
-
-    var componentLayout: ComponentLayout? {
-        guard let alphaInfo = CGImageAlphaInfo(rawValue: rawValue & Self.alphaInfoMask.rawValue) else { return nil }
-        let isLittleEndian = contains(.byteOrder32Little)
-
-        if alphaInfo == .none {
-            return isLittleEndian ? .bgr : .rgb
-        }
-        let alphaIsFirst = alphaInfo == .premultipliedFirst || alphaInfo == .first || alphaInfo == .noneSkipFirst
-
-        if isLittleEndian {
-            return alphaIsFirst ? .bgra : .abgr
-        } else {
-            return alphaIsFirst ? .argb : .rgba
-        }
-    }
-
-    var isAlphaPremultiplied: Bool {
-        let alphaInfo = CGImageAlphaInfo(rawValue: rawValue & Self.alphaInfoMask.rawValue)
-        return alphaInfo == .premultipliedFirst || alphaInfo == .premultipliedLast
-    }
-}
-
-public extension CGImage {
-
-    func getPixelColor(_ point: CGPoint) -> UIColor? {
-        guard let pixelData = self.dataProvider?.data,
-            let layout = bitmapInfo.componentLayout,
-            let data = CFDataGetBytePtr(pixelData)
-            else { return nil }
-
-        let index = width * Int(point.y) + Int(point.x)
-        let numBytes = CFDataGetLength(pixelData)
-        let numComponents = layout.count
-        if numBytes != width * height * numComponents {
-            print("Unexpected size: \(numBytes) != \(width * height * numComponents) "
-                + " \(width)x\(height)x\(numComponents) -> \(Float(numBytes) / Float(width * height * numComponents))")
-            return nil
-        }
-        let isAlphaPremultiplied = bitmapInfo.isAlphaPremultiplied
-        switch numComponents {
-        case 1:
-            return UIColor(red: 0, green: 0, blue: 0, alpha: CGFloat(data[index])/255.0)
-        case 3:
-            let components = (0..<3).map { CGFloat((data[3 * index + $0])) / 255 }
-            return UIColor(components: components)
-        case 4:
-            let components = (0..<4).map { CGFloat((data[3 * index + $0])) / 255 }
-            let multiplier: CGFloat = isAlphaPremultiplied ? 1 / components[3] : 1
-            let multipliedComponents = components.map { $0 * multiplier }
-            return UIColor(components: multipliedComponents)
-        default:
-            return nil
-        }
+extension UIFont {
+    var isBold: Bool {
+        fontDescriptor.symbolicTraits.contains(.traitBold)
     }
 }

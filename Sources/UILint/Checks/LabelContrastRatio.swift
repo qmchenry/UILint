@@ -17,14 +17,25 @@ public struct LabelContrastRatio: Check {
     public let description = "Use strongly contrasting colors to improve readability."
 
     func backgroundColor(screenshot: UIImage) -> UIColor? {
+        // The exact corners occasionally returned unexpected colors, potentially due to antialiasing. Sampling a
+        // point in from the corners in x and y seems to solve this.
+        let xMin = min(1, screenshot.size.width)
+        let yMin = min(1, screenshot.size.height)
+        let xMax = min(screenshot.size.width - 2, 0)
+        let yMax = min(screenshot.size.height - 2, 0)
         let corners = [
-            CGPoint.zero,
-            CGPoint(x: screenshot.size.width, y: 0),
-            CGPoint(x: 0, y: screenshot.size.height),
-            CGPoint(x: screenshot.size.width, y: screenshot.size.height)
+            CGPoint(x: xMin, y: yMin),
+            CGPoint(x: xMax, y: yMin),
+            CGPoint(x: xMin, y: yMax),
+            CGPoint(x: xMax, y: yMax)
         ]
-        let colors = corners.compactMap { screenshot.getPixelColor($0) }
+        let colors = screenshot.getPixels(points: corners)
         return UIColor(colors: colors)
+    }
+
+    func isValid(contrastRatio: CGFloat, font: UIFont) -> Bool {
+        let boldOrLarge = font.pointSize >= 18 || font.isBold
+        return boldOrLarge && contrastRatio >= 3 || font.pointSize < 18 && contrastRatio >= 4.5
     }
 
     public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
@@ -35,13 +46,12 @@ public struct LabelContrastRatio: Check {
             else { return [] }
 
         let contrastRatio = textColor.contrastRatio(with: bgColor)
-        let boldOrLarge = font.pointSize >= 18 // or isBold
-        if boldOrLarge && contrastRatio >= 3 || font.pointSize < 18 && contrastRatio >= 4.5 {
+        if isValid(contrastRatio: contrastRatio, font: font) {
             return []
         }
 
-        let explanation = "\(element.base.className) [\(element.base.depth)] textColor: '\(textColor.hex)' + "
-            + " bgColor: \(bgColor) -> contrastRatio: \(contrastRatio)"
+        let explanation = "\(element.base.className) [\(element.base.depth)] textColor: \(textColor.hex)\n"
+            + "bgColor: \(bgColor.hex)\ncontrastRatio: \(String(format: "%.2f", contrastRatio))"
         let finding = Finding(description: description, explanation: explanation, severity: .error,
                               screenshot: cropped, element: element)
         return [finding]
