@@ -14,7 +14,7 @@ public struct UILint {
     let details: EnvironmentDetails
 
     public init?(view: UIView) {
-        guard let grandparent = view.parentViewController()?.view else {
+        guard let grandparentVC = view.parentViewController(), let grandparent = grandparentVC.view else {
             print("Unable to find parent view controller from view")
             return nil
         }
@@ -24,7 +24,8 @@ public struct UILint {
         let screenshot = grandparent.makeSnapshot()
         details = EnvironmentDetails(windowSize: screenshot?.size ?? .zero,
                                      screenshot: screenshot,
-                                     safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets))
+                                     safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets),
+                                     traitCollection: grandparentVC.traitCollection)
 
         func recurse(_ view: UIView, level: Int) -> [Element] {
             let viewOutput = [Element(view: view, depth: currentDepth, level: level)].compactMap { $0 }
@@ -42,7 +43,7 @@ public struct UILint {
     }
 
     public func makePDF() -> Data {
-        Report(elements: elements, findings: findings, screenshot: details.screenshot).makePDF()
+        Report(elements: elements, findings: findings, details: details).makePDF()
     }
 
     static weak var window: UIWindow?
@@ -91,4 +92,5 @@ public struct EnvironmentDetails {
     let windowSize: CGSize
     let screenshot: UIImage?
     let safeAreaRect: CGRect
+    let traitCollection: UITraitCollection
 }

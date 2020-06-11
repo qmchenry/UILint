@@ -12,42 +12,41 @@ class Report {
 
     let elements: [Element]
     let findings: [Finding]
-    let screenshot: UIImage?
+    let details: EnvironmentDetails
 
+    let pdfTitle = "UILint Report"
     let padding = CGFloat(10)
     let paddingLarge = CGFloat(20)
 
     var currentY = CGFloat(0)
+    var screenshot: UIImage? { details.screenshot }
 
-    public init(elements: [Element], findings: [Finding], screenshot: UIImage?) {
+    public init(elements: [Element], findings: [Finding], details: EnvironmentDetails ) {
         self.elements = elements
         self.findings = findings
-        self.screenshot = screenshot
+        self.details = details
     }
 
-    public func makePDF() -> Data {
-
-        let pdfTitle = "UILint Report"
-        let pdfMetadata = [
+    var pdfMetadata: [AnyHashable: Any] {
+        [
             kCGPDFContextCreator: "UILint",
             kCGPDFContextTitle: pdfTitle
         ]
+    }
 
+    public func makePDF() -> Data {
         let pdfData = NSMutableData()
         UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, pdfMetadata)
-
         newPage()
-
         draw(pdfTitle, attributes: title1)
+        drawSystemSummary()
         draw("Screenshot", attributes: title2, xPosition: padding)
         draw(screenshot)
 
         newPage("Findings")
-
         if findings.isEmpty {
             draw("No findings", attributes: body)
         }
-
         findings.forEach { finding in
             let height = draw(finding, draw: false)
             drawRule()
@@ -59,8 +58,6 @@ class Report {
         }
 
         newPage("Elements")
-        drawRule()
-
         elements.sorted().forEach { element in
             let height = draw(element, draw: false)
             if height > 0 {
@@ -74,7 +71,6 @@ class Report {
 
         newPage("View Hierarchy")
         currentY += 5
-
         elements.forEach { element in
             let height = draw(heirarchyElement: element, draw: false)
             if currentY + height + 5 > pageSize.height {
@@ -342,6 +338,20 @@ extension Report {
         color.set()
         UIRectFrame(CGRect(x: padding, y: currentY, width: pageSize.width - 2 * padding, height: height))
         currentY += height
+    }
+
+    func drawSystemSummary() {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH:mm:ss E MMM d, yyyy"
+        draw("Bundle ID: \(Bundle.main.bundleIdentifier ?? "")", attributes: body)
+        draw("Date: \(dateFormatter.string(from: Date()))", attributes: body)
+        draw("iOS: \(UIDevice.current.systemVersion)", attributes: body)
+        draw("Device: \(UIDevice.current.name)", attributes: body)
+        if #available(iOS 12.0, *) {
+            let mode = details.traitCollection.userInterfaceStyle == .light ? "Light mode" : "Dark mode"
+            draw("Mode: \(mode)", attributes: body)
+        }
+        currentY += padding
     }
 
 }
