@@ -20,15 +20,17 @@ public enum Element: Comparable {
         let wantsTouches: Bool // like a button
         let consumesTouches: Bool // opaque view that blocks
         let depth: Int
+        let level: Int
         let contentScaleFactor: CGFloat
         let contentMode: UIView.ContentMode
-        init(_ view: UIView, depth: Int) {
+        init(_ view: UIView, depth: Int, level: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
             let enabledGestureRecognizers = view.gestureRecognizers?.filter { $0.isEnabled }.count ?? 0
             wantsTouches = (view is UIControl) || enabledGestureRecognizers > 0
             consumesTouches = view.consumesTouches
             self.depth = depth
+            self.level = level
             contentScaleFactor = view.contentScaleFactor
             contentMode = view.contentMode
         }
@@ -79,8 +81,8 @@ public enum Element: Comparable {
         return windowFrame.intersects(overlapWindowFrame)
     }
 
-    init?(view: UIView, depth: Int) {
-        let base = Base(view, depth: depth)
+    init?(view: UIView, depth: Int, level: Int) {
+        let base = Base(view, depth: depth, level: level)
         if let view = view as? UILabel {
             self = Element.label(font: view.font,
                                    maxLines: view.numberOfLines,

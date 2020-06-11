@@ -42,40 +42,47 @@ class Report {
         draw("Screenshot", attributes: title2, xPosition: padding)
         draw(screenshot)
 
-        newPage()
-        draw("Findings", attributes: title2, xPosition: padding)
+        newPage("Findings")
+
+        if findings.isEmpty {
+            draw("No findings", attributes: body)
+        }
 
         findings.forEach { finding in
             let height = draw(finding, draw: false)
             drawRule()
             if currentY + height + 5 > pageSize.height {
-                newPage()
-                currentY += 50
-                draw("Findings (continued)", attributes: title2, xPosition: padding)
-                drawRule()
+                newPage("Findings (continued)")
             }
             currentY += 5
             draw(finding)
         }
 
-        newPage()
-        draw("Elements", attributes: title2, xPosition: padding)
+        newPage("Elements")
+        drawRule()
 
         elements.sorted().forEach { element in
             let height = draw(element, draw: false)
             if height > 0 {
-                drawRule()
                 if currentY + height + 5 > pageSize.height {
-                    newPage()
-                    draw("Elements (continued)", attributes: title2, xPosition: padding)
-                    drawRule()
+                    newPage("Elements (continued)")
                 }
                 currentY += 5
                 draw(element)
             }
         }
 
-        drawRule()
+        newPage("View Hierarchy")
+        currentY += 5
+
+        elements.forEach { element in
+            let height = draw(heirarchyElement: element, draw: false)
+            if currentY + height + 5 > pageSize.height {
+                newPage("View Hierarchy (continued)")
+                currentY += 5
+            }
+            draw(heirarchyElement: element)
+        }
 
         UIGraphicsEndPDFContext()
         return pdfData as Data
@@ -102,6 +109,15 @@ class Report {
         style.alignment = .left
         style.lineBreakMode = .byWordWrapping
         return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
+                NSAttributedString.Key.paragraphStyle: style]
+    }()
+
+    let unispacedBody: [NSAttributedString.Key: Any] = {
+        var style = NSMutableParagraphStyle()
+        style.alignment = .left
+        style.lineBreakMode = .byWordWrapping
+        let font = UIFont(name: "Menlo-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .regular)
+        return [NSAttributedString.Key.font: font,
                 NSAttributedString.Key.paragraphStyle: style]
     }()
 
@@ -154,6 +170,12 @@ extension Report {
         currentY = padding
     }
 
+    func newPage(_ string: String) {
+        newPage()
+        draw(string, attributes: title2, xPosition: padding)
+        drawRule()
+    }
+
     func drawCentered(_ string: NSAttributedString, rect: CGRect) {
         let drawingOptions: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading]
         let stringSize = string.boundingRect(with: rect.size, options: drawingOptions, context: nil)
@@ -184,8 +206,8 @@ extension Report {
         return stringSize.size
     }
 
-    @discardableResult func draw(_ image: UIImage?, xPosition: CGFloat? = nil, width: CGFloat? = nil,
-                                 updateHeight: Bool = true, draw: Bool = true) -> CGSize {
+    @discardableResult func draw(_ image: UIImage?, outline: Bool = true, xPosition: CGFloat? = nil,
+                                 width: CGFloat? = nil, updateHeight: Bool = true, draw: Bool = true) -> CGSize {
         guard let image = image else { return .zero }
         let xPosition = xPosition ?? padding
         let actualWidth = width ?? (pageSize.width - xPosition - 2 * padding)
@@ -198,6 +220,10 @@ extension Report {
                               height: image.size.height * scale)
         if draw {
             image.draw(in: drawRect)
+            if outline {
+                UIColor.black.set()
+                UIRectFrame(drawRect)
+            }
             if updateHeight {
                 currentY += drawRect.height + padding
             }
@@ -301,6 +327,15 @@ extension Report {
         default: break
         }
         return 0
+    }
+
+    @discardableResult func draw(heirarchyElement element: Element, draw performDraw: Bool = true) -> CGFloat {
+        let string = "\(element.base.className)"
+        let spacer = "\(String(format: "%4d ", element.depth)) "
+            + String(repeating: "-  ", count: element.base.level)
+        let size = draw(spacer, attributes: unispacedBody, updateHeight: false, draw: performDraw)
+        let rowSize = draw(string, attributes: unispacedBody, xPosition: size.width + padding, draw: performDraw)
+        return rowSize.height
     }
 
     func drawRule(color: UIColor = .gray, height: CGFloat = 1) {

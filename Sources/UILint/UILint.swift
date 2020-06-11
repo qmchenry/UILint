@@ -26,13 +26,13 @@ public struct UILint {
                                      screenshot: screenshot,
                                      safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets))
 
-        func recurse(_ view: UIView) -> [Element] {
-            let viewOutput = [Element(view: view, depth: currentDepth)].compactMap { $0 }
+        func recurse(_ view: UIView, level: Int) -> [Element] {
+            let viewOutput = [Element(view: view, depth: currentDepth, level: level)].compactMap { $0 }
             currentDepth += 1
-            return view.allSubviews.compactMap { recurse($0) }.reduce(viewOutput, +)
+            return view.allSubviews.compactMap { recurse($0, level: level + 1) }.reduce(viewOutput, +)
         }
 
-        elements = recurse(grandparent)
+        elements = recurse(grandparent, level: 0)
     }
 
     var findings: [Finding] {
