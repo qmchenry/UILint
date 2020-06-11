@@ -17,6 +17,7 @@ public protocol Check {
 }
 
 public let allChecks: [Check.Type] = [
+    LabelContrastRatio.self,
     LabelOffscreen.self,
     LabelOverlap.self,
     LabelTruncation.self,
