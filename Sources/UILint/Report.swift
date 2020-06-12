@@ -37,12 +37,7 @@ class Report {
     public func makePDF() -> Data {
         let pdfData = NSMutableData()
         UIGraphicsBeginPDFContextToData(pdfData, CGRect.zero, pdfMetadata)
-        newPage()
-        draw(pdfTitle, attributes: title1)
-        drawSystemSummary()
-        draw("Screenshot", attributes: title2, xPosition: padding)
-        draw(screenshot)
-
+        drawFirstPage()
         newPage("Findings")
         if findings.isEmpty {
             draw("No findings", attributes: body)
@@ -340,18 +335,36 @@ extension Report {
         currentY += height
     }
 
-    func drawSystemSummary() {
+    func drawSystemSummary(xPosition: CGFloat? = nil) {
+        let xPosition = xPosition ?? padding
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss E MMM d, yyyy"
-        draw("Bundle ID: \(Bundle.main.bundleIdentifier ?? "")", attributes: body)
-        draw("Date: \(dateFormatter.string(from: Date()))", attributes: body)
-        draw("iOS: \(UIDevice.current.systemVersion)", attributes: body)
-        draw("Device: \(UIDevice.current.name)", attributes: body)
+        draw("Bundle ID: \(Bundle.main.bundleIdentifier ?? "")", attributes: body, xPosition: xPosition)
+        draw("Date: \(dateFormatter.string(from: Date()))", attributes: body, xPosition: xPosition)
+        draw("iOS: \(UIDevice.current.systemVersion)", attributes: body, xPosition: xPosition)
+        draw("Device: \(UIDevice.current.name)", attributes: body, xPosition: xPosition)
+        draw("Locale: \(Locale.current.languageCode ?? "nil")", attributes: body, xPosition: xPosition)
         if #available(iOS 12.0, *) {
             let mode = details.traitCollection.userInterfaceStyle == .light ? "Light mode" : "Dark mode"
-            draw("Mode: \(mode)", attributes: body)
+            draw("Mode: \(mode)", attributes: body, xPosition: xPosition)
         }
         currentY += padding
     }
 
+    func drawFirstPage() {
+        newPage()
+        draw(pdfTitle, attributes: title1)
+        let screenshotSize = draw(screenshot, draw: false)
+        if screenshotSize.height / screenshotSize.width > 1.3 {
+            draw("Screenshot", attributes: title2, updateHeight: false)
+            draw("System Details", attributes: title2, xPosition: pageSize.width / 2 + padding)
+            draw(screenshot, width: pageSize.width / 2 - padding, updateHeight: false)
+            drawSystemSummary(xPosition: pageSize.width / 2 + padding)
+        } else {
+            draw("System Details", attributes: title2)
+            drawSystemSummary()
+            draw("Screenshot", attributes: title2)
+            draw(screenshot)
+        }
+    }
 }

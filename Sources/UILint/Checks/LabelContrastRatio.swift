@@ -21,8 +21,8 @@ public struct LabelContrastRatio: Check {
         // point in from the corners in x and y seems to solve this.
         let xMin = min(1, screenshot.size.width)
         let yMin = min(1, screenshot.size.height)
-        let xMax = min(screenshot.size.width - 2, 0)
-        let yMax = min(screenshot.size.height - 2, 0)
+        let xMax = max(screenshot.size.width - 2, 0)
+        let yMax = max(screenshot.size.height - 2, 0)
         let corners = [
             CGPoint(x: xMin, y: yMin),
             CGPoint(x: xMax, y: yMin),
@@ -46,6 +46,7 @@ public struct LabelContrastRatio: Check {
             else { return [] }
 
         let contrastRatio = textColor.contrastRatio(with: bgColor)
+        print("\(contrastRatio) \(textColor.hex) \(bgColor.hex)")
         if isValid(contrastRatio: contrastRatio, font: font) {
             return []
         }

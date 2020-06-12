@@ -58,7 +58,12 @@ public struct UILint {
             else { return }
             let pdfData = lint.makePDF()
             let activityVC = UIActivityViewController(activityItems: [pdfData], applicationActivities: nil)
+            activityVC.modalPresentationStyle = .overFullScreen
             rootVC.topmostViewController().present(activityVC, animated: true)
+            if let popOver = activityVC.popoverPresentationController {
+                popOver.sourceView = rootVC.topmostViewController().view
+                popOver.sourceRect = .zero
+            }
         }
         window.addGestureRecognizer(recognizer)
     }
