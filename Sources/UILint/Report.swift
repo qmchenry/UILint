@@ -355,7 +355,7 @@ extension Report {
         draw("Locale: \(Locale.current.languageCode ?? "nil")", attributes: style, xPosition: xPosition)
         if #available(iOS 12.0, *) {
             let mode = details.traitCollection.userInterfaceStyle == .light ? "Light mode" : "Dark mode"
-            draw("Mode: \(mode)", attributes: body, xPosition: xPosition)
+            draw("Mode: \(mode)", attributes: style, xPosition: xPosition)
         }
         draw("Global configuration", attributes: title2, xPosition: xPosition)
         draw("Excluded checks", attributes: body, xPosition: xPosition)

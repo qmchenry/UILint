@@ -19,13 +19,13 @@ public struct UILint {
             return nil
         }
 
-        var currentDepth = 0
-
-        let screenshot = grandparent.makeSnapshot()
-        details = EnvironmentDetails(windowSize: screenshot?.size ?? .zero,
+        let screenshot = ScreenshotHelper.takeScreenshot()
+        details = EnvironmentDetails(windowSize: screenshot.size,
                                      screenshot: screenshot,
                                      safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets),
                                      traitCollection: grandparentVC.traitCollection)
+
+        var currentDepth = 0
 
         func recurse(_ view: UIView, level: Int) -> [Element] {
             let viewOutput = [Element(view: view, depth: currentDepth, level: level)].compactMap { $0 }
