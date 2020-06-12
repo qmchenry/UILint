@@ -7,7 +7,7 @@
 
 import UIKit
 
-public enum Element: Comparable {
+public enum Element: Comparable, CustomDebugStringConvertible {
 
     case label(font: UIFont, maxLines: Int, text: String, textColor: UIColor, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, base: Base)
@@ -23,6 +23,7 @@ public enum Element: Comparable {
         let level: Int
         let contentScaleFactor: CGFloat
         let contentMode: UIView.ContentMode
+        let accessibilityIdentifier: String?
         init(_ view: UIView, depth: Int, level: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
@@ -33,6 +34,7 @@ public enum Element: Comparable {
             self.level = level
             contentScaleFactor = view.contentScaleFactor
             contentMode = view.contentMode
+            accessibilityIdentifier = view.accessibilityIdentifier
         }
     }
 
@@ -79,6 +81,10 @@ public enum Element: Comparable {
             return false
         }
         return windowFrame.intersects(overlapWindowFrame)
+    }
+
+    public var debugDescription: String {
+        base.className + "  " + (base.accessibilityIdentifier ?? "")
     }
 
     init?(view: UIView, depth: Int, level: Int) {

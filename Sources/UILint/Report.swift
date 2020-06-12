@@ -328,9 +328,9 @@ extension Report {
     }
 
     @discardableResult func draw(heirarchyElement element: Element, draw performDraw: Bool = true) -> CGFloat {
-        let string = "\(element.base.className)"
         let spacer = "\(String(format: "%4d ", element.depth)) "
             + String(repeating: "-  ", count: element.base.level)
+        let string = "\(element)"
         let size = draw(spacer, attributes: unispacedBody, updateHeight: false, draw: performDraw)
         let rowSize = draw(string, attributes: unispacedBody, xPosition: size.width + padding, draw: performDraw)
         return rowSize.height
