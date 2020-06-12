@@ -95,6 +95,13 @@ class Report {
                 NSAttributedString.Key.paragraphStyle: style]
     }()
 
+    let title3: [NSAttributedString.Key: Any] = {
+        var style = NSMutableParagraphStyle()
+        style.alignment = .left
+        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title2),
+                NSAttributedString.Key.paragraphStyle: style]
+    }()
+
     let body: [NSAttributedString.Key: Any] = {
         var style = NSMutableParagraphStyle()
         style.alignment = .left
@@ -339,14 +346,31 @@ extension Report {
         let xPosition = xPosition ?? padding
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "HH:mm:ss E MMM d, yyyy"
-        draw("Bundle ID: \(Bundle.main.bundleIdentifier ?? "")", attributes: body, xPosition: xPosition)
-        draw("Date: \(dateFormatter.string(from: Date()))", attributes: body, xPosition: xPosition)
-        draw("iOS: \(UIDevice.current.systemVersion)", attributes: body, xPosition: xPosition)
-        draw("Device: \(UIDevice.current.name)", attributes: body, xPosition: xPosition)
-        draw("Locale: \(Locale.current.languageCode ?? "nil")", attributes: body, xPosition: xPosition)
+        let style = unispacedBody
+        draw("Bundle ID: \(Bundle.main.bundleIdentifier ?? "")", attributes: style, xPosition: xPosition)
+        draw("Date: \(dateFormatter.string(from: Date()))", attributes: style, xPosition: xPosition)
+        draw("iOS: \(UIDevice.current.systemVersion)", attributes: style, xPosition: xPosition)
+        draw("Device model: \(UIDevice.current.model)", attributes: style, xPosition: xPosition)
+        draw("Device name: \(UIDevice.current.name)", attributes: style, xPosition: xPosition)
+        draw("Locale: \(Locale.current.languageCode ?? "nil")", attributes: style, xPosition: xPosition)
         if #available(iOS 12.0, *) {
             let mode = details.traitCollection.userInterfaceStyle == .light ? "Light mode" : "Dark mode"
             draw("Mode: \(mode)", attributes: body, xPosition: xPosition)
+        }
+        draw("Global configuration", attributes: title2, xPosition: xPosition)
+        draw("Excluded checks", attributes: body, xPosition: xPosition)
+        if UILintConfig.shared.excludedChecks.isEmpty {
+            draw("No excluded checks", attributes: style, xPosition: xPosition + padding)
+        }
+        UILintConfig.shared.excludedChecks.forEach { check in
+            draw("\(check.self)", attributes: style, xPosition: xPosition + padding)
+        }
+        draw("Expected fonts", attributes: body, xPosition: xPosition)
+        if UILintConfig.shared.expectedFontNames.isEmpty {
+            draw("All fonts are expected", attributes: style, xPosition: xPosition + padding)
+        }
+        UILintConfig.shared.expectedFontNames.forEach { fontName in
+            draw("\(fontName)", attributes: style, xPosition: xPosition + padding)
         }
         currentY += padding
     }
