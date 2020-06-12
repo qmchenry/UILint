@@ -184,25 +184,42 @@ extension UIColor {
 extension UIImage {
     func getPixels(points: [CGPoint]) -> [UIColor] {
         guard let cgImage = self.cgImage,
-            cgImage.bitsPerPixel == 32,
-            cgImage.bitsPerComponent == 8,
+            cgImage.bitsPerPixel == 32 || cgImage.bitsPerPixel == 64,
+            cgImage.bitsPerComponent == 8 || cgImage.bitsPerComponent == 16,
             let imageData = cgImage.dataProvider?.data as Data?
         else {
             return []
         }
         let size = cgImage.width * cgImage.height
-        let buffer = UnsafeMutableBufferPointer<UInt32>.allocate(capacity: size)
-        _ = imageData.copyBytes(to: buffer)
         let indexes = points.map { point -> Int in
             Int(point.x) + Int(point.y) * Int(cgImage.width)
         }
-        guard indexes.filter({ $0 < 0 || $0 >= buffer.count }).isEmpty else { return [] }
-        let colors = indexes.map { index -> UIColor in
-            let pixel = buffer[index]
-            return UIColor(red: CGFloat(pixel & 255) / 255.0,
-                           green: CGFloat((pixel >> 8) & 255) / 255.0,
-                           blue: CGFloat((pixel >> 16) & 255) / 255.0,
-                           alpha: CGFloat((pixel >> 24) & 255) / 255.0)
+        let components: [[CGFloat]]
+        if cgImage.bitsPerPixel == 32 {
+            let buffer = UnsafeMutableBufferPointer<Int32>.allocate(capacity: size)
+            guard indexes.filter({ $0 < 0 || $0 >= buffer.count }).isEmpty else { return [] }
+            _ = imageData.copyBytes(to: buffer)
+            components = indexes.map { index -> [CGFloat] in
+                let bytes = buffer[index]
+                return [CGFloat(bytes & 255) / 255.0,
+                    CGFloat((bytes >> 8) & 255) / 255.0,
+                    CGFloat((bytes >> 16) & 255) / 255.0,
+                    CGFloat((bytes >> 24) & 255) / 255.0]
+            }
+        } else {
+            let buffer = UnsafeMutableBufferPointer<Int64>.allocate(capacity: size)
+            guard indexes.filter({ $0 < 0 || $0 >= buffer.count }).isEmpty else { return [] }
+            _ = imageData.copyBytes(to: buffer)
+            components = indexes.map { index -> [CGFloat] in
+                let bytes = buffer[index]
+                return [CGFloat(bytes & 65535) / 65535.0,
+                    CGFloat((bytes >> 16) & 65535) / 65535.0,
+                    CGFloat((bytes >> 32) & 65535) / 65535.0,
+                    CGFloat((bytes >> 48) & 65535) / 65535.0]
+            }
+        }
+        let colors = components.map { (rgba: [CGFloat]) -> UIColor in
+            UIColor(red: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
         }
         return colors
     }
