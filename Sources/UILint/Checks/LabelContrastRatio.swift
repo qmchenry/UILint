@@ -38,9 +38,9 @@ public struct LabelContrastRatio: Check {
         return boldOrLarge && contrastRatio >= 3 || font.pointSize < 18 && contrastRatio >= 4.5
     }
 
-    public func findings(forElement element: Element, elements: [Element], details: EnvironmentDetails) -> [Finding] {
+    public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
         guard case let Element.label(font, _, _, textColor, base) = element else { return [] }
-        guard let screenshot = details.screenshot,
+        guard let screenshot = context.screenshot,
             let cropped = crop(screenshot: screenshot, toWindowFrame: base.windowFrame),
             let bgColor = backgroundColor(screenshot: cropped)
             else { return [] }

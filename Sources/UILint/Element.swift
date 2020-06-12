@@ -64,14 +64,14 @@ public enum Element: Comparable, CustomDebugStringConvertible {
     var isButton: Bool { sortOrder == 200 }
     var isImage: Bool { sortOrder == 300 }
 
-    func findings(elements: [Element], details: EnvironmentDetails) -> [Finding] {
+    func findings(elements: [Element], context: LintingContext) -> [Finding] {
         var results = [Finding]()
         let enabledChecks = allChecks.filter { check in
             !UILintConfig.shared.excludedChecks.contains { $0 == check }
         }
         enabledChecks.forEach { check in
             results += check.init()
-                .findings(forElement: self, elements: elements, details: details)
+                .findings(forElement: self, elements: elements, context: context)
         }
         return results
     }
@@ -118,5 +118,4 @@ public enum Element: Comparable, CustomDebugStringConvertible {
     public static func == (lhs: Element, rhs: Element) -> Bool {
         return lhs.sortOrder == rhs.sortOrder
     }
-
 }

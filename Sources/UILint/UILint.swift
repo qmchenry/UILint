@@ -11,7 +11,7 @@ import UIKit
 public struct UILint {
 
     let elements: [Element]
-    let details: EnvironmentDetails
+    let context: LintingContext
 
     public init?(view: UIView) {
         guard let grandparentVC = view.parentViewController(), let grandparent = grandparentVC.view else {
@@ -20,7 +20,7 @@ public struct UILint {
         }
 
         let screenshot = ScreenshotHelper.takeScreenshot()
-        details = EnvironmentDetails(windowSize: screenshot.size,
+        context = LintingContext(windowSize: screenshot.size,
                                      screenshot: screenshot,
                                      safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets),
                                      traitCollection: grandparentVC.traitCollection)
@@ -38,12 +38,12 @@ public struct UILint {
 
     var findings: [Finding] {
         elements.flatMap {
-            $0.findings(elements: elements, details: details)
+            $0.findings(elements: elements, context: context)
         }
     }
 
     public func makePDF() -> Data {
-        Report(elements: elements, findings: findings, details: details).makePDF()
+        Report(elements: elements, findings: findings, details: context).makePDF()
     }
 
     static weak var window: UIWindow?
@@ -93,7 +93,7 @@ final class UILintGestureRecognizer: UITapGestureRecognizer {
     }
 }
 
-public struct EnvironmentDetails {
+public struct LintingContext {
     let windowSize: CGSize
     let screenshot: UIImage?
     let safeAreaRect: CGRect

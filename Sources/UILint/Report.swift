@@ -12,7 +12,7 @@ class Report {
 
     let elements: [Element]
     let findings: [Finding]
-    let details: EnvironmentDetails
+    let details: LintingContext
 
     let pdfTitle = "UILint Report"
     let padding = CGFloat(10)
@@ -21,7 +21,7 @@ class Report {
     var currentY = CGFloat(0)
     var screenshot: UIImage? { details.screenshot }
 
-    public init(elements: [Element], findings: [Finding], details: EnvironmentDetails ) {
+    public init(elements: [Element], findings: [Finding], details: LintingContext ) {
         self.elements = elements
         self.findings = findings
         self.details = details

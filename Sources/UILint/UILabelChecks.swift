@@ -51,5 +51,4 @@ extension Element {
             attributes: [.font: font],
             context: nil).size
     }
-
 }
