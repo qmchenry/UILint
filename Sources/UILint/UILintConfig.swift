@@ -21,3 +21,7 @@ public struct UILintConfig {
         Self.shared.excludedChecks = []
     }
 }
+
+public protocol UILintConfigurable {
+    func shouldLint(element: Element, check: Check.Type) -> Bool
+}

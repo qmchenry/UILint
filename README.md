@@ -1,6 +1,8 @@
 # UILint
 
 [![Build Status](https://app.bitrise.io/app/5571d1f22e8bc4dd/status.svg?token=iDAtzso4K447H1xEf55VoA&branch=master)](https://app.bitrise.io/app/5571d1f22e8bc4dd)
+[![Swift package manager compatible](https://img.shields.io/badge/SPM-compatible-brightgreen)](https://swift.org/package-manager/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The goal of this project is to ease the burden of making high quality user interfaces _just so_ both for developers and designers. Similar to a linter that monitors code for issues, UILint examines a UI at runtime to find potential issues.
 

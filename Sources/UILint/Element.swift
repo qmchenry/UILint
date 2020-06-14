@@ -15,15 +15,16 @@ public enum Element: Comparable, CustomDebugStringConvertible {
     case other(base: Base)
 
     public struct Base {
-        let className: String
-        let windowFrame: CGRect?
-        let wantsTouches: Bool // like a button
-        let consumesTouches: Bool // opaque view that blocks
-        let depth: Int
-        let level: Int
-        let contentScaleFactor: CGFloat
-        let contentMode: UIView.ContentMode
-        let accessibilityIdentifier: String?
+        public let className: String
+        public let windowFrame: CGRect?
+        public let wantsTouches: Bool // like a button
+        public let consumesTouches: Bool // opaque view that blocks
+        public let depth: Int
+        public let level: Int
+        public let contentScaleFactor: CGFloat
+        public let contentMode: UIView.ContentMode
+        public let accessibilityIdentifier: String?
+        public let tag: Int
         init(_ view: UIView, depth: Int, level: Int) {
             self.className = view.className
             self.windowFrame = view.windowFrame
@@ -35,10 +36,11 @@ public enum Element: Comparable, CustomDebugStringConvertible {
             contentScaleFactor = view.contentScaleFactor
             contentMode = view.contentMode
             accessibilityIdentifier = view.accessibilityIdentifier
+            tag = view.tag
         }
     }
 
-    var base: Base {
+    public var base: Base {
         switch self {
         case .label(_, _, _, _, let base): return base
         case .button(_, _, _, _, let base): return base
@@ -70,8 +72,10 @@ public enum Element: Comparable, CustomDebugStringConvertible {
             !UILintConfig.shared.excludedChecks.contains { $0 == check }
         }
         enabledChecks.forEach { check in
-            results += check.init()
-                .findings(forElement: self, elements: elements, context: context)
+            if context.shouldLint?(self, check) ?? true {
+                results += check.init()
+                    .findings(forElement: self, elements: elements, context: context)
+            } else { print("Skipping check \(check.self) on \(self)") }
         }
         return results
     }
@@ -84,7 +88,12 @@ public enum Element: Comparable, CustomDebugStringConvertible {
     }
 
     public var debugDescription: String {
-        base.className + "  " + (base.accessibilityIdentifier ?? "")
+        let descriptions: [String?] = [
+                base.className,
+                base.tag != 0 ? "tag:\(base.tag)" : nil,
+                base.accessibilityIdentifier != nil ?  "aid:'\(base.accessibilityIdentifier!)'" : nil
+            ]
+        return descriptions.compactMap { $0 }.joined(separator: " ")
     }
 
     init?(view: UIView, depth: Int, level: Int) {

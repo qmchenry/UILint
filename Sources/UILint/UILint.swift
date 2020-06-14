@@ -23,7 +23,8 @@ public struct UILint {
         context = LintingContext(windowSize: screenshot.size,
                                      screenshot: screenshot,
                                      safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets),
-                                     traitCollection: grandparentVC.traitCollection)
+                                     traitCollection: grandparentVC.traitCollection,
+                                     shouldLint: (grandparentVC as? UILintConfigurable)?.shouldLint(element:check:))
 
         var currentDepth = 0
 
@@ -98,4 +99,5 @@ public struct LintingContext {
     let screenshot: UIImage?
     let safeAreaRect: CGRect
     let traitCollection: UITraitCollection
+    let shouldLint: ((Element, Check.Type) -> Bool)?
 }
