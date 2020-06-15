@@ -231,8 +231,8 @@ extension Report {
 
     @discardableResult func draw(_ color: UIColor, xPosition: CGFloat? = nil,
                                  updateHeight: Bool = true, draw performDraw: Bool = true) -> CGSize {
-        let colorWidth = CGFloat(30)
-        let textWidth = CGFloat(120)
+        let colorWidth = CGFloat(20)
+        let textWidth = CGFloat(100)
         let xPosition = xPosition ?? padding
         let colorRect = CGRect(x: xPosition, y: currentY, width: colorWidth, height: colorWidth)
         if performDraw {
@@ -241,13 +241,13 @@ extension Report {
             UIColor.black.set()
             UIRectFrame(colorRect)
         }
-        let textSize = draw(color.hex, attributes: body, xPosition: xPosition + colorRect.width + padding,
+        let textSize = draw(color.hex, attributes: unispacedBody, xPosition: xPosition + colorRect.width + padding,
                         width: textWidth, updateHeight: updateHeight, draw: performDraw)
         let height = max(colorRect.height, textSize.height)
         if performDraw && updateHeight {
             currentY += height + padding
         }
-        return CGSize(width: 2 * padding + textWidth, height: height)
+        return CGSize(width: padding + textWidth, height: height)
     }
 
     @discardableResult func draw(_ finding: Finding, draw performDraw: Bool = true) -> CGFloat {
@@ -289,18 +289,23 @@ extension Report {
     @discardableResult func draw(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
         var xPosition = padding
         switch element {
-        case .label(let font, let maxLines, let text, let textColor, let base):
+        case .label(let font, _, let text, let textColor, let base):
             let size0 = draw("\(element.base.depth) Label: \(font.pointSize)pt", attributes: body,
                              xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
             xPosition += 140 + padding
             let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 180,
                              updateHeight: false, draw: performDraw)
             xPosition += 180 + padding
-            let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
-            let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition,
-                             width: 100, updateHeight: false, draw: performDraw)
-            xPosition += 100 + padding
-            let size3 = draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
+            //let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
+            //let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition,
+            //                 width: 100, updateHeight: false, draw: performDraw)
+            //xPosition += 100 + padding
+            let colorSize = draw(textColor, xPosition: xPosition, updateHeight: false, draw: false)
+            xPosition = pageSize.width - 2 * colorSize.width
+            let size2 = draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
+            xPosition += colorSize.width
+            let size3 = draw(base.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false,
+                             draw: performDraw)
             let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
             if performDraw {
                 currentY += rowHeight + padding
