@@ -19,7 +19,7 @@ public struct UILint {
             return nil
         }
 
-        let screenshot = ScreenshotHelper.takeScreenshot()
+        let screenshot = grandparent.takeScreenshot()
         context = LintingContext(windowSize: screenshot.size,
                                      screenshot: screenshot,
                                      safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets),

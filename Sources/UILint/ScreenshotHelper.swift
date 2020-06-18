@@ -18,7 +18,18 @@ struct ScreenshotHelper {
         let view = UIScreen.main.snapshotView(afterScreenUpdates: false)
         let renderer = UIGraphicsImageRenderer(size: view.bounds.size)
         let image = renderer.image { _ in
-            view.drawHierarchy(in: view.bounds, afterScreenUpdates: true)
+            view.drawHierarchy(in: view.bounds, afterScreenUpdates: false)
+        }
+        return image
+    }
+}
+
+extension UIView {
+    func takeScreenshot() -> UIImage {
+        // Note: possibly not supported in macos/catalyst
+        let renderer = UIGraphicsImageRenderer(size: bounds.size)
+        let image = renderer.image { _ in
+            drawHierarchy(in: bounds, afterScreenUpdates: false)
         }
         return image
     }
