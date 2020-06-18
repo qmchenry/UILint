@@ -123,11 +123,11 @@ extension CGColor {
 
     var hex: String {
         let rgba = rgbaCapped
-        return String(format: "%02x%02x%02x%02x",
-                      UInt8(255.0 * rgba.red),
-                      UInt8(255.0 * rgba.green),
-                      UInt8(255.0 * rgba.blue),
-                      UInt8(255.0 * rgba.alpha))
+        return String(format: "%02lX%02lX%02lX%02lX",
+                      lroundf(Float(rgba.red) * 255),
+                      lroundf(Float(rgba.green) * 255),
+                      lroundf(Float(rgba.blue) * 255),
+                      lroundf(Float(rgba.alpha) * 255))
     }
 
     func toColorSpace(name: CFString, intent: CGColorRenderingIntent = .defaultIntent) -> CGColor? {
@@ -143,13 +143,17 @@ extension CGColor {
     }
 
     func luminance() -> CGFloat? {
-        guard let components = components, components.count >= 3 else { return nil }
+        guard let components = components, components.count >= 2 else {
+            return nil
+        }
         // https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
 
         func adjust(_ colorComponent: CGFloat) -> CGFloat {
             return (colorComponent < 0.04045) ? (colorComponent / 12.92) : pow((colorComponent + 0.055) / 1.055, 2.4)
         }
-
+        if components.count == 2 {
+            return (0.2126 + 0.7152 + 0.0722) * adjust(components[0])
+        }
         return 0.2126 * adjust(components[0]) + 0.7152 * adjust(components[1]) + 0.0722 * adjust(components[2])
     }
 
@@ -193,6 +197,10 @@ extension UIColor {
         var alpha: CGFloat = 0
         getRed(&red, green: &green, blue: &blue, alpha: &alpha)
         return [red, green, blue, alpha]
+    }
+
+    func contrastRatio(with color: UIColor) -> CGFloat? {
+        cgColor.contrastRatio(with: color.cgColor)
     }
 
     convenience init(components: [CGFloat]) {

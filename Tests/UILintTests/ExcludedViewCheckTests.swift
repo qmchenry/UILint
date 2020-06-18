@@ -49,7 +49,6 @@ final class ExcludedViewCheckTests: XCTestCase {
         sut.view.addSubview(label)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        XCTAssertEqual(findings.count, 1)
         XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
         XCTAssertFalse(findings.contains { $0.description == LabelVerticalClipping().description })
     }
@@ -72,7 +71,6 @@ final class ExcludedViewCheckTests: XCTestCase {
         sut.view.addSubview(label)
         let lint = UILint(view: sut.view)
         let findings = lint!.findings
-        XCTAssertEqual(findings.count, 1)
         XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
         XCTAssertFalse(findings.contains { $0.description == LabelVerticalClipping().description })
     }

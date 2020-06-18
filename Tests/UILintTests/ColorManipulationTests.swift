@@ -18,7 +18,7 @@ final class ColorManipulationTests: XCTestCase {
         // Based on values from https://contrast-ratio.com/#white-on-blue
         XCTAssertEqual(UIColor.white.contrastRatio(with: .black), 21)
         XCTAssertEqual(UIColor.black.contrastRatio(with: .black), 1)
-        XCTAssertEqual(UIColor.white.contrastRatio(with: .blue), 8.59, accuracy: 0.01)
+        XCTAssertEqual(UIColor.white.contrastRatio(with: .blue)!, 8.59, accuracy: 0.01)
     }
 
     func testAverageColorSame() {
@@ -36,7 +36,7 @@ final class ColorManipulationTests: XCTestCase {
     func testAverageColor() {
         let colors = [UIColor.blue, UIColor.red]
         let average = UIColor(colors: colors)!
-        XCTAssertEqual(average.hex, "#800080FF")
+        XCTAssertEqual(average.hex, "800080FF")
     }
 
     func testUIFontIsBold() {
