@@ -1,15 +1,11 @@
-//
 //  QAReport.swift
 //
-//
 //  Created by Quinn McHenry on 6/1/20.
-//
 
 import PDFKit
 import UIKit
 
 class Report {
-
     let elements: [Element]
     let findings: [Finding]
     let details: LintingContext
@@ -28,10 +24,7 @@ class Report {
     }
 
     var pdfMetadata: [AnyHashable: Any] {
-        [
-            kCGPDFContextCreator: "UILint",
-            kCGPDFContextTitle: pdfTitle
-        ]
+        [kCGPDFContextCreator: "UILint", kCGPDFContextTitle: pdfTitle]
     }
 
     public func makePDF() -> Data {
@@ -51,7 +44,6 @@ class Report {
             currentY += 5
             draw(finding)
         }
-
         newPage("Elements")
         elements.sorted().forEach { element in
             let height = draw(element, draw: false)
@@ -63,7 +55,6 @@ class Report {
                 draw(element)
             }
         }
-
         newPage("View Hierarchy")
         currentY += 5
         elements.forEach { element in
@@ -74,7 +65,6 @@ class Report {
             }
             draw(heirarchyElement: element)
         }
-
         UIGraphicsEndPDFContext()
         return pdfData as Data
     }
@@ -250,6 +240,12 @@ extension Report {
         return CGSize(width: padding + textWidth, height: height)
     }
 
+    @discardableResult func draw(_ cgColor: CGColor?, xPosition: CGFloat? = nil,
+                                 updateHeight: Bool = true, draw performDraw: Bool = true) -> CGSize {
+        let color = cgColor != nil ? UIColor(cgColor: cgColor!) : .clear
+        return draw(color, xPosition: xPosition, updateHeight: updateHeight, draw: performDraw)
+    }
+
     @discardableResult func draw(_ finding: Finding, draw performDraw: Bool = true) -> CGFloat {
         let severityWidth = CGFloat(75)
         let severityHeight = CGFloat(40)
@@ -304,7 +300,7 @@ extension Report {
             xPosition = pageSize.width - 2 * colorSize.width
             let size2 = draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
             xPosition += colorSize.width
-            let size3 = draw(base.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false,
+            let size3 = draw(base.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false,
                              draw: performDraw)
             let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
             if performDraw {

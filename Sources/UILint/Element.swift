@@ -18,6 +18,7 @@ public enum Element: Comparable, CustomDebugStringConvertible {
         public let className: String
         public let windowFrame: CGRect?
         public let backgroundColor: UIColor?
+        public let effectiveBackgroundColor: CGColor?
         public let wantsTouches: Bool // like a button
         public let consumesTouches: Bool // opaque view that blocks
         public let depth: Int
@@ -27,9 +28,12 @@ public enum Element: Comparable, CustomDebugStringConvertible {
         public let accessibilityIdentifier: String?
         public let tag: Int
         init(_ view: UIView, depth: Int, level: Int) {
+//            let screenshot = context.screenshot?.crop(to: view.windowFrame, viewSize: context.screenshot?.size)
             className = view.className
             windowFrame = view.windowFrame
             backgroundColor = view.backgroundColor
+//            effectiveBackgroundColor = screenshot?.effectiveBackgroundColor()
+            effectiveBackgroundColor = view.backgroundColor?.cgColor
             let enabledGestureRecognizers = view.gestureRecognizers?.filter { $0.isEnabled }.count ?? 0
             wantsTouches = (view is UIControl) || enabledGestureRecognizers > 0
             consumesTouches = view.consumesTouches

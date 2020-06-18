@@ -58,6 +58,11 @@ extension UIImage {
         }
         return UIImage(cgImage: cropped)
     }
+
+    func crop(to rect: CGRect?, viewSize: CGSize?) -> UIImage? {
+        guard let rect = rect, let viewSize = viewSize else { return nil }
+        return crop(to: rect, viewSize: viewSize)
+    }
 }
 
 extension UIViewController {
@@ -88,65 +93,97 @@ extension UINavigationController {
     }
 }
 
-extension UIColor {
+struct RGBA {
+    let red: CGFloat
+    let green: CGFloat
+    let blue: CGFloat
+    let alpha: CGFloat
+}
 
-    // Hex string representation from UIColor
+extension CGColor {
+    var rgbaComponents: RGBA {
+        guard let components = components else {
+            return RGBA(red: 0, green: 0, blue: 0, alpha: 0)
+        }
+        switch components.count {
+        case 4: return RGBA(red: components[0], green: components[1], blue: components[2], alpha: components[3])
+        case 3: return RGBA(red: components[0], green: components[1], blue: components[2], alpha: 1)
+        case 2: return RGBA(red: components[0], green: components[0], blue: components[0], alpha: components[1])
+        default: return RGBA(red: 0, green: 0, blue: 0, alpha: 0)
+        }
+    }
+
+    var rgbaCapped: RGBA {
+        let rgba = rgbaComponents
+        func cap(_ value: CGFloat) -> CGFloat {
+            return min(1, max(0, value))
+        }
+        return RGBA(red: cap(rgba.red), green: cap(rgba.green), blue: cap(rgba.blue), alpha: cap(rgba.alpha))
+    }
+
     var hex: String {
-        guard let components = cgColor.components, components.count >= 2 else {
-            return "#00000000"
+        let rgba = rgbaCapped
+        return String(format: "%02x%02x%02x%02x",
+                      UInt8(255.0 * rgba.red),
+                      UInt8(255.0 * rgba.green),
+                      UInt8(255.0 * rgba.blue),
+                      UInt8(255.0 * rgba.alpha))
+    }
+
+    func toColorSpace(name: CFString, intent: CGColorRenderingIntent = .defaultIntent) -> CGColor? {
+        converted(to: CGColorSpace(name: name)!, intent: intent, options: nil)
+    }
+
+    func toColorSpace(colorSpace: CGColorSpace, intent: CGColorRenderingIntent = .defaultIntent) -> CGColor? {
+        converted(to: colorSpace, intent: intent, options: nil)
+    }
+
+    var toSRGB: CGColor? {
+        toColorSpace(name: CGColorSpace.sRGB)
+    }
+
+    func luminance() -> CGFloat? {
+        guard let components = components, components.count >= 3 else { return nil }
+        // https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
+
+        func adjust(_ colorComponent: CGFloat) -> CGFloat {
+            return (colorComponent < 0.04045) ? (colorComponent / 12.92) : pow((colorComponent + 0.055) / 1.055, 2.4)
         }
-        let alpha: Float
-        if components.count >= 4 {
-            alpha = Float(components[3])
-        } else if components.count == 2 {
-            alpha = Float(components[1])
-        } else {
-            alpha = 1
-        }
-        if components.count == 2 {
-            return String(format: "#%02lX%02lX%02lX%02lX",
-                          lroundf(Float(components[0]) * 255),
-                          lroundf(Float(components[0]) * 255),
-                          lroundf(Float(components[0]) * 255),
-                          lroundf(alpha * 255))
-        }
-        return String(format: "#%02lX%02lX%02lX%02lX",
-                      lroundf(Float(components[0]) * 255),
-                      lroundf(Float(components[1]) * 255),
-                      lroundf(Float(components[2]) * 255),
-                      lroundf(alpha * 255))
+
+        return 0.2126 * adjust(components[0]) + 0.7152 * adjust(components[1]) + 0.0722 * adjust(components[2])
     }
 
     // Luminance and contrast ratio computation code from
     // https://stackoverflow.com/questions/42355778/how-to-compute-color-contrast-ratio-between-two-uicolor-instances
-    static func contrastRatio(between color1: UIColor, and color2: UIColor) -> CGFloat {
+    static func contrastRatio(between color1: CGColor, and color2: CGColor) -> CGFloat? {
         // https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
-
-        let luminance1 = color1.luminance()
-        let luminance2 = color2.luminance()
-
+        guard let luminance1 = color1.luminance(), let luminance2 = color2.luminance() else { return nil }
         let luminanceDarker = min(luminance1, luminance2)
         let luminanceLighter = max(luminance1, luminance2)
-
         return (luminanceLighter + 0.05) / (luminanceDarker + 0.05)
     }
 
-    func contrastRatio(with color: UIColor) -> CGFloat {
-        return UIColor.contrastRatio(between: self, and: color)
+    func contrastRatio(with color: CGColor) -> CGFloat? {
+        return Self.contrastRatio(between: self, and: color)
     }
 
-    func luminance() -> CGFloat {
-        // https://www.w3.org/TR/WCAG20-TECHS/G18.html#G18-tests
-
-        let ciColor = CIColor(color: self)
-
-        func adjust(colorComponent: CGFloat) -> CGFloat {
-            return (colorComponent < 0.04045) ? (colorComponent / 12.92) : pow((colorComponent + 0.055) / 1.055, 2.4)
+    public static func average(colors: [CGColor]) -> CGColor? {
+        guard colors.count > 0 else { return nil }
+        let sum: [CGFloat] = colors.reduce([0, 0, 0, 0]) { (sum, color) in
+            guard let rgba = color.components else { return sum }
+            let alpha = rgba.count == 4 ? rgba[3] : 1
+            return [sum[0]+rgba[0], sum[1]+rgba[1], sum[2]+rgba[2], sum[3]+alpha]
         }
+        let count = CGFloat(colors.count)
+        return UIColor(red: sum[0] / count, green: sum[1] / count, blue: sum[2] / count, alpha: sum[3] / count).cgColor
+    }
+}
 
-        return 0.2126 * adjust(colorComponent: ciColor.red)
-            + 0.7152 * adjust(colorComponent: ciColor.green)
-            + 0.0722 * adjust(colorComponent: ciColor.blue)
+extension UIColor {
+
+    // Hex string representation from UIColor
+    var hex: String {
+        return cgColor.hex
     }
 
     var rgba: [CGFloat] {
@@ -182,46 +219,67 @@ extension UIColor {
 }
 
 extension UIImage {
-    func getPixels(points: [CGPoint]) -> [UIColor] {
-        guard let cgImage = self.cgImage,
-            cgImage.bitsPerPixel == 32 || cgImage.bitsPerPixel == 64,
-            cgImage.bitsPerComponent == 8 || cgImage.bitsPerComponent == 16,
-            let imageData = cgImage.dataProvider?.data as Data?
-        else {
-            return []
-        }
-        let size = cgImage.width * cgImage.height
-        let indexes = points.map { point -> Int in
-            Int(point.x) + Int(point.y) * Int(cgImage.width)
-        }
-        let components: [[CGFloat]]
-        if cgImage.bitsPerPixel == 32 {
-            let buffer = UnsafeMutableBufferPointer<Int32>.allocate(capacity: size)
-            guard indexes.filter({ $0 < 0 || $0 >= buffer.count }).isEmpty else { return [] }
-            _ = imageData.copyBytes(to: buffer)
-            components = indexes.map { index -> [CGFloat] in
-                let bytes = buffer[index]
-                return [CGFloat(bytes & 255) / 255.0,
-                    CGFloat((bytes >> 8) & 255) / 255.0,
-                    CGFloat((bytes >> 16) & 255) / 255.0,
-                    CGFloat((bytes >> 24) & 255) / 255.0]
-            }
-        } else {
-            let buffer = UnsafeMutableBufferPointer<Int64>.allocate(capacity: size)
-            guard indexes.filter({ $0 < 0 || $0 >= buffer.count }).isEmpty else { return [] }
-            _ = imageData.copyBytes(to: buffer)
-            components = indexes.map { index -> [CGFloat] in
-                let bytes = buffer[index]
-                return [CGFloat(bytes & 65535) / 65535.0,
-                    CGFloat((bytes >> 16) & 65535) / 65535.0,
-                    CGFloat((bytes >> 32) & 65535) / 65535.0,
-                    CGFloat((bytes >> 48) & 65535) / 65535.0]
-            }
-        }
-        let colors = components.map { (rgba: [CGFloat]) -> UIColor in
-            UIColor(red: rgba[0], green: rgba[1], blue: rgba[2], alpha: rgba[3])
-        }
+    func getPixels(points: [CGPoint]) -> [CGColor] {
+        let rects = points.map { CGRect(origin: $0, size: CGSize(width: 1, height: 1)) }
+        let colors = rects.compactMap { averageColor(rect: $0)?.cgColor }
+        print(colors)
         return colors
+    }
+
+    func averageColor(rect: CGRect? = nil, colorSpace colorSpaceName: CFString = CGColorSpace.sRGB) -> UIColor? {
+        let rect = rect ?? CGRect(origin: .zero, size: size)
+        guard let bitDepth = cgImage?.bitsPerPixel, bitDepth == 32 || bitDepth == 64 else { return nil }
+        guard let inputImage = CIImage(image: self) else { return nil }
+        let extentVector = CIVector(x: rect.origin.x, y: rect.origin.y, z: rect.size.width, w: rect.size.height)
+
+        guard let filter = CIFilter(name: "CIAreaAverage",
+                                    parameters: [kCIInputImageKey: inputImage, kCIInputExtentKey: extentVector]),
+            let outputImage = filter.outputImage
+            else { return nil }
+
+        let format: CIFormat = bitDepth == 32 ? .RGBA8 : .RGBA16
+        let space = CGColorSpace(name: colorSpaceName)!
+        let context: CIContext = {
+            var options = [CIContextOption: Any]()
+            options[.workingColorSpace] = space
+            options[.workingFormat] = NSNumber(value: format.rawValue)
+            return CIContext(options: options)
+        }()
+
+        if bitDepth == 64 {
+            var bitmap = [UInt16](repeating: 0, count: 4)
+            context.render(outputImage, toBitmap: &bitmap, rowBytes: 8,
+                           bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: format, colorSpace: space)
+            return UIColor(red: CGFloat(bitmap[0])/65535,
+                           green: CGFloat(bitmap[1])/65535,
+                           blue: CGFloat(bitmap[2])/65535,
+                           alpha: CGFloat(bitmap[3])/65535)
+        } else {
+            var bitmap = [UInt8](repeating: 0, count: 4)
+            context.render(outputImage, toBitmap: &bitmap, rowBytes: 4,
+                           bounds: CGRect(x: 0, y: 0, width: 1, height: 1), format: format, colorSpace: space)
+            return UIColor(red: CGFloat(bitmap[0])/255,
+                           green: CGFloat(bitmap[1])/255,
+                           blue: CGFloat(bitmap[2])/255,
+                           alpha: CGFloat(bitmap[3])/255)
+        }
+    }
+
+    func effectiveBackgroundColor() -> CGColor? {
+        // The exact corners occasionally returned unexpected colors, potentially due to antialiasing. Sampling a
+        // point in from the corners in x and y seems to solve this.
+        let xMin = min(1, size.width)
+        let yMin = min(1, size.height)
+        let xMax = max(size.width - 2, 0)
+        let yMax = max(size.height - 2, 0)
+        let corners = [
+            CGPoint(x: xMin, y: yMin),
+            CGPoint(x: xMax, y: yMin),
+            CGPoint(x: xMin, y: yMax),
+            CGPoint(x: xMax, y: yMax)
+        ]
+        let colors = getPixels(points: corners)
+        return CGColor.average(colors: colors)
     }
 }
 

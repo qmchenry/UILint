@@ -16,25 +16,8 @@ import UIKit
 public struct LabelContrastRatio: Check {
     public let description = "Use strongly contrasting colors to improve readability."
 
-    func backgroundColor(screenshot: UIImage) -> UIColor? {
-        // The exact corners occasionally returned unexpected colors, potentially due to antialiasing. Sampling a
-        // point in from the corners in x and y seems to solve this.
-        let xMin = min(1, screenshot.size.width)
-        let yMin = min(1, screenshot.size.height)
-        let xMax = max(screenshot.size.width - 2, 0)
-        let yMax = max(screenshot.size.height - 2, 0)
-        let corners = [
-            CGPoint(x: xMin, y: yMin),
-            CGPoint(x: xMax, y: yMin),
-            CGPoint(x: xMin, y: yMax),
-            CGPoint(x: xMax, y: yMax)
-        ]
-        let colors = screenshot.getPixels(points: corners)
-        return UIColor(colors: colors)
-    }
-
     func isValid(contrastRatio: CGFloat, font: UIFont) -> Bool {
-        let boldOrLarge = font.pointSize >= 18 || font.isBold
+    let boldOrLarge = font.pointSize >= 18 || font.isBold
         return boldOrLarge && contrastRatio >= 3 || font.pointSize < 18 && contrastRatio >= 4.5
     }
 
@@ -42,11 +25,15 @@ public struct LabelContrastRatio: Check {
         guard case let Element.label(font, _, _, textColor, base) = element else { return [] }
         guard let screenshot = context.screenshot,
             let cropped = crop(screenshot: screenshot, toWindowFrame: base.windowFrame),
-            let bgColor = backgroundColor(screenshot: cropped)
-            else { return [] }
+            let bgColor = element.base.effectiveBackgroundColor,
+            let textCGColor = textColor.cgColor.toColorSpace(name: CGColorSpace.sRGB),
+            let contrastRatio = textCGColor.contrastRatio(with: bgColor)
+            else {
+                print("couldn't compute contrast ratio \(element)")
+                return []
+            }
 
-        let contrastRatio = textColor.contrastRatio(with: bgColor)
-        print("\(contrastRatio) \(textColor.hex) \(bgColor.hex)")
+        print("CR \(contrastRatio) \(textColor.hex) \(bgColor.hex)")
         if isValid(contrastRatio: contrastRatio, font: font) {
             return []
         }
