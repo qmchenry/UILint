@@ -27,7 +27,7 @@ extension Element {
             let frame = base.windowFrame else { return false }
         guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
-        return labelSize().height > frame.size.height
+        return labelSize().height.rounded() > frame.size.height.rounded()
     }
 
     func isLabelOffscreen(windowSize: CGSize) -> Bool {

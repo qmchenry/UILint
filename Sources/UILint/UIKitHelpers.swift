@@ -26,7 +26,7 @@ extension UIView {
 
     // View's frame in global/window coordinates
     var windowFrame: CGRect? {
-        superview?.convert(frame, to: parentViewController()?.view)
+        superview?.convert(frame, to: parentViewController()?.view).rounded
     }
 
     // Return an array of all subviews including those not included in the
@@ -43,6 +43,12 @@ extension UIView {
         // todo handle layer transform
         let hitView = hitTest(CGPoint(x: bounds.size.width/2, y: bounds.size.height/2), with: nil)
         return hitView === self
+    }
+}
+
+extension CGRect {
+    var rounded: CGRect {
+        CGRect(x: origin.x.rounded(), y: origin.y.rounded(), width: width.rounded(), height: height.rounded())
     }
 }
 
