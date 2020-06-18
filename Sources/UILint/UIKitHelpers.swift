@@ -296,3 +296,13 @@ extension UIFont {
         fontDescriptor.symbolicTraits.contains(.traitBold)
     }
 }
+
+extension UIDisplayGamut {
+    var name: String {
+        switch self {
+        case .P3: return "Display P3"
+        case .SRGB: return "sRGB"
+        default: return "Unknown"
+        }
+    }
+}

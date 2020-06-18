@@ -8,19 +8,19 @@ import UIKit
 class Report {
     let elements: [Element]
     let findings: [Finding]
-    let details: LintingContext
+    let context: LintingContext
 
     let pdfTitle = "UILint Report"
     let padding = CGFloat(10)
     let paddingLarge = CGFloat(20)
 
     var currentY = CGFloat(0)
-    var screenshot: UIImage? { details.screenshot }
+    var screenshot: UIImage? { context.screenshot }
 
     public init(elements: [Element], findings: [Finding], details: LintingContext ) {
         self.elements = elements
         self.findings = findings
-        self.details = details
+        self.context = details
     }
 
     var pdfMetadata: [AnyHashable: Any] {
@@ -70,84 +70,6 @@ class Report {
     }
 
     var pageSize: CGSize { UIGraphicsGetPDFContextBounds().size }
-
-    let title1: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .center
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .largeTitle),
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let title2: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title1),
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let title3: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .title2),
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let body: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        style.lineBreakMode = .byWordWrapping
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let unispacedBody: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        style.lineBreakMode = .byWordWrapping
-        let font = UIFont(name: "Menlo-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .regular)
-        return [NSAttributedString.Key.font: font,
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let detail: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        style.lineBreakMode = .byWordWrapping
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .caption1),
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let warning: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
-                NSAttributedString.Key.foregroundColor: UIColor.black,
-                NSAttributedString.Key.backgroundColor: UIColor.yellow,
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    let error: [NSAttributedString.Key: Any] = {
-        var style = NSMutableParagraphStyle()
-        style.alignment = .left
-        return [NSAttributedString.Key.font: UIFont.preferredFont(forTextStyle: .body),
-                NSAttributedString.Key.foregroundColor: UIColor.white,
-                NSAttributedString.Key.backgroundColor: UIColor.red,
-                NSAttributedString.Key.paragraphStyle: style]
-    }()
-
-    func style(severity: QAFindingSeverity) -> [NSAttributedString.Key: Any] {
-        if case QAFindingSeverity.error = severity {
-            return error
-        }
-        return warning
-    }
-
-    func color(severity: QAFindingSeverity) -> UIColor {
-        if case QAFindingSeverity.error = severity {
-            return UIColor.red
-        }
-        return UIColor.yellow
-    }
 
 }
 
@@ -355,9 +277,10 @@ extension Report {
         draw("Device name: \(UIDevice.current.name)", attributes: style, xPosition: xPosition)
         draw("Locale: \(Locale.current.languageCode ?? "nil")", attributes: style, xPosition: xPosition)
         if #available(iOS 12.0, *) {
-            let mode = details.traitCollection.userInterfaceStyle == .light ? "Light mode" : "Dark mode"
+            let mode = context.traitCollection.userInterfaceStyle == .light ? "Light mode" : "Dark mode"
             draw("Mode: \(mode)", attributes: style, xPosition: xPosition)
         }
+        draw("Display gamut: \(context.traitCollection.displayGamut.name)", attributes: style, xPosition: xPosition)
         draw("Global configuration", attributes: title2, xPosition: xPosition)
         draw("Excluded checks", attributes: body, xPosition: xPosition)
         if UILintConfig.shared.excludedChecks.isEmpty {
