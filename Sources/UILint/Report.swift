@@ -205,49 +205,65 @@ extension Report {
      }
 
     @discardableResult func draw(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
-        var xPosition = padding
         switch element {
-        case .label(let font, _, let text, let textColor, let base):
-            let size0 = draw("\(element.base.depth) Label: \(font.pointSize)pt", attributes: body,
-                             xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
-            xPosition += 140 + padding
-            let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 180,
-                             updateHeight: false, draw: performDraw)
-            xPosition += 180 + padding
-            //let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
-            //let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition,
-            //                 width: 100, updateHeight: false, draw: performDraw)
-            //xPosition += 100 + padding
-            let colorSize = draw(textColor, xPosition: xPosition, updateHeight: false, draw: false)
-            xPosition = pageSize.width - 2 * colorSize.width
-            let size2 = draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
-            xPosition += colorSize.width
-            let size3 = draw(base.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false,
-                             draw: performDraw)
-            let rowHeight = max(size0.height, size1.height, size2.height, size3.height)
-            if performDraw {
-                currentY += rowHeight + padding
-            }
-            let sizeText = draw(text, attributes: detail, xPosition: 40, draw: performDraw)
-            let height = rowHeight + padding + sizeText.height
-            return height
-        case .image(let image, let imageAccessibilityLabel, let base):
-            let size0 = draw("\(element.base.depth) \(base.className):", attributes: body,
-                             xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
-            xPosition += 140 + padding
-            let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
-                             xPosition: xPosition, width: 240, updateHeight: false, draw: performDraw)
-            xPosition += 240 + padding
-            let size2 = draw(image, xPosition: xPosition, width: pageSize.width - xPosition - padding,
-                             updateHeight: false, draw: performDraw)
-            let rowHeight = max(size0.height, size1.height, size2.height) + padding
-            if performDraw {
-                currentY += rowHeight
-            }
-            return rowHeight
-        default: break
+        case .label: return drawLabel(element, draw: performDraw)
+        case .image: return drawImage(element, draw: performDraw)
+        default: return 0
         }
-        return 0
+    }
+
+    @discardableResult func drawLabel(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
+        guard case let Element.label(font, maxLines, text, textColor, measuredTextColor, measuredBackgroundColor, base)
+            = element else { return 0 }
+        var xPosition = padding
+        let size0 = draw("\(element.base.depth) Label: \(font.pointSize)pt", attributes: body,
+                         xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
+        xPosition += 140 + padding
+        let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 180,
+                         updateHeight: false, draw: performDraw)
+        xPosition += 180 + padding
+        let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
+        let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition,
+                         width: 100, updateHeight: false, draw: performDraw)
+        xPosition += 100 + padding
+        let bgColor = measuredBackgroundColor?.cgColor ?? base.effectiveBackgroundColor ?? UIColor.clear.cgColor
+        let contrast = textColor.cgColor.contrastRatio(with: bgColor)
+        draw("\(String(format: "%.2f", contrast ?? 0)):1", attributes: body, xPosition: xPosition,
+                         width: 100, updateHeight: false, draw: performDraw)
+        xPosition = padding
+        if performDraw { currentY += max(size0.height, size1.height, size2.height) + padding }
+        let colorSize = draw(textColor, xPosition: xPosition, updateHeight: false, draw: false)
+        xPosition += draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw).width
+        draw(measuredTextColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        xPosition += colorSize.width
+        draw(base.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        xPosition += colorSize.width
+        draw(measuredBackgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        xPosition += colorSize.width
+        draw(base.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        xPosition += colorSize.width
+        if performDraw { currentY += colorSize.height + padding }
+        let sizeText = draw(text, attributes: detail, xPosition: 40, draw: performDraw)
+        let height = colorSize.height + padding + sizeText.height
+        return height
+    }
+
+    @discardableResult func drawImage(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
+        guard case let Element.image(image, imageAccessibilityLabel, base) = element else { return 0 }
+        var xPosition = padding
+        let size0 = draw("\(element.base.depth) \(base.className):", attributes: body,
+                         xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
+        xPosition += 140 + padding
+        let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
+                         xPosition: xPosition, width: 240, updateHeight: false, draw: performDraw)
+        xPosition += 240 + padding
+        let size2 = draw(image, xPosition: xPosition, width: pageSize.width - xPosition - padding,
+                         updateHeight: false, draw: performDraw)
+        let rowHeight = max(size0.height, size1.height, size2.height) + padding
+        if performDraw {
+            currentY += rowHeight
+        }
+        return rowHeight
     }
 
     @discardableResult func draw(heirarchyElement element: Element, draw performDraw: Bool = true) -> CGFloat {

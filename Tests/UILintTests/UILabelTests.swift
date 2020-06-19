@@ -134,10 +134,15 @@ class UILabelTests: XCTestCase {
         let windowSize = CGSize(width: 320, height: 480)
         sut.view.frame = CGRect(origin: .zero, size: windowSize)
 
+        let context = LintingContext(windowSize: windowSize,
+                                     screenshot: nil,
+                                     safeAreaRect: CGRect(origin: .zero, size: windowSize),
+                                     traitCollection: UITraitCollection(),
+                                     shouldLint: nil)
         // need to find a way to sneak windowSize into QAElement.Base
         func isOffscreen(origin: CGPoint) -> Bool {
             let view = UILabel(frame: CGRect(origin: origin, size: size))
-            let element = Element(view: view, depth: 0, level: 1)!
+            let element = Element(view: view, depth: 0, level: 1, context: context)!
             return element.isLabelOffscreen(windowSize: windowSize)
         }
         XCTAssertFalse(isOffscreen(origin: .zero))

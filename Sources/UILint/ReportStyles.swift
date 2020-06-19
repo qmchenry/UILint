@@ -8,7 +8,7 @@
 import UIKit
 
 extension Report {
-    
+
     var title1: [NSAttributedString.Key: Any] {
         let style = NSMutableParagraphStyle()
         style.alignment = .center
@@ -86,6 +86,4 @@ extension Report {
         }
         return UIColor.yellow
     }
-
 }
-

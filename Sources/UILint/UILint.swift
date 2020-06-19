@@ -20,7 +20,7 @@ public struct UILint {
         }
 
         let screenshot = grandparent.takeScreenshot()
-        context = LintingContext(windowSize: screenshot.size,
+        let context = LintingContext(windowSize: screenshot.size,
                                      screenshot: screenshot,
                                      safeAreaRect: grandparent.frame.inset(by: grandparent.safeAreaInsets),
                                      traitCollection: grandparentVC.traitCollection,
@@ -29,11 +29,13 @@ public struct UILint {
         var currentDepth = 0
 
         func recurse(_ view: UIView, level: Int) -> [Element] {
-            let viewOutput = [Element(view: view, depth: currentDepth, level: level)].compactMap { $0 }
+            let viewOutput = [Element(view: view, depth: currentDepth, level: level, context: context)]
+                .compactMap { $0 }
             currentDepth += 1
             return view.allSubviews.compactMap { recurse($0, level: level + 1) }.reduce(viewOutput, +)
         }
 
+        self.context = context
         elements = recurse(grandparent, level: 0)
     }
 

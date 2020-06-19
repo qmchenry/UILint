@@ -9,7 +9,8 @@ import UIKit
 
 public enum Element: Comparable, CustomDebugStringConvertible {
 
-    case label(font: UIFont, maxLines: Int, text: String, textColor: UIColor, base: Base)
+    case label(font: UIFont, maxLines: Int, text: String, textColor: UIColor,
+        measuredTextColor: UIColor?, measuredBackgroundColor: UIColor?, base: Base)
     case button(fontName: String?, fontSize: CGFloat?, title: String?, hasImage: Bool, base: Base)
     case image(image: UIImage?, imageAccessibilityLabel: String?, base: Base)
     case other(base: Base)
@@ -27,13 +28,12 @@ public enum Element: Comparable, CustomDebugStringConvertible {
         public let contentMode: UIView.ContentMode
         public let accessibilityIdentifier: String?
         public let tag: Int
-        init(_ view: UIView, depth: Int, level: Int) {
-//            let screenshot = context.screenshot?.crop(to: view.windowFrame, viewSize: context.screenshot?.size)
+        init(_ view: UIView, depth: Int, level: Int, context: LintingContext) {
+            let screenshot = context.screenshot?.crop(to: view.windowFrame, viewSize: context.screenshot?.size)
             className = view.className
             windowFrame = view.windowFrame
             backgroundColor = view.backgroundColor
-//            effectiveBackgroundColor = screenshot?.effectiveBackgroundColor()
-            effectiveBackgroundColor = view.backgroundColor?.cgColor
+            effectiveBackgroundColor = screenshot?.effectiveBackgroundColor()
             let enabledGestureRecognizers = view.gestureRecognizers?.filter { $0.isEnabled }.count ?? 0
             wantsTouches = (view is UIControl) || enabledGestureRecognizers > 0
             consumesTouches = view.consumesTouches
@@ -48,7 +48,7 @@ public enum Element: Comparable, CustomDebugStringConvertible {
 
     public var base: Base {
         switch self {
-        case .label(_, _, _, _, let base): return base
+        case .label(_, _, _, _, _, _, let base): return base
         case .button(_, _, _, _, let base): return base
         case .image(_, _, let base): return base
         case .other(let base): return base
@@ -102,13 +102,17 @@ public enum Element: Comparable, CustomDebugStringConvertible {
         return descriptions.compactMap { $0 }.joined(separator: " ")
     }
 
-    init?(view: UIView, depth: Int, level: Int) {
-        let base = Base(view, depth: depth, level: level)
+    init?(view: UIView, depth: Int, level: Int, context: LintingContext) {
+        let base = Base(view, depth: depth, level: level, context: context)
         if let view = view as? UILabel {
+            let texture = context.screenshot?.crop(to: view.windowFrame, viewSize: context.screenshot!.size)
+            let extractor = LabelColorExtractor(screenshot: texture, label: view)
             self = Element.label(font: view.font,
                                    maxLines: view.numberOfLines,
                                    text: view.text ?? "",
                                    textColor: view.textColor,
+                                   measuredTextColor: extractor?.textColor,
+                                   measuredBackgroundColor: extractor?.backgroundColor,
                                    base: base)
         } else if let view = view as? UIButton {
             let font = view.titleLabel?.font

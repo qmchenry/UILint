@@ -22,7 +22,7 @@ public struct LabelContrastRatio: Check {
     }
 
     public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
-        guard case let Element.label(font, _, _, textColor, base) = element else { return [] }
+        guard case let Element.label(font, _, _, textColor, _, _, base) = element else { return [] }
         guard let screenshot = context.screenshot,
             let cropped = crop(screenshot: screenshot, toWindowFrame: base.windowFrame),
             let bgColor = element.base.effectiveBackgroundColor,
