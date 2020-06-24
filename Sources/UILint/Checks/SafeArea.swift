@@ -10,9 +10,9 @@ import UIKit
 public struct SafeArea: Check {
     public let description = "Adhere to the safe area and layout margins defined by UIKit."
 
-    public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
+    public func findings<T: Element>(forElement element: T, elements: [T], context: LintingContext) -> [Finding] {
         guard let windowFrame = element.base.windowFrame else { return [] }
-        guard element.isLabel || element.isButton || element.isImage else { return [] }
+        guard element.isSafeAreaAware else { return [] }
         guard context.safeAreaRect.union(windowFrame) != context.safeAreaRect else { return [] }
 
         let explanation = "\(element.base.className) [\(element.base.depth)] [\(windowFrame)] "

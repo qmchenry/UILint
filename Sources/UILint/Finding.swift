@@ -12,10 +12,10 @@ public struct Finding: CustomDebugStringConvertible {
     let explanation: String
     let severity: QAFindingSeverity
     let screenshot: UIImage?
-    let element: Element
+    let element: Any
 
     public var debugDescription: String {
-        "Finding (\(element.base.className)): [\(severity)] \(description) \(explanation)"
+        "Finding [\(severity)] \(description) \(explanation)"
     }
 }
 

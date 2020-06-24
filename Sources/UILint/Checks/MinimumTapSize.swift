@@ -10,7 +10,7 @@ import UIKit
 public struct MinimumTapSize: Check {
     public let description = "Provide ample touch targets for interactive elements."
 
-    public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
+    public func findings<T: Element>(forElement element: T, elements: [T], context: LintingContext) -> [Finding] {
         guard element.base.wantsTouches, let windowFrame = element.base.windowFrame else { return [] }
         guard windowFrame.size.height < 44 || windowFrame.size.width < 44 else { return [] }
 

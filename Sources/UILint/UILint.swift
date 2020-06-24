@@ -101,5 +101,6 @@ public struct LintingContext {
     let screenshot: UIImage?
     let safeAreaRect: CGRect
     let traitCollection: UITraitCollection
-    let shouldLint: ((Element, Check.Type) -> Bool)?
+    // if there's a generic way to use Element instead of using it's base.accessibilityIdentifier and tag...
+    let shouldLint: ((String?, Int?, Check.Type) -> Bool)?
 }

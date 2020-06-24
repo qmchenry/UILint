@@ -21,24 +21,24 @@ public struct LabelContrastRatio: Check {
         return boldOrLarge && contrastRatio >= 3 || font.pointSize < 18 && contrastRatio >= 4.5
     }
 
-    public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
-        guard case let Element.label(font, _, _, textColor, _, _, base) = element else { return [] }
+    public func findings<T: Element>(forElement element: T, elements: [T], context: LintingContext) -> [Finding] {
+        guard let element = element as? Label else { return [] }
         guard let screenshot = context.screenshot,
-            let cropped = crop(screenshot: screenshot, toWindowFrame: base.windowFrame),
+            let cropped = crop(screenshot: screenshot, toWindowFrame: element.base.windowFrame),
             let bgColor = element.base.effectiveBackgroundColor,
-            let textCGColor = textColor.cgColor.toColorSpace(name: CGColorSpace.sRGB),
+            let textCGColor = element.textColor.cgColor.toColorSpace(name: CGColorSpace.sRGB),
             let contrastRatio = textCGColor.contrastRatio(with: bgColor)
             else {
                 print("couldn't compute contrast ratio \(element)")
                 return []
             }
 
-        print("CR \(contrastRatio) \(textColor.hex) \(bgColor.hex)")
-        if isValid(contrastRatio: contrastRatio, font: font) {
+        print("CR \(contrastRatio) \(element.textColor.hex) \(bgColor.hex)")
+        if isValid(contrastRatio: contrastRatio, font: element.font) {
             return []
         }
 
-        let explanation = "\(element.base.className) [\(element.base.depth)] textColor: \(textColor.hex)\n"
+        let explanation = "\(element.base.className) [\(element.base.depth)] textColor: \(element.textColor.hex)\n"
             + "bgColor: \(bgColor.hex)\ncontrastRatio: \(String(format: "%.2f", contrastRatio))"
         let finding = Finding(description: description, explanation: explanation, severity: .error,
                               screenshot: cropped, element: element)

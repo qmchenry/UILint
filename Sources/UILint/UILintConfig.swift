@@ -13,7 +13,7 @@ public struct UILintConfig {
     /// If not empty, findings will be issued when fonts are discovered that are not in this list
     public var expectedFontNames = [String]()
 
-    /// If a QACheck is included in this array, that check will be skipped when UILint is run
+    /// If a Check is included in this array, that check will be skipped when UILint is run
     public var excludedChecks = [Check.Type]()
 
     public func reset() {
@@ -23,5 +23,5 @@ public struct UILintConfig {
 }
 
 public protocol UILintConfigurable {
-    func shouldLint(element: Element, check: Check.Type) -> Bool
+    func shouldLint<T: Element>(element: T, check: Check.Type) -> Bool
 }

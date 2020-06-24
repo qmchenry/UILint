@@ -63,7 +63,7 @@ class Report {
                 newPage("View Hierarchy (continued)")
                 currentY += 5
             }
-            draw(heirarchyElement: element)
+            draw(heirarchyElement: element as Element)
         }
         UIGraphicsEndPDFContext()
         return pdfData as Data
@@ -204,60 +204,58 @@ extension Report {
         return rowHeight
      }
 
-    @discardableResult func draw(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
-        switch element {
-        case .label: return drawLabel(element, draw: performDraw)
-        case .image: return drawImage(element, draw: performDraw)
-        default: return 0
+    @discardableResult func draw<T: Element>(_ element: T, draw performDraw: Bool = true) -> CGFloat {
+        if let element = element as? Label {
+            return draw(element, draw: performDraw)
+        }
+        if let element = element as? Image {
+            return draw(element, draw: performDraw)
         }
     }
 
-    @discardableResult func drawLabel(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
-        guard case let Element.label(font, maxLines, text, textColor, measuredTextColor, measuredBackgroundColor, base)
-            = element else { return 0 }
+    @discardableResult func draw(_ label: Label, draw performDraw: Bool = true) -> CGFloat {
         var xPosition = padding
-        let size0 = draw("\(element.base.depth) Label: \(font.pointSize)pt", attributes: body,
+        let size0 = draw("\(label.base.depth) Label: \(label.font.pointSize)pt", attributes: body,
                          xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
         xPosition += 140 + padding
-        let size1 = draw("\(font.fontName)", attributes: body, xPosition: xPosition, width: 180,
+        let size1 = draw("\(label.font.fontName)", attributes: body, xPosition: xPosition, width: 180,
                          updateHeight: false, draw: performDraw)
         xPosition += 180 + padding
-        let numberOfLines = element.numberOfLines(text: text, font: font, frame: base.windowFrame)
-        let size2 = draw("\(numberOfLines) / \(maxLines) lines", attributes: body, xPosition: xPosition,
+        let numberOfLines = label.numberOfLines(text: label.text, font: label.font, frame: label.base.windowFrame)
+        let size2 = draw("\(label.numberOfLines) / \(label.maxLines) lines", attributes: body, xPosition: xPosition,
                          width: 100, updateHeight: false, draw: performDraw)
         xPosition += 100 + padding
-        let bgColor = measuredBackgroundColor?.cgColor ?? base.effectiveBackgroundColor ?? UIColor.clear.cgColor
-        let contrast = textColor.cgColor.contrastRatio(with: bgColor)
+        let bgColor = label.measuredBackgroundColor?.cgColor ?? label.base.effectiveBackgroundColor ?? UIColor.clear.cgColor
+        let contrast = label.textColor.cgColor.contrastRatio(with: bgColor)
         draw("\(String(format: "%.2f", contrast ?? 0)):1", attributes: body, xPosition: xPosition,
                          width: 100, updateHeight: false, draw: performDraw)
         xPosition = padding
         if performDraw { currentY += max(size0.height, size1.height, size2.height) + padding }
-        let colorSize = draw(textColor, xPosition: xPosition, updateHeight: false, draw: false)
-        xPosition += draw(textColor, xPosition: xPosition, updateHeight: false, draw: performDraw).width
-        draw(measuredTextColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        let colorSize = draw(label.textColor, xPosition: xPosition, updateHeight: false, draw: false)
+        xPosition += draw(label.textColor, xPosition: xPosition, updateHeight: false, draw: performDraw).width
+        draw(label.measuredTextColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
-        draw(base.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        draw(label.base.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
-        draw(measuredBackgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        draw(label.measuredBackgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
-        draw(base.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        draw(label.base.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
         if performDraw { currentY += colorSize.height + padding }
-        let sizeText = draw(text, attributes: detail, xPosition: 40, draw: performDraw)
+        let sizeText = draw(label.text, attributes: detail, xPosition: 40, draw: performDraw)
         let height = colorSize.height + padding + sizeText.height
         return height
     }
 
-    @discardableResult func drawImage(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
-        guard case let Element.image(image, imageAccessibilityLabel, base) = element else { return 0 }
+    @discardableResult func draw(_ image: Image, draw performDraw: Bool = true) -> CGFloat {
         var xPosition = padding
-        let size0 = draw("\(element.base.depth) \(base.className):", attributes: body,
+        let size0 = draw("\(image.base.depth) \(image.base.className):", attributes: body,
                          xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
         xPosition += 140 + padding
-        let size1 = draw(imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
+        let size1 = draw(image.imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
                          xPosition: xPosition, width: 240, updateHeight: false, draw: performDraw)
         xPosition += 240 + padding
-        let size2 = draw(image, xPosition: xPosition, width: pageSize.width - xPosition - padding,
+        let size2 = draw(image.image, xPosition: xPosition, width: pageSize.width - xPosition - padding,
                          updateHeight: false, draw: performDraw)
         let rowHeight = max(size0.height, size1.height, size2.height) + padding
         if performDraw {
@@ -266,8 +264,8 @@ extension Report {
         return rowHeight
     }
 
-    @discardableResult func draw(heirarchyElement element: Element, draw performDraw: Bool = true) -> CGFloat {
-        let spacer = "\(String(format: "%4d ", element.depth)) "
+    @discardableResult func draw<T: Element>(heirarchyElement element: T, draw performDraw: Bool = true) -> CGFloat {
+        let spacer = "\(String(format: "%4d ", element.base.depth)) "
             + String(repeating: "-  ", count: element.base.level)
         let string = "\(element)"
         let size = draw(spacer, attributes: unispacedBody, updateHeight: false, draw: performDraw)
