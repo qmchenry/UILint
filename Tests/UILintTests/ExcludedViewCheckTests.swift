@@ -9,9 +9,8 @@ import XCTest
 @testable import UILint
 
 private class ViewController: UIViewController, UILintConfigurable {
-
     func shouldLint(element: Element, check: Check.Type) -> Bool {
-        switch (element.base.tag, element.base.accessibilityIdentifier, check) {
+        switch (element.tag, element.accessibilityIdentifier, check) {
         case (10, _, _): return false
         case (20, _, is LabelVerticalClipping.Type): return false
         case (_, "Don't check this", _): return false

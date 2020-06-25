@@ -19,6 +19,20 @@ public struct UILint {
             return nil
         }
 
+        func element(for view: UIView, depth: Int, level: Int, context: LintingContext) -> Element? {
+            guard UILintConfig.shared.ignoreUnderscoredClasses, !view.className.hasPrefix("_") else { return nil }
+            if let label = view as? UILabel {
+                return Label(label, depth: depth, level: level, context: context)
+            }
+            if let button = view as? UIButton {
+                return Button(button, depth: depth, level: level, context: context)
+            }
+            if let image = view as? UIImageView {
+                return Image(image, depth: depth, level: level, context: context)
+            }
+            return Element(view, depth: depth, level: level, context: context)
+        }
+
         let screenshot = grandparent.takeScreenshot()
         let context = LintingContext(windowSize: screenshot.size,
                                      screenshot: screenshot,
@@ -29,9 +43,11 @@ public struct UILint {
         var currentDepth = 0
 
         func recurse(_ view: UIView, level: Int) -> [Element] {
-            let viewOutput = [Element(view: view, depth: currentDepth, level: level, context: context)]
+            let viewOutput = [element(for: view, depth: currentDepth, level: level, context: context)]
                 .compactMap { $0 }
-            currentDepth += 1
+            if !viewOutput.isEmpty {
+                currentDepth += 1
+            }
             return view.allSubviews.compactMap { recurse($0, level: level + 1) }.reduce(viewOutput, +)
         }
 
@@ -102,5 +118,5 @@ public struct LintingContext {
     let safeAreaRect: CGRect
     let traitCollection: UITraitCollection
     // if there's a generic way to use Element instead of using it's base.accessibilityIdentifier and tag...
-    let shouldLint: ((String?, Int?, Check.Type) -> Bool)?
+    let shouldLint: ((Element, Check.Type) -> Bool)?
 }

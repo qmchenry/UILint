@@ -10,19 +10,19 @@ import UIKit
 public struct OverlappingTouchBlock: Check {
     public let description = "Touches to the target view may be blocked by another view."
 
-    public func findings<T: Element>(forElement element: T, elements: [T], context: LintingContext) -> [Finding] {
-        guard element.base.wantsTouches, let windowFrame = element.base.windowFrame else { return [] }
+    public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
+        guard element.wantsTouches, let windowFrame = element.windowFrame else { return [] }
 
         let overlapping = elements.filter {
-            $0.base.depth > element.base.depth
-            && $0.base.consumesTouches
+            $0.depth > element.depth
+            && $0.consumesTouches
             && $0.overlaps(element)
         }
         let findings = overlapping.map { checkElement -> Finding in
-            let unionBounds = windowFrame.union(checkElement.base.windowFrame!)
+            let unionBounds = windowFrame.union(checkElement.windowFrame!)
             let cropped = context.screenshot?.crop(to: unionBounds, viewSize: context.screenshot!.size)
-            let explanation = "\(element.base.className) [\(element.base.depth)] is obscured by "
-                + "\(checkElement.base.className) [\(checkElement.base.depth)]"
+            let explanation = "\(element.className) [\(element.depth)] is obscured by "
+                + "\(checkElement.className) [\(checkElement.depth)]"
             let finding = Finding(description: description, explanation: explanation, severity: .error,
                                   screenshot: cropped, element: element)
             return finding

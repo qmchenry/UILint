@@ -28,12 +28,12 @@ final class UILintTests: XCTestCase {
         XCTAssertEqual(lint?.elements[4].depth, 4)
         XCTAssertEqual(lint?.elements[5].depth, 5)
 
-        XCTAssertEqual(lint?.elements[0].base.className, "UIView")
-        XCTAssertEqual(lint?.elements[1].base.className, "UIImageView")
-        XCTAssertEqual(lint?.elements[2].base.className, "UIView")
-        XCTAssertEqual(lint?.elements[3].base.className, "UISlider")
-        XCTAssertEqual(lint?.elements[4].base.className, "UIImageView")
-        XCTAssertEqual(lint?.elements[5].base.className, "UILabel")
+        XCTAssertEqual(lint?.elements[0].className, "UIView")
+        XCTAssertEqual(lint?.elements[1].className, "UIImageView")
+        XCTAssertEqual(lint?.elements[2].className, "UIView")
+        XCTAssertEqual(lint?.elements[3].className, "UISlider")
+        XCTAssertEqual(lint?.elements[4].className, "UIImageView")
+        XCTAssertEqual(lint?.elements[5].className, "UILabel")
 
     }
 

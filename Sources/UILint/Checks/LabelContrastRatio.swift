@@ -21,11 +21,11 @@ public struct LabelContrastRatio: Check {
         return boldOrLarge && contrastRatio >= 3 || font.pointSize < 18 && contrastRatio >= 4.5
     }
 
-    public func findings<T: Element>(forElement element: T, elements: [T], context: LintingContext) -> [Finding] {
+    public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
         guard let element = element as? Label else { return [] }
         guard let screenshot = context.screenshot,
-            let cropped = crop(screenshot: screenshot, toWindowFrame: element.base.windowFrame),
-            let bgColor = element.base.effectiveBackgroundColor,
+            let cropped = crop(screenshot: screenshot, toWindowFrame: element.windowFrame),
+            let bgColor = element.effectiveBackgroundColor,
             let textCGColor = element.textColor.cgColor.toColorSpace(name: CGColorSpace.sRGB),
             let contrastRatio = textCGColor.contrastRatio(with: bgColor)
             else {
@@ -38,7 +38,7 @@ public struct LabelContrastRatio: Check {
             return []
         }
 
-        let explanation = "\(element.base.className) [\(element.base.depth)] textColor: \(element.textColor.hex)\n"
+        let explanation = "\(element.className) [\(element.depth)] textColor: \(element.textColor.hex)\n"
             + "bgColor: \(bgColor.hex)\ncontrastRatio: \(String(format: "%.2f", contrastRatio))"
         let finding = Finding(description: description, explanation: explanation, severity: .error,
                               screenshot: cropped, element: element)

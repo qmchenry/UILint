@@ -16,6 +16,9 @@ public struct UILintConfig {
     /// If a Check is included in this array, that check will be skipped when UILint is run
     public var excludedChecks = [Check.Type]()
 
+    /// If true, skip UIView subclasses starting with an underscore
+    public var ignoreUnderscoredClasses = true
+
     public func reset() {
         Self.shared.expectedFontNames = []
         Self.shared.excludedChecks = []
@@ -23,5 +26,5 @@ public struct UILintConfig {
 }
 
 public protocol UILintConfigurable {
-    func shouldLint<T: Element>(element: T, check: Check.Type) -> Bool
+    func shouldLint(element: Element, check: Check.Type) -> Bool
 }

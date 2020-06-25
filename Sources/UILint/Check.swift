@@ -10,7 +10,7 @@ import UIKit
 public protocol Check {
     init()
     var description: String { get }
-    func findings<T: Element>(forElement element: T, elements: [T], context: LintingContext) -> [Finding]
+    func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding]
     func crop(screenshot: UIImage?, toWindowFrame frame: CGRect?) -> UIImage?
 }
 

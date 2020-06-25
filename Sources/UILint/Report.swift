@@ -204,28 +204,29 @@ extension Report {
         return rowHeight
      }
 
-    @discardableResult func draw<T: Element>(_ element: T, draw performDraw: Bool = true) -> CGFloat {
+    @discardableResult func draw(_ element: Element, draw performDraw: Bool = true) -> CGFloat {
         if let element = element as? Label {
-            return draw(element, draw: performDraw)
+            return drawLabel(element, draw: performDraw)
         }
         if let element = element as? Image {
-            return draw(element, draw: performDraw)
+            return drawImage(element, draw: performDraw)
         }
+        return 0
     }
 
-    @discardableResult func draw(_ label: Label, draw performDraw: Bool = true) -> CGFloat {
+    @discardableResult func drawLabel(_ label: Label, draw performDraw: Bool = true) -> CGFloat {
         var xPosition = padding
-        let size0 = draw("\(label.base.depth) Label: \(label.font.pointSize)pt", attributes: body,
+        let size0 = draw("\(label.depth) Label: \(label.font.pointSize)pt", attributes: body,
                          xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
         xPosition += 140 + padding
         let size1 = draw("\(label.font.fontName)", attributes: body, xPosition: xPosition, width: 180,
                          updateHeight: false, draw: performDraw)
         xPosition += 180 + padding
-        let numberOfLines = label.numberOfLines(text: label.text, font: label.font, frame: label.base.windowFrame)
-        let size2 = draw("\(label.numberOfLines) / \(label.maxLines) lines", attributes: body, xPosition: xPosition,
+        let lines = label.numberOfLines(text: label.text, font: label.font, frame: label.windowFrame)
+        let size2 = draw("\(lines) / \(label.maxLines) lines", attributes: body, xPosition: xPosition,
                          width: 100, updateHeight: false, draw: performDraw)
         xPosition += 100 + padding
-        let bgColor = label.measuredBackgroundColor?.cgColor ?? label.base.effectiveBackgroundColor ?? UIColor.clear.cgColor
+        let bgColor = label.measuredBackgroundColor?.cgColor ?? label.effectiveBackgroundColor ?? UIColor.clear.cgColor
         let contrast = label.textColor.cgColor.contrastRatio(with: bgColor)
         draw("\(String(format: "%.2f", contrast ?? 0)):1", attributes: body, xPosition: xPosition,
                          width: 100, updateHeight: false, draw: performDraw)
@@ -235,11 +236,11 @@ extension Report {
         xPosition += draw(label.textColor, xPosition: xPosition, updateHeight: false, draw: performDraw).width
         draw(label.measuredTextColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
-        draw(label.base.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        draw(label.backgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
         draw(label.measuredBackgroundColor ?? .clear, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
-        draw(label.base.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
+        draw(label.effectiveBackgroundColor, xPosition: xPosition, updateHeight: false, draw: performDraw)
         xPosition += colorSize.width
         if performDraw { currentY += colorSize.height + padding }
         let sizeText = draw(label.text, attributes: detail, xPosition: 40, draw: performDraw)
@@ -247,9 +248,9 @@ extension Report {
         return height
     }
 
-    @discardableResult func draw(_ image: Image, draw performDraw: Bool = true) -> CGFloat {
+    @discardableResult func drawImage(_ image: Image, draw performDraw: Bool = true) -> CGFloat {
         var xPosition = padding
-        let size0 = draw("\(image.base.depth) \(image.base.className):", attributes: body,
+        let size0 = draw("\(image.depth) \(image.className):", attributes: body,
                          xPosition: xPosition, width: 140, updateHeight: false, draw: performDraw)
         xPosition += 140 + padding
         let size1 = draw(image.imageAccessibilityLabel ?? "{no accessibility label}", attributes: body,
@@ -265,8 +266,8 @@ extension Report {
     }
 
     @discardableResult func draw<T: Element>(heirarchyElement element: T, draw performDraw: Bool = true) -> CGFloat {
-        let spacer = "\(String(format: "%4d ", element.base.depth)) "
-            + String(repeating: "-  ", count: element.base.level)
+        let spacer = "\(String(format: "%4d ", element.depth)) "
+            + String(repeating: "-  ", count: element.level)
         let string = "\(element)"
         let size = draw(spacer, attributes: unispacedBody, updateHeight: false, draw: performDraw)
         let rowSize = draw(string, attributes: unispacedBody, xPosition: size.width + padding, draw: performDraw)

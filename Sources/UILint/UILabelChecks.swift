@@ -10,21 +10,21 @@ import UIKit
 extension Label {
 
     func isLabelTruncated() -> Bool {
-        guard let frame = base.windowFrame else { return false }
+        guard let frame = windowFrame else { return false }
         guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
         return maxLines > 0 ? numberOfLines(text: text, font: font, frame: frame) > maxLines : false
     }
 
     func isLabelClippedVertically() -> Bool {
-        guard let frame = base.windowFrame else { return false }
+        guard let frame = windowFrame else { return false }
         guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
         return labelSize().height.rounded() > frame.size.height.rounded()
     }
 
     func isLabelOffscreen(windowSize: CGSize) -> Bool {
-        guard let frame = base.windowFrame else { return false }
+        guard let frame = windowFrame else { return false }
         let windowRect = CGRect(origin: .zero, size: windowSize).rounded
         return windowRect.union(frame) != windowRect
     }
@@ -36,7 +36,7 @@ extension Label {
     }
 
     func labelSize() -> CGSize {
-        guard let frame = base.windowFrame else { return .zero }
+        guard let frame = windowFrame else { return .zero }
         return (text as NSString).boundingRect(with: CGSize(width: frame.size.width, height: .greatestFiniteMagnitude),
             options: .usesLineFragmentOrigin,
             attributes: [.font: font],
