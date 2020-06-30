@@ -19,7 +19,7 @@ final class UILintTests: XCTestCase {
         sut.view.addSubview(view) // 2
         sut.view.addSubview(UILabel()) // 5
 
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         XCTAssertEqual(lint?.elements.count, 6)
         XCTAssertEqual(lint?.elements[0].depth, 0)
         XCTAssertEqual(lint?.elements[1].depth, 1)

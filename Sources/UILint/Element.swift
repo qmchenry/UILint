@@ -79,7 +79,7 @@ extension Element: Comparable {
     public static func < (lhs: Element, rhs: Element) -> Bool {
         return lhs.sortOrder < rhs.sortOrder
     }
-    
+
     public static func == (lhs: Element, rhs: Element) -> Bool {
         return lhs.sortOrder == rhs.sortOrder
     }

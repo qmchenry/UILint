@@ -35,7 +35,7 @@ final class ExcludedViewCheckTests: XCTestCase {
         label.text = "Some long text here"
         label.tag = 10
         sut.view.addSubview(label)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
         // in testUILabelTruncationZeroFrame() has two Findings
@@ -46,7 +46,7 @@ final class ExcludedViewCheckTests: XCTestCase {
         label.text = "Some long text here"
         label.tag = 20
         sut.view.addSubview(label)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
         XCTAssertFalse(findings.contains { $0.description == LabelVerticalClipping().description })
@@ -57,7 +57,7 @@ final class ExcludedViewCheckTests: XCTestCase {
         label.text = "Some long text here"
         label.accessibilityIdentifier = "Don't check this"
         sut.view.addSubview(label)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
         // in testUILabelTruncationZeroFrame() has two Findings
@@ -68,7 +68,7 @@ final class ExcludedViewCheckTests: XCTestCase {
         label.text = "Some long text here"
         label.accessibilityIdentifier = "Don't check this for vertical clipping"
         sut.view.addSubview(label)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
         XCTAssertFalse(findings.contains { $0.description == LabelVerticalClipping().description })

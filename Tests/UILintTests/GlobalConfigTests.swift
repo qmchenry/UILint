@@ -23,7 +23,7 @@ final class GlobalConfigTests: XCTestCase {
         label.text = "This text is two lines\nlong for it\'s own good!"
         label.numberOfLines = 2
         sut.view.addSubview(label)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
 
         UILintConfig.shared.excludedChecks.append(LabelTruncation.self)
         let findings = lint!.findings
@@ -43,7 +43,7 @@ final class GlobalConfigTests: XCTestCase {
         label2.text = "This text is in AvenirNext-Bold!"
         label2.numberOfLines = 0
         sut.view.addSubview(label2)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
 
         UILintConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
         let findings = lint!.findings
@@ -62,7 +62,7 @@ final class GlobalConfigTests: XCTestCase {
         label2.text = "This text is in AvenirNext-Bold!"
         label2.numberOfLines = 0
         sut.view.addSubview(label2)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
 
         UILintConfig.shared.expectedFontNames.append("AvenirNext-HeavyItalic")
         UILintConfig.shared.expectedFontNames.append("AvenirNext-Bold")

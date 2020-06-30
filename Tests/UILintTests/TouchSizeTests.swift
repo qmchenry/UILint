@@ -21,7 +21,7 @@ class TouchSizeTests: XCTestCase {
     func testUIButtonMinimumHeight() {
         let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 44, height: 43)))
         sut.view.addSubview(button)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertEqual(findings[0].description, MinimumTapSize().description)
@@ -31,7 +31,7 @@ class TouchSizeTests: XCTestCase {
     func testUIButtonMinimumWidth() {
         let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 43, height: 44)))
         sut.view.addSubview(button)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertEqual(findings[0].description, MinimumTapSize().description)
@@ -41,7 +41,7 @@ class TouchSizeTests: XCTestCase {
     func testUIButtonMinimumWidthAndHeight() {
         let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 1, height: 1)))
         sut.view.addSubview(button)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertEqual(findings[0].description, MinimumTapSize().description)
@@ -51,7 +51,7 @@ class TouchSizeTests: XCTestCase {
     func testUIButtonZeroSize() {
         let button = UIButton(frame: CGRect(origin: .zero, size: .zero))
         sut.view.addSubview(button)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertEqual(findings[0].description, MinimumTapSize().description)
@@ -61,7 +61,7 @@ class TouchSizeTests: XCTestCase {
     func testUIButtonMinimumGoodSize() {
         let button = UIButton(frame: CGRect(origin: .zero, size: CGSize(width: 44, height: 44)))
         sut.view.addSubview(button)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
@@ -72,7 +72,7 @@ class TouchSizeTests: XCTestCase {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 44, height: 43)))
         view.addGestureRecognizer(UITapGestureRecognizer())
         sut.view.addSubview(view)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertEqual(findings[0].description, MinimumTapSize().description)
@@ -83,7 +83,7 @@ class TouchSizeTests: XCTestCase {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 43, height: 44)))
         view.addGestureRecognizer(UITapGestureRecognizer())
         sut.view.addSubview(view)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 1)
         XCTAssertEqual(findings[0].description, MinimumTapSize().description)
@@ -94,7 +94,7 @@ class TouchSizeTests: XCTestCase {
         let view = UIView(frame: CGRect(origin: .zero, size: CGSize(width: 44, height: 44)))
         view.addGestureRecognizer(UITapGestureRecognizer())
         sut.view.addSubview(view)
-        let lint = UILint(view: sut.view)
+        let lint = UILintSession(view: sut.view)
         let findings = lint!.findings
         XCTAssertEqual(findings.count, 0)
     }
