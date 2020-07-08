@@ -11,6 +11,7 @@ import UIKit
 public struct UILint {
 
     static var sessions = [UILintSession]()
+    public static let singleReportURL = URL(fileURLWithPath: "/tmp/uilint-report.pdf")
 
     public static func clearSessions() {
         sessions.removeAll()
@@ -28,6 +29,7 @@ public struct UILint {
             else { return }
             sessions.append(session)
             let pdfData = session.makePDF()
+            try? pdfData.write(to: singleReportURL)
             let activityVC = UIActivityViewController(activityItems: [pdfData], applicationActivities: nil)
             activityVC.modalPresentationStyle = .overFullScreen
             rootVC.topmostViewController().present(activityVC, animated: true)
