@@ -45,7 +45,7 @@ public class Element: CustomDebugStringConvertible {
         let descriptions: [String?] = [
                 className,
                 tag != 0 ? "tag:\(tag)" : nil,
-                accessibilityIdentifier != nil ?  "aid:'\(accessibilityIdentifier!)'" : nil
+                accessibilityIdentifier != nil ?  "aid: '\(accessibilityIdentifier!)'" : nil
             ]
         return descriptions.compactMap { $0 }.joined(separator: " ")
     }

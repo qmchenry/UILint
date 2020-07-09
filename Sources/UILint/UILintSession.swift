@@ -8,7 +8,7 @@
 import UIKit
 
 public struct UILintSession {
-    var elements = [Element]()
+    let elements: [Element]
     let context: LintingContext
 
     var findings: [Finding] {
@@ -18,7 +18,26 @@ public struct UILintSession {
     }
 
     public func makePDF() -> Data {
-        Report(elements: elements, findings: findings, details: context).makePDF()
+        let allFindings = findings
+        let report = Report(elements: elements, findings: allFindings, details: context).makePDF()
+        #if targetEnvironment(simulator)
+        try? report.write(to: UILint.singleReportURL)
+        try? Data(summary(findings: allFindings).utf8).write(to: UILint.singleResultsURL)
+        #endif
+        return report
+    }
+
+    public func summary(findings: [Finding]) -> String {
+        let errors = findings.filter { $0.severity == .error }.count
+        let warnings = findings.filter { $0.severity == .warning }.count
+        if errors + warnings == 0 {
+            return "No findings"
+        }
+        return "\(errors) error\(errors == 1 ? "" : "s"), \(warnings) warning\(warnings == 1 ? "" : "s")"
+    }
+
+    public func summary() -> String {
+        summary(findings: findings)
     }
 
     public init?(view: UIView) {
@@ -34,6 +53,6 @@ public struct UILintSession {
                                  traitCollection: grandparentVC.traitCollection,
                                  shouldLint: (grandparentVC as? UILintConfigurable)?.shouldLint(element:check:))
 
-        elements += UIKitSceneWalker.walk(view: grandparent, context: context)
+        elements = UIKitSceneWalker.walk(view: grandparent, context: context)
     }
 }
