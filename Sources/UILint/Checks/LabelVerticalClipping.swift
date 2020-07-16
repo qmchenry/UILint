@@ -14,7 +14,12 @@ public struct LabelVerticalClipping: Check {
         guard let element = element as? Label, element.isLabelClippedVertically() else { return [] }
         // todo handle auto font scaling
 
-        let explanation = "\(element.className) [\(element.depth)] full text is '\(element.text)' "
+        let screenSize = (element.windowFrame?.size ?? .zero).string(precision: 2)
+        let explanation = """
+            \(element.className) [\(element.depth)] full text is '\(element.text)'
+            screen size: \(screenSize) required size: \(element.labelSize().string(precision: 2))
+            maxLines: \(element.maxLines) required lines: \(element.numberOfLines(label: element))
+            """
         let cropped = crop(screenshot: context.screenshot, toWindowFrame: element.windowFrame)
         let finding = Finding(description: description, explanation: explanation, severity: .error,
                               screenshot: cropped, element: element)

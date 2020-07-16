@@ -26,7 +26,7 @@ extension UIView {
 
     // View's frame in global/window coordinates
     var windowFrame: CGRect? {
-        superview?.convert(frame, to: parentViewController()?.view).rounded
+        superview?.convert(frame, to: parentViewController()?.view)
     }
 
     // Return an array of all subviews including those not included in the
@@ -49,6 +49,12 @@ extension UIView {
 extension CGRect {
     var rounded: CGRect {
         CGRect(x: origin.x.rounded(), y: origin.y.rounded(), width: width.rounded(), height: height.rounded())
+    }
+}
+
+extension CGSize {
+    func string(precision: Int) -> String {
+        String(format: "(%0.\(precision)f, %0.\(precision)f)", width, height)
     }
 }
 

@@ -26,56 +26,52 @@ class UILabelTests: XCTestCase {
         let findings = lint!.findings
         XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
         XCTAssertTrue(findings.contains { $0.description == LabelVerticalClipping().description })
-        XCTAssertEqual(findings[0].severity, .error)
-        XCTAssertEqual(findings[1].severity, .error)
     }
 
     func testUILabelTruncationTinyFrame() {
         let label = UILabel(frame: CGRect(origin: .zero, size: CGSize(width: 1, height: 1)))
         label.text = "Some long text here"
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        let findings = lint!.findings
+        let lint = UILintSession(view: sut.view)!
+        let findings = lint.findings
         XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
         XCTAssertTrue(findings.contains { $0.description == LabelVerticalClipping().description })
-        XCTAssertEqual(findings[0].severity, .error)
-        XCTAssertEqual(findings[1].severity, .error)
     }
 
     func testUILabelTruncationTinyHeight() {
         let label = UILabel(frame: CGRect(origin: .zero, size: CGSize(width: 200, height: 1)))
         label.text = "Some long text here"
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertEqual(lint?.findings.first?.severity, .error)
-        XCTAssertTrue(lint!.findings.contains { $0.description == LabelVerticalClipping().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertEqual(lint.findings.first?.severity, .error)
+        XCTAssertTrue(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
 
     func testUILabelNoTruncationSingleLine() {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 180, height: 57))
         label.text = "This text is just right."
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelTruncation().description })
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelVerticalClipping().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelTruncation().description })
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
 
     func testUILabelEmptyNoTruncationSingleLine() {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 1, height: 57))
         label.text = ""
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelTruncation().description })
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelVerticalClipping().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelTruncation().description })
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
 
     func testUILabelTruncationSingleLine() {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 180, height: 57))
         label.text = "This text is too long for it\'s own good!"
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertEqual(lint?.findings.first?.severity, .error)
-        XCTAssertTrue(lint!.findings.contains { $0.description == LabelTruncation().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertEqual(lint.findings.first?.severity, .error)
+        XCTAssertTrue(lint.findings.contains { $0.description == LabelTruncation().description })
     }
 
     func testUILabelNoTruncationMultiline() {
@@ -83,9 +79,9 @@ class UILabelTests: XCTestCase {
         label.text = "This text is two lines\nlong for it\'s own good!"
         label.numberOfLines = 2
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelTruncation().description })
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelVerticalClipping().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelTruncation().description })
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
 
     func testUILabelTruncationMultiline() {
@@ -93,9 +89,9 @@ class UILabelTests: XCTestCase {
         label.text = "This text is two lines\nlong for it\'s own good!"
         label.numberOfLines = 2
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertEqual(lint?.findings.first?.severity, .error)
-        XCTAssertTrue(lint!.findings.contains { $0.description == LabelTruncation().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertEqual(lint.findings.first?.severity, .error)
+        XCTAssertTrue(lint.findings.contains { $0.description == LabelTruncation().description })
     }
 
     func testUILabelTruncationMultilineShort() {
@@ -103,30 +99,28 @@ class UILabelTests: XCTestCase {
         label.text = "This text is two lines\nlong for it\'s own good!"
         label.numberOfLines = 2
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        let findings = lint!.findings
-        XCTAssertTrue(findings.contains { $0.description == LabelTruncation().description })
-        XCTAssertTrue(findings.contains { $0.description == LabelVerticalClipping().description })
-        XCTAssertEqual(findings[0].severity, .error)
-        XCTAssertEqual(findings[1].severity, .error)
+        let lint = UILintSession(view: sut.view)!
+        let findings = lint .findings
+        XCTAssertEqual(findings.filter { $0.description == LabelTruncation().description }.count, 1)
+        XCTAssertEqual(findings.filter { $0.description == LabelVerticalClipping().description }.count, 1)
     }
 
     func testUILabelClippedVertically() {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 157, height: 1))
         label.text = "This text is text."
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertEqual(lint?.findings.first?.severity, .error)
-        XCTAssertTrue(lint!.findings.contains { $0.description == LabelVerticalClipping().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertEqual(lint.findings.first?.severity, .error)
+        XCTAssertTrue(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
 
     func testUILabelEmptyNotClippedVertically() {
         let label = UILabel(frame: CGRect(x: 0, y: 0, width: 157, height: 1))
         label.text = ""
         sut.view.addSubview(label)
-        let lint = UILintSession(view: sut.view)
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelTruncation().description })
-        XCTAssertFalse(lint!.findings.contains { $0.description == LabelVerticalClipping().description })
+        let lint = UILintSession(view: sut.view)!
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelTruncation().description })
+        XCTAssertFalse(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
 
     func disabled_testUILabelOffscreen() {

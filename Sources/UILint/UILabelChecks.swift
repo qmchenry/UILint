@@ -13,7 +13,7 @@ extension Label {
         guard let frame = windowFrame else { return false }
         guard text.count > 0 else { return false }
         guard frame.width > 0 else { return true }
-        return maxLines > 0 ? numberOfLines(text: text, font: font, frame: frame) > maxLines : false
+        return maxLines > 0 && numberOfLines(text: text, font: font, frame: frame) > maxLines
     }
 
     func isLabelClippedVertically() -> Bool {
@@ -32,15 +32,22 @@ extension Label {
     func numberOfLines(text: String, font: UIFont, frame: CGRect?) -> Int {
         guard frame != nil, text.count > 0 else { return 0 }
         let size = labelSize()
-        return Int(ceil(size.height) / font.lineHeight)
+        return Int(ceil(size.height / font.lineHeight))
+    }
+
+    func numberOfLines(label: Label) -> Int {
+        numberOfLines(text: label.text, font: label.font, frame: label.windowFrame)
     }
 
     func labelSize() -> CGSize {
         guard let frame = windowFrame else { return .zero }
-        return (text as NSString).boundingRect(with: CGSize(width: frame.size.width, height: .greatestFiniteMagnitude),
-            options: .usesLineFragmentOrigin,
+        let options: NSStringDrawingOptions = [.usesLineFragmentOrigin, .usesFontLeading, .usesDeviceMetrics]
+        let testSize = CGSize(width: ceil(frame.size.width), height: .greatestFiniteMagnitude)
+        let size = (text as NSString).boundingRect(with: testSize,
+            options: options,
             attributes: [.font: font],
             context: nil).size
+        return size
     }
 }
 
