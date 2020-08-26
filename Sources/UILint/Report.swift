@@ -227,7 +227,7 @@ extension Report {
                          width: 100, updateHeight: false, draw: performDraw)
         xPosition += 100 + padding
         let bgColor = label.measuredBackgroundColor?.cgColor ?? label.effectiveBackgroundColor ?? UIColor.clear.cgColor
-        let contrast = label.textColor.cgColor.contrastRatio(with: bgColor)
+        let contrast = label.textColor.cgColor.contrastRatio(between: bgColor)
         draw("\(String(format: "%.2f", contrast ?? 0)):1", attributes: body, xPosition: xPosition,
                          width: 100, updateHeight: false, draw: performDraw)
         xPosition = padding

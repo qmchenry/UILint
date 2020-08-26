@@ -11,6 +11,7 @@
 // 18 pt and larger     Any                 3:1
 // Any                  Bold                3:1
 
+import Sprinkles
 import UIKit
 
 public struct LabelContrastRatio: Check {
@@ -27,7 +28,7 @@ public struct LabelContrastRatio: Check {
             let cropped = crop(screenshot: screenshot, toWindowFrame: element.windowFrame),
             let bgColor = element.effectiveBackgroundColor,
             let textCGColor = element.textColor.cgColor.toColorSpace(name: CGColorSpace.sRGB),
-            let contrastRatio = textCGColor.contrastRatio(with: bgColor)
+            let contrastRatio = textCGColor.contrastRatio(between: bgColor)
             else {
                 print("couldn't compute contrast ratio \(element)")
                 return []

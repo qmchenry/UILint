@@ -14,11 +14,13 @@ let package = Package(
             name: "UILint",
             targets: ["UILint"])
     ],
-    dependencies: [],
+    dependencies: [
+        .package(url: "https://github.com/qmchenry/Sprinkles.git", .branch("main"))
+                 ],
     targets: [
         .target(
             name: "UILint",
-            dependencies: []),
+            dependencies: ["Sprinkles"]),
         .testTarget(
             name: "UILintTests",
             dependencies: ["UILint"])

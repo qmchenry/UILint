@@ -8,7 +8,7 @@
 import UIKit
 
 public struct OverlappingTouchBlock: Check {
-    public let description = "Touches to the target view may be blocked by another view."
+    public let description = "An element is blocking tappable area of another element."
 
     public func findings(forElement element: Element, elements: [Element], context: LintingContext) -> [Finding] {
         guard element.wantsTouches, let windowFrame = element.windowFrame else { return [] }

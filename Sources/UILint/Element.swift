@@ -29,7 +29,7 @@ public class Element: CustomDebugStringConvertible {
         className = view.className
         windowFrame = view.windowFrame
         backgroundColor = view.backgroundColor
-        effectiveBackgroundColor = screenshot?.effectiveBackgroundColor()
+        effectiveBackgroundColor = screenshot?.effectiveBackgroundColor()?.cgColor
         let enabledGestureRecognizers = view.gestureRecognizers?.filter { $0.isEnabled }.count ?? 0
         wantsTouches = (view is UIControl) || enabledGestureRecognizers > 0
         consumesTouches = view.consumesTouches
