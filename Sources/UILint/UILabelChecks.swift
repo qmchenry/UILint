@@ -43,7 +43,7 @@ extension Label {
         guard let frame = windowFrame else { return .zero }
         let options: NSStringDrawingOptions = [.usesLineFragmentOrigin]
         let testSize = CGSize(width: ceil(frame.size.width), height: .greatestFiniteMagnitude)
-        
+
         let size = (text as NSString).boundingRect(with: testSize,
             options: options,
             attributes: [.font: font],

@@ -18,7 +18,6 @@ class UILabelIntrinsicSizeTests: XCTestCase {
         UILintConfig.shared.reset()
     }
 
-
     func testLabelIntrinsicSizeClipping() {
         let label = UILabel()
         label.font = UIFont.preferredFont(forTextStyle: .body)
@@ -33,7 +32,7 @@ class UILabelIntrinsicSizeTests: XCTestCase {
             [.usesLineFragmentOrigin],
             [.truncatesLastVisibleLine],
             [.usesDeviceMetrics],
-            [.usesLineFragmentOrigin, .usesFontLeading, .usesDeviceMetrics],
+            [.usesLineFragmentOrigin, .usesFontLeading, .usesDeviceMetrics]
         ]
 
         func labelSizes(text: String) {
@@ -46,7 +45,7 @@ class UILabelIntrinsicSizeTests: XCTestCase {
             let sizes = options.map {
                 nsText.boundingRect(with: limitSize, options: $0, attributes: [.font: font], context: nil).size
             }
-            let stringSizes = sizes.map{$0.string(precision: 3)}.joined(separator: "\n")
+            let stringSizes = sizes.map {$0.string(precision: 3)}.joined(separator: "\n")
             print("text: \(text)\nintrinsicSize:\n\(intrinsicSize.string(precision: 3))\nsizes:\n\(stringSizes)")
         }
 
@@ -54,7 +53,7 @@ class UILabelIntrinsicSizeTests: XCTestCase {
         sut.view.addSubview(label)
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: sut.view.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: sut.view.centerYAnchor),
+            label.centerYAnchor.constraint(equalTo: sut.view.centerYAnchor)
         ])
 
         labelSizes(text: "Hello enormous world")
@@ -74,6 +73,5 @@ class UILabelIntrinsicSizeTests: XCTestCase {
 //        XCTAssertFalse(lint.findings.contains { $0.description == LabelTruncation().description })
 //        XCTAssertFalse(lint.findings.contains { $0.description == LabelVerticalClipping().description })
     }
-
 
 }
